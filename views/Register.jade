@@ -1,0 +1,40 @@
+!!! 5
+html(lang = "en")
+    head
+        title= 'IKLANT-Register'
+        meta(charset='utf-8')
+        meta(name='viewport',content='width=device-width, initial-scale=1')
+        meta(http-equiv='Cache-Control', content='no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0')
+        meta(http-equiv='Pragma', content='no-cache')
+        meta(http-equiv='Expires', content='-1')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+        link(rel='stylesheet', href='/stylesheets/dialogStyle.css')
+        script(type='text/javascript', src='/javascripts/jquery-1.7.1.min.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile.custom.js')
+        script(type='text/javascript', src="/javascripts/registerUser.js")
+        script(type='text/javascript', src="/javascripts/LoginValidations.js")
+        script(type='text/javascript', src='/javascripts/common.js')
+    body
+        form(id="registerFormID")
+            div(data-role='page', data-theme='a', id="loginDetailsDiv")
+                div(data-role="header", data-theme="a", class="ui-bar ui-grid-a", data-overlay-theme="c")
+                    div(class="ui-block-a")
+                        img(id='groupIcon', src='/images/iklant.png')
+                        h3(for="value", style="margin:20px 10px 0 0; text-align:right;")
+                    div(class="ui-block-b", align="right")
+                div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="a")
+                    h3 Group Details
+                    p(id ='errorField',data-theme="e",align='center')
+                    div(data-role="content", id="groupdetails", data-theme="a", data-overlay-theme="a", data-inline="true")
+                        div(data-role="fieldcontain", data-mini="true")
+                            label(for="tenantNameId", data-inline="true") Tenant Name *
+                            input(type="text", name="tenantName", id="tenantNameId", value="",autocomplete="off",onkeyup='forNamesValidation(this)')
+                        div(data-role="fieldcontain")
+                            label(for="tenantAddressId") Tenant Address *
+                            input(type="text", name="tenantAddress", id="tenantAddressId", value="",autocomplete="off",onkeyup='forRemoveSpecialCharcters(this)')
+                        a(href='',  rel="external",data-icon='check', data-theme="b", data-role='button', title=' Add ', data-inline="true", id='saveTenantId') Save
+                        a(href=contextPath + '/client/ci/login', rel="external",data-icon='arrow-l', data-role='button', title=' Back', data-inline="true") Back
+                div(class="ui-loader-background")

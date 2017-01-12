@@ -1,0 +1,253 @@
+extends ./layout
+include ./header
+
+block title
+    title= 'IKLANT-demandReport'
+
+block scripts
+    link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+    include ./headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/jquery-ui.js')
+    script(type='text/javascript', src='/javascripts/trailBalance.js')
+    script(type="text/javascript", src="/javascripts/reportmgmt.js")
+    script(type="text/javascript", src="/javascripts/jquery.dataTables.js")
+
+block content
+    form(id='demandReport')
+        div(data-role='page', data-theme='b')
+            input(type='hidden', name='reportPageName', id='reportPageName', value="demandReport")
+            input(type='hidden', name='report_download_flag', id='report_download_flag', value="#{download_report}")
+            input(type='hidden', name='selectedDocName', id='selectedDocName', value="#{fileLocation}")
+            input(type='hidden', name='reportType', id='reportType')
+            input(type='hidden', name='reportId', id='reportId',value='#{reportId}')
+            -var groupsReport = constantsObj.getGroupsReports()
+            -var backLink = (constantsObj.getDemandGroupWiseReport() == reportId)?contextPath + '/client/ci/reportsMenuByCategory/'+constantsObj.getGroupsReports():contextPath + '/client/ci/reportsMenuByCategory/'+constantsObj.getGroupMembersReports()
+            +header("",["backHref","menu","logout"],backLink)
+            div(data-role="navbar",id="navid")
+                ul(id="custom-nav-list")
+                    li
+                        a(rel="external", data-role="tab" , id="table-li-1",class="ui-btn-active") Demand Summary
+            div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b",id='demandCollectionDiv')
+                h3 Select Dates to view Demand Summary
+                p(id="errorField",align="center",class='error-message global-font-details')
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a",style='width:100%;')
+                    div(class='ui-block-a',style='width:10%;')
+                        div(data-role='fieldcontain')
+                        label(id="report_label_top") From Date
+                    div(class='ui-block-b',style='width:15%;')
+                        div(data-role='fieldcontain')
+                            input(type="text", name="fromdate", id="fromdate",readonly = "readonly", value=startDate, required='true',class='fromDateDC')
+                    div(class='ui-block-c',style='width:10%;')
+                        div(data-role='fieldcontain')
+                        label(id="report_label_top") To Date
+                    div(class='ui-block-d',style='width:15%;')
+                        div(data-role='fieldcontain')
+                            input(type="text", name="todate", id="todate", value=endDate,readonly = "readonly", required='true',class='toDateDC')
+                    - if(roleId == constantsObj.getSMHroleId() || roleId == constantsObj.getNaiveroleId()|| roleId == constantsObj.getAMHroleId()|| roleId == constantsObj.getAuditorRoleId()) {
+                        div(class='ui-block-e',style='width:9%;')
+                            div(data-role='fieldcontain')
+                            label(id="report_label_top") Office
+                        div(class='ui-block-e',style='width:16%;')
+                            div(data-role='fieldcontain')
+                                select(name='listoffice', id='listoffice', data-theme='b', data-icon='grid', data-inline='true', data-mini='true',onchange='loadFO()')
+                                    option(value='-1') All
+                                    -for(i=0;i<officeIdArray.length;i++){
+                                        -if(officeValue == officeIdArray[i]){
+                                            option(value=officeIdArray[i],selected="selected") #{officeNameArray[i]}
+                                        -}
+                                        -else{
+                                            option(value=officeIdArray[i]) #{officeNameArray[i]}
+                                        -}
+                                    - }
+                    - }
+                    div(class='ui-block-e',style='width:10%;')
+                        div(data-role='fieldcontain')
+                        label(id="report_label_top") Loan Product
+                    div(class='ui-block-e',style='width:12%;')
+                        div(data-role='fieldcontain')
+                            select(name='loan_product', id='loan_product', data-theme='b', data-icon='grid', data-inline='true', data-mini='true')
+                                option(value='-1') All
+                                -for(i=0;i<prdOfferingIdArray.length;i++){
+                                    -if(loan_product_value == prdOfferingIdArray[i]){
+                                        option(value=prdOfferingIdArray[i],selected="selected") #{prdOfferingNameArray[i]}
+                                    -}
+                                    -else{
+                                        option(value=prdOfferingIdArray[i]) #{prdOfferingNameArray[i]}
+                                    -}
+                                - }
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a",style='width:100%;')
+                    div(class='ui-block-a',style='width:13%;')
+                        div(data-role='fieldcontain')
+                        label(id="report_label_top") Product Category
+                    div(class='ui-block-b',style='width:12%;')
+                        div(data-role='fieldcontain')
+                            select(name='category', id='category', data-theme='b', data-icon='grid', data-inline='true', data-mini='true')
+                                option(value='-1') All
+                                -for(i=0;i<prdCategoryIdArray.length;i++){
+                                    -if(prd_category_value == prdCategoryIdArray[i]){
+                                        option(value=prdCategoryIdArray[i],selected="selected") #{prdCategoryNameArray[i]}
+                                    -}
+                                    -else{
+                                        option(value=prdCategoryIdArray[i]) #{prdCategoryNameArray[i]}
+                                    -}
+                                - }
+                    div(class='ui-block-c',style='width:10%;')
+                        div(data-role='fieldcontain')
+                        label(id="report_label_top") Loan Officer
+                    div(class='ui-block-d',style='width:15%;')
+                        div(data-role='fieldcontain')
+                            select(name='loanOfficer', id='loanOfficerId',data-theme='b', data-icon='grid', data-inline='true', data-mini='true')
+                                option(value='-1') All
+                                -for(i=0;i<personnelIdArray.length;i++){
+                                    -if(personnel_value == personnelIdArray[i]){
+                                        option(value=personnelIdArray[i],selected="selected") #{personnelNameArray[i]}
+                                    -}
+                                    -else{
+                                        option(value=personnelIdArray[i]) #{personnelNameArray[i]}
+                                    -}
+                                - }
+                    -if(constantsObj.getDemandClientWiseReport() == reportId){
+                        div(class='ui-block-e',style='width:20%;')
+                            div(data-role='fieldcontain')
+                            label(id="report_label_top") Is Individual Tracked
+                        div(class='ui-block-e',style='width:10%;')
+                            div(data-role='fieldcontain')
+                                select(name='individual_tracked', id='individual_tracked',data-theme='b', data-icon='grid', data-inline='true', data-mini='true')
+                                    option(value='-1') All
+                                    option(value='1') Yes
+                                    option(value='0') No
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a",style='width:100%;')
+                    -}
+                    div(class='ui-block-e',style='width:8%;')
+                        div(data-role='fieldcontain')
+                        label(id="report_label_top") Customer
+                    div(class='ui-block-e',style='width:16%;')
+                        div(data-role='fieldcontain')
+                            input(type="text", name="customer", id="customer", required='true', value=customerVal,onkeyup='forNamesValidation(this)')
+                    div(class='ui-block-c',style='width:8%;')
+                        div(data-role='fieldcontain')
+                        label(id="report_label_top") Account
+                    div(class='ui-block-d',style='width:16%;')
+                        div(data-role='fieldcontain')
+                            input(type="text", name="account", id="account", required='true', value=accountNo,onkeyup='forNumbers(this)')
+                div(data-role="horizontal", data-inline="true",data-theme="b",id="show",class="ui-grid-a",style='width:100%;')
+                    -if(constantsObj.getDemandGroupWiseReport() == reportId){
+                        div(class='ui-block-a',style='width:33%;')
+                            div(data-role="fieldcontain",align="center")
+                                a(href='JavaScript:generateDCReport("demandReport","Summary")',  rel="external",data-theme="b",data-role='button',data-mini='true', data-inline="true") View Summary
+                    -}
+                    div(class='ui-block-b',style='width:34%;')
+                        div(data-role="fieldcontain",align="center")
+                            a(href='JavaScript:generateDCReport("demandReport","Detailed")',  rel="external",data-theme="b",data-role='button',data-mini='true', data-inline="true") View Detailed Report
+                    div(class='ui-block-c',style='width:33%;')
+                        div(data-role="fieldcontain",align="center")
+                            a(href='#', data-role='button',id='downloadExcel', data-inline='true', data-mini='true',onclick='generateDCReport("demandReport","Download")') Export To Excel
+            - if(result){
+                -if(result.length>0){
+                    div(style = "overflow: auto;",class=(result.length>10)?'container '+detailed:detailed)
+                        div(data-role="navbar",id="navid")
+                            ul(id="custom-nav-list")
+                                li
+                                    a(rel="external", data-role="tab" , id="table-li-1",class="ui-btn-active") Demand Report
+                        table(id="fixedHeader_detailedsummary", CLASS="DISPLAY", cellspacing="0", width="100%")
+                            thead
+                                tr
+                                    th S.No
+                                    th Month
+                                    th Loan Product
+                                    th Branch
+                                    th Field Officer
+                                    th Due Date
+                                    th Group Code
+                                    th Group Name
+                                    th Client Name
+                                    th Pri.Demd
+                                    th Int.Demd
+                                    th Tot.Demd
+                            - count = 1;
+                            -if(constantsObj.getDemandGroupWiseReport() == reportId){
+                                - for(var i=0;i<result.length;i++) {
+                                    -if(result[i].demd_office_id && result[i].demd_date && result[i].demd_account_id){
+                                        tr
+                                            td(class='center-text') #{count}
+                                            td #{result[i].MONTH}
+                                            td #{result[i].loan_product}
+                                            td #{result[i].demd_office}
+                                            td #{result[i].field_officer}
+                                            td #{result[i].demd_date}
+                                            td #{result[i].group_code}
+                                            td #{result[i].demd_customer}
+                                            td #{result[i].demd_client_name}
+                                            td(class='text-right-align') #{result[i].principal_demd}
+                                            td(class='text-right-align') #{result[i].interest_demd}
+                                            td(class='text-right-align') #{result[i].total_demd}
+                                        - count++
+                                    -}
+                                -}
+                            -}
+                            -else{
+                                - for(var i=0;i<result.length;i++) {
+                                    tr
+                                        td(class='center-text') #{i+1}
+                                        td #{result[i].MONTH}
+                                        td #{result[i].loan_product}
+                                        td #{result[i].demd_office}
+                                        td #{result[i].field_officer}
+                                        td #{result[i].demd_date}
+                                        td #{result[i].group_code}
+                                        td #{result[i].demd_group_name}
+                                        td #{result[i].demd_customer}
+                                        td(class='text-right-align') #{result[i].principal_demd}
+                                        td(class='text-right-align') #{result[i].interest_demd}
+                                        td(class='text-right-align') #{result[i].total_demd}
+                                -}
+                            -}
+                    -if(constantsObj.getDemandGroupWiseReport() == reportId){
+                        div(style = "overflow: auto;",class=summary)
+                            div(data-role="navbar",id="navid")
+                                ul(id="custom-nav-list")
+                                    li
+                                        a(rel="external", data-role="tab" , id="table-li-1",class="ui-btn-active") Demand Summary
+                            table(id="fixedHeader_summary", CLASS="DISPLAY", cellspacing="0", width="100%")
+                                thead
+                                    tr
+                                        th S.No
+                                        th Office
+                                        th Principal Demand
+                                        th Interest Demand
+                                        th Total Demand
+                                - count = 1;
+                                - for(var i=0;i<result.length;i++) {
+                                    -if(!result[i].demd_account_id && !result[i].demd_date && result[i].demd_office_id ){
+                                        tbody
+                                            tr
+                                                td(class='center-text') #{count}
+                                                td #{result[i].demd_office}
+                                                td(class='text-right-align') #{result[i].totalPrincipal}
+                                                td(class='text-right-align') #{result[i].totalInterest}
+                                                td(class='text-right-align') #{result[i].totalDemand}
+                                        -count++
+                                    -}
+                                -}
+                                - for(var i=0;i<result.length;i++) {
+                                    -if(!result[i].demd_office_id){
+                                        tbody
+                                            tr
+                                                td(colspan='2') Total
+                                                td(class='text-right-align') #{result[i].totalPrincipal}
+                                                td(class='text-right-align') #{result[i].totalInterest}
+                                                td(class='text-right-align') #{result[i].totalDemand}
+                                    -}
+                                - }
+                    -}
+                -}
+                -else{
+                    tbody
+                        tr
+                            div(align='center')
+                                span(style='font-weight:bold') No records to display
+                -}
+            - }
+            div(class="ui-loader-background")

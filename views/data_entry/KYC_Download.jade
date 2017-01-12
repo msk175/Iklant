@@ -1,0 +1,81 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'IKLANT-KYCFormDownload'
+
+block scripts
+    include ../headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+    script(type='text/javascript', src="/javascripts/data_entry/kycDownload.js")
+
+block content
+    form(id='BMFormId')
+        div(data-role='page', data-theme='b')
+            +header("KYC Download",["backJavascript","logout"],'cancelKYCDownload',[])
+            div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b")
+                h3 KYC Download
+                div(data-role="content", data-theme="c", data-overlay-theme="c", data-inline="true")
+                    div(data-role='fieldcontain',align='left')
+                        -if(typeof status != 'undefined' && status == 'failure'){
+                            p(id='errorLabelId',align="center",class='error-message global-font-details') No documents found for this member
+                        -}
+                        div(data-role="horizontal", data-theme="a", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-b")
+                            div(class='ui-block-a')
+                                label(for="documentType") Document Type
+                                select(name='DocumentType',rel = "external", data-mini="true" ,id="documentType",data-inline="true",autofocus="autofocus", data-theme='b', data-icon='arrow-d', data-native-menu="false")
+                                    option(value="0")    Select
+                                    -for(i=0;i< docTypeIdArray.length;i++){
+                                        -if(docTypeIdArray[i]==docType)
+                                            option(value=docTypeIdArray[i], selected='selected') #{docTypeNameArray[i]}
+                                        -else
+                                            option(value=docTypeIdArray[i]) #{docTypeNameArray[i]}
+                                    - }
+                            div(class='ui-block-b')
+                                label(for="memberName") Member Name
+                                select(name='MemberName',rel = "external", data-mini="true" ,id="memberName",data-inline="true",autofocus="autofocus", data-theme='b', data-icon='arrow-d', data-native-menu="true")
+                                    option(value="0")    Select
+                                    -for(i=0;i< memberIdArray.length;i++){
+                                        -if(memberIdArray[i]==memberId)
+                                            option(value=memberIdArray[i], selected='selected') #{memberNameArray[i]}
+                                        -else
+                                            option(value=memberIdArray[i]) #{memberNameArray[i]}
+                                    - }
+                            div(class='ui-block-c')
+                                label(for="modeOfpayId") Retrieve Type
+                                div(data-role="fieldcontain", style = 'width:200px')
+                                    input(type="radio", data-mini="true", name="retrieveType", data-theme='b', id="localId", value="1")
+                                    label(for="localId") Local
+                                div(data-role="fieldcontain", style = 'width:200px')
+                                    input(type="radio", data-mini="true",name="retrieveType", data-theme='b', id="remoteId",checked="checked", value="2")
+                                    label(for="remoteId") Remote
+                        input(type="hidden",id="groupID",name="groupID",value=groupId)
+                        input(type="hidden",id="memberID",name="memberID",value=memberId)
+                        input(type="hidden",id="documentTypeID",name="documentTypeID",value=docType)
+                        input(type="hidden",id="reqOfficeHidden",name="reqOfficeHidden",value="#{officeValue}")
+
+                div(data-role="fieldcontain")
+                    a(href='JavaScript:downloadImage()',  rel="external",data-theme="b",data-icon='check', data-role='button', title=' Submit ', data-inline="true",data-mini="true", id="downloadId") Download
+                    -if(image[0]!='Empty'){
+                        //a(href="JavaScript:downloadImage1('"+image[0]+"')",  rel="external",data-theme="b",data-icon='check', data-role='button', title=' downloadImage ', data-inline="true") Download Image
+                    - }
+                    a(href='JavaScript:cancelKYCDownload()', rel="external",data-icon='back', data-role='button', title=' Back', data-mini="true",data-inline="true") Back
+                    -if(image[0]!='Empty')
+                        //img(src=image[1])
+                    br
+                    br
+                    div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-a")
+                        div(class='ui-block-a')
+                            -if(image[0]!='Empty'){
+                                label(for="imageLabel") Select to View Image
+                                select(name='ImageSelect',rel = "external", data-mini="true", onchange="showImage()",id="imageLabel",data-inline="true",autofocus="autofocus", data-theme='b', data-icon='arrow-d', data-native-menu="false")
+                                    option(value="0")    Select
+                                    -for(i=0;i< image.length;i++){
+                                        option(value=i) image #{i+1}
+                                    - }
+                            - }
+                    -for(i=0;i< image.length;i++){
+                        input(type="hidden",id='downloadedImageId'+i,name='downloadedImage'+i,value="#{image[i]}")
+                    - }
+            input(type="hidden", name="menuName", id="menuName", value='#{menu}')
+            div(class="ui-loader-background")

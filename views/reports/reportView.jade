@@ -1,0 +1,344 @@
+extends ../layout
+include ../header
+
+block title
+    title #{reportName}
+block scripts
+    link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+    include ../headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type="text/javascript", src="/javascripts/reportmgmt.js")
+    script(type='text/javascript', src='/javascripts/jquery-ui.js')
+    script(type="text/javascript", src="/javascripts/jquery.dataTables.js")
+    script(type="text/javascript", src="/javascripts/jsapi.txt")
+    script(type="text/javascript", src="/javascripts/constantjs.js")
+    script(type="text/javascript", src="/javascripts/ldTrackingReport.js")
+
+block content
+    form(id='reportManagementForm')
+        div(data-role='page', data-theme='b')
+            div(data-role="header", data-theme="a")
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                    div(class="ui-block-a")
+                        img(id='groupIcon', src='/images/iklant.png')
+                    div(class="ui-block-b", align="right", style="position:relative;right:3%;")
+                        a(href=contextPath + '/client/ci/menu', rel="external",data-icon='grid', data-role='button', title=' Menu', data-inline="true") Menu
+                        a(href=contextPath + '/client/ci/loadReportsByCategory/#{categoryId}', rel="external",data-icon='arrow-l', data-role='button', title=' Back', data-inline="true") Back
+                        a(href=contextPath + '/client/ci/logout',  rel="external",data-icon='back', data-role='button', title=' Logout ', data-inline="true") Logout
+            div(data-role="navbar",id="navid")
+                ul(id="custom-nav-list")
+                    li
+                        a(rel="external", data-role="tab" , id="ldReport",class="ui-btn-active") #{reportName}
+                    -if(result.length > 0 && reportName.replace(/ /g,"") == constantsObj.getLDTrackingReport()){
+                        li
+                            a(rel="external", data-role="tab", id="ldChart") Chart View
+                    -}
+            div(data-role="content")
+                div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b",id='reportView')
+                    h3 Select dates to view #{reportName} report
+                    p(id="errorField",class='error-message global-font-details',align='center')
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a",style='width:100%;padding-left:2em')
+                        -var classValue = 'a';
+                        -var dateCount = 0;
+                        -for(var i=0;i<3;i++){
+                            -if(reportFilterId[i] != constantsObj.getUserIdLabel()){
+                                div(class='ui-block-#{classValue}',style="width:12%")
+                                    div(data-role="fieldcontain")
+                                    label(id="report_label_top") #{reportFilterValue[i]}
+                            -}
+                                -if(reportFilterId[i] == constantsObj.getFromDateLabel()){
+                                    div(class='ui-block-b',style="width:20%")
+                                        div(data-role="fieldcontain")
+                                            input(type="text", name="fromdate", id="fromdate",readonly = "readonly", value=fromDate, required='true',class=(reportName.indexOf('Demand')>-1)?'fromDateDC':'fromDate')
+                                    -classValue = 'c';
+                                    -dateCount = 1;
+                                -}else if(reportFilterId[i] == constantsObj.getToDateLabel()){
+                                    div(class=(classValue == 'c')?'ui-block-d':'ui-block-b',style="width:20%")
+                                        div(data-role="fieldcontain")
+                                            input(type="text", name="todate", id="todate", value=toDate,readonly = "readonly", required='true',class=(reportName.indexOf('Demand')>-1)?'toDateDC':'toDate')
+                                    -classValue = (classValue == 'c')?'e':'c';
+                                -}
+                                -else if(reportFilterId[i] == constantsObj.getOfficeIdLabel()){
+                                    div(class=(classValue == 'e')?'ui-block-e':'ui-block-d',style="width:20%")
+                                        div(data-role="fieldcontain")
+                                            -if(roleId == constantsObj.getSMHroleId() || roleId == constantsObj.getAMHroleId() || roleId == constantsObj.getDEOroleId() || roleId == constantsObj.getCCEroleId()){
+                                                select(name='listoffice', id='listoffice', data-theme='b', data-icon='grid', data-inline='true', data-mini='true',onchange="loadFO()")
+                                                    option(value='-1') All
+                                                    -for(j=0;j<officeIdArray.length;j++){
+                                                        -if(officeId == officeIdArray[j]){
+                                                            option(value=officeIdArray[j],selected="selected") #{officeNameArray[j]}
+                                                        -}
+                                                        -else{
+                                                            option(value=officeIdArray[j]) #{officeNameArray[j]}
+                                                        -}
+                                                    - }
+                                            -}else{
+                                                select(name='listoffice', id='listoffice', data-theme='b', data-icon='grid', data-inline='true', data-mini='true',disabled='disabled',onchange="loadFO()")
+                                                    option(value='-1') All
+                                                    -for(j=0;j<officeIdArray.length;j++){
+                                                        -if(officeId == officeIdArray[j]){
+                                                            option(value=officeIdArray[j],selected="selected") #{officeNameArray[j]}
+                                                        -}
+                                                        -else{
+                                                            option(value=officeIdArray[j]) #{officeNameArray[j]}
+                                                        -}
+                                                    - }
+                                            -}
+                                    -classValue = (classValue == 'e')?'a':'e';
+                                -}
+                                -else if(reportFilterId[i] == constantsObj.getLedger()){
+                                    div(class=(classValue == 'a')?'ui-block-b':'ui-block-e',style="width:20%")
+                                        div(data-role="fieldcontain")
+                                            select(name='listledger', id='listledger', data-theme='b', data-icon='grid', data-inline='true', data-mini='true',onchange='saveLedgerName();')
+                                                -for(i=0;i<ledger_name_array.length;i++){
+                                                    -if(ledgerValue == gl_code_value_array[i]){
+                                                        option(value=gl_code_value_array[i],selected="",id='listledger') #{ledger_name_array[i]} [#{gl_code_value_array[i]}]
+                                                    -}else{
+                                                        option(value=gl_code_value_array[i],id='listledger') #{ledger_name_array[i]} [#{gl_code_value_array[i]}]
+                                                    -}
+                                                - }
+                                    -classValue = 'c';
+                                -}else if(reportFilterId[i] == constantsObj.getFieldOfficerIdLabel()){
+                                    div(class=(classValue == 'a')?'ui-block-b':'ui-block-e',style="width:20%")
+                                        div(data-role="fieldcontain")
+                                            select(name='loanOfficer', id='loanOfficerId', data-theme='b', data-icon='grid', data-inline='true', data-mini='true')
+                                                option(value='-1') All
+                                                -for(k=0;k<personnelNameArray.length;k++){
+                                                    -if(fieldOfficerId == personnelIdArray[k]){
+                                                        option(value=personnelIdArray[k],selected="") #{personnelNameArray[k]}
+                                                    -}else{
+                                                        option(value=personnelIdArray[k]) #{personnelNameArray[k]}
+                                                    -}
+                                                -}
+                                -}
+                                -else if(reportFilterId[i] == constantsObj.getDaysInArrearsLabel()){
+                                    div(class=(classValue == "a")?'ui-block-b':'ui-block-e',style="width:20%")
+                                        div(data-role="fieldcontain")
+                                            div(data-role="fieldcontain")
+                                                input(type="text", name="daysInArrears", id="daysInArrears", required='true', value=daysInArrears,onkeyup='forNumbers(this)',maxlength='20',autocomplete='off',style='text-align:right')
+                                    -classValue = (classValue == 'a')?'c':'a';
+                                -}
+                                -else if(reportFilterId[i] == constantsObj.getLoanStatusLabel() && reportName.replace(/ /g,"") == constantsObj.getGroupMembersDetailReport()){
+                                    div(class=(classValue == "a")?'ui-block-b':'ui-block-e',style="width:20%")
+                                        div(data-role="fieldcontain")
+                                            select(name='loanStatus', id='loanStatus', data-theme='b', data-icon='grid', data-inline='true', data-mini='true')
+                                                -for(var s=0;s<accountStateId.length;s++){
+                                                    -if(loanStatus == accountStateId[s]){
+                                                        option(value=accountStateId[s],selected="selected") #{accountStateName[s]}
+                                                    -}else{
+                                                        option(value=accountStateId[s]) #{accountStateName[s]}
+                                                    -}
+                                                -}
+                                -}
+                                -else if(reportFilterId[i] == constantsObj.getFundLabel() ){
+                                    div(class=(classValue == "a")?'ui-block-b':'ui-block-e',style="width:20%")
+                                        div(data-role="fieldcontain")
+                                            select(name='fundName', id='fundId', data-theme='b', data-icon='grid', data-inline='true', data-mini='true')
+                                                -for(var s=0;s<accountStateId.length;s++){
+                                                    -if(fundId == fundIds[s]){
+                                                        option(value=fundIds[s],selected="selected") #{fundNames[s]}
+                                                    -}else{
+                                                        option(value=fundIds[s]) #{fundNames[s]}
+                                                    -}
+                                                -}
+                                -}
+                        -}
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a",style='width:100%;padding-left:2em')
+                        -var classValue = 'a';
+                        -for(var i=3;i<reportFilterId.length;i++){
+                            -if(reportFilterId[i] != constantsObj.getUserIdLabel()){
+                                div(class='ui-block-#{classValue}',style="width:12%")
+                                    div(data-role="fieldcontain")
+                                        label(id="report_label_top") #{reportFilterValue[i]}
+                            -}
+                                -if(reportFilterId[i] == constantsObj.getFieldOfficerIdLabel()){
+                                    div(class='ui-block-b',style="width:20%")
+                                        div(data-role="fieldcontain")
+                                            select(name='loanOfficer', id='loanOfficerId', data-theme='b', data-icon='grid', data-inline='true', data-mini='true')
+                                                option(value='-1') All
+                                                -for(k=0;k<personnelNameArray.length;k++){
+                                                    -if(fieldOfficerId == personnelIdArray[k]){
+                                                        option(value=personnelIdArray[k],selected="") #{personnelNameArray[k]}
+                                                    -}else{
+                                                        option(value=personnelIdArray[k]) #{personnelNameArray[k]}
+                                                    -}
+                                                -}
+                                    -classValue = 'c';
+                                -}
+                                -else if(reportFilterId[i] == constantsObj.getProductCategoryLabel()){
+                                    div(class=(classValue == 'c')?'ui-block-d':'ui-block-b',style="width:20%")
+                                        div(data-role="fieldcontain")
+                                            select(name='category', id='category', data-theme='b', data-icon='grid', data-inline='true', data-mini='true')
+                                                option(value='-1') All
+                                                -for(l=0;l<prdCategoryNameArray.length;l++){
+                                                    -if(productCategoryId == prdCategoryIdArray[l]){
+                                                        option(value=prdCategoryIdArray[l],selected="") #{prdCategoryNameArray[l]}
+                                                    -}else{
+                                                        option(value=prdCategoryIdArray[l]) #{prdCategoryNameArray[l]}
+                                                    -}
+                                                -}
+                                    -classValue = (classValue == 'c')?'e':'c';;
+                                -}
+                                -else if(reportFilterId[i] == constantsObj.getProductTypeLabel()){
+                                    div(class=(classValue == 'e')?'ui-block-e':'ui-block-d',style="width:20%")
+                                        div(data-role="fieldcontain")
+                                            select(name='loan_product', id='loan_product', data-theme='b', data-icon='grid', data-inline='true', data-mini='true')
+                                                option(value='-1') All
+                                                -for(m=0;m<prdOfferingNameArray.length;m++){
+                                                    -if(productTypeId == prdOfferingIdArray[m]){
+                                                        option(value=prdOfferingIdArray[m],selected="") #{prdOfferingNameArray[m]}
+                                                    -}else{
+                                                        option(value=prdOfferingIdArray[m]) #{prdOfferingNameArray[m]}
+                                                    -}
+                                                -}
+                                    -classValue = (classValue == 'e')?'a':'e';
+                                -}
+                                -else if(reportFilterId[i] == constantsObj.getCustomerNameLabel()){
+                                    div(class=(classValue == 'a')?'ui-block-b':'ui-block-e',style="width:20%")
+                                        div(data-role="fieldcontain")
+                                            input(type="text", name="customer", id="customer", required='true', value=customerName,onkeyup='forNamesValidation(this)',maxlength='200',autocomplete='off')
+                                    -classValue = (classValue == 'a')?'c':'a';
+                                -}else if(reportFilterId[i] == constantsObj.getAccountNoLabel()){
+                                    div(class=(classValue == "c")?'ui-block-d':'ui-block-b',style="width:20%")
+                                        div(data-role="fieldcontain")
+                                            input(type="text", name="account", id="account", required='true', value=accountNo,onkeyup='forNumbers(this)',maxlength='20',autocomplete='off')
+                                    -classValue = (classValue == 'c')?'e':'c';
+                                -}
+                                -else if(reportFilterId[i] == constantsObj.getNPAIndicatorLabel()){
+                                    div(class=(classValue == "e")?'ui-block-a':'ui-block-e',style="width:20%")
+                                        div(data-role="fieldcontain")
+                                            input(type="text", name="npaIndicator", id="npaIndicator", required='true', value=npaIndicator,onkeyup='forNumbers(this)',maxlength='20',autocomplete='off',style='text-align:right')
+                                    -classValue = (classValue == 'e')?'a':'e';
+                                -}
+                                -else if(reportFilterId[i] == constantsObj.getDaysInArrearsLabel()){
+                                    div(class=(classValue == "a")?'ui-block-b':'ui-block-e',style="width:20%")
+                                        div(data-role="fieldcontain")
+                                            div(data-role="fieldcontain")
+                                                input(type="text", name="daysInArrears", id="daysInArrears", required='true', value=daysInArrears,onkeyup='forNumbers(this)',maxlength='20',autocomplete='off',style='text-align:right')
+                                    -classValue = (classValue == 'a')?'c':'a';
+                                -}
+                                -else if(reportFilterId[i] == constantsObj.getTotalODAboveLabel()){
+                                    div(class=(classValue == "c")?'ui-block-d':'ui-block-b',style="width:20%")
+                                        div(data-role="fieldcontain")
+                                            input(type="text", name="totalODAbove", id="totalODAbove", required='true', value=totalODAbove,onkeyup='forNumbers(this)',maxlength='20',autocomplete='off',style='text-align:right')
+                                    -classValue = (classValue == 'c')?'e':'c';
+                                -}
+                                -else if(reportFilterId[i] == constantsObj.getLedger()){
+                                    div(class=(classValue == "c")?'ui-block-d':'ui-block-b',style="width:20%")
+                                        select(name='listledger', id='listledger', data-theme='b', data-icon='grid', data-inline='true', data-mini='true',onchange='saveLedgerName();')
+                                            -for(k=0;k<ledger_name_array.length;k++){
+                                                -if(ledgerValue == gl_code_value_array[k]){
+                                                    option(value=gl_code_value_array[k],selected="",id='listledger') #{ledger_name_array[k]} [#{gl_code_value_array[k]}]
+                                                -}else{
+                                                    option(value=gl_code_value_array[k],id='listledger') #{ledger_name_array[k]} [#{gl_code_value_array[k]}]
+                                                -}
+                                            - }
+
+                                    -classValue = (classValue == 'c')?'e':'c';
+                                -}
+                                -else if(reportFilterId[i] == constantsObj.getMfiFlag()){
+                                    div(class=(classValue == "c")?'ui-block-d':'ui-block-b',style="width:20%")
+                                        div(data-role="fieldcontain")
+                                            label(for="mfiFlagId") Flag
+                                            input(type="checkbox", name="mfiFlag", id="mfiFlagId", data-mini="true", data-inline="true",checked="checked")
+                                    -classValue = (classValue == 'c')?'e':'c';
+                                -}
+                                -else if(reportFilterId[i] == constantsObj.getAccFlag()){
+                                    div(class=(classValue == "c")?'ui-block-d':'ui-block-b',style="width:20%")
+                                        div(data-role="fieldcontain")
+                                            label(for="accFlagId") Flag
+                                            input(type="checkbox", name="accFlag", id="accFlagId", data-mini="true", data-inline="true",checked="checked")
+                                    -classValue = (classValue == 'c')?'e':'c';
+                                -}
+                        -}
+                        input(type="hidden", name="reportDescription", id="reportDescription", value='#{reportName.replace(/ /g,"")}')
+                        input(type="hidden", name="reportspname", id="reportspname", value='#{spname}')
+                        input(type="hidden", name="reportType", id="reportType")
+                        input(type="hidden", name="reportId", id="reportId",value='#{reportId}')
+                        input(type="hidden", name="categoryId", id="categoryId",value='#{categoryId}')
+                        input(type="hidden", name="reportName", id="reportName",value='#{reportName}')
+                        input(type="hidden", name="generationType", id="generationType",value='#{generationType}')
+                        input(type="hidden", name="selectedDocName", id="selectedDocName",value='#{filePath}')
+                        input(type="hidden", name="reportFilter", id="reportFilter",value='#{reportFilterId}')
+                        -var memberReachability = new Array();
+                        -var unReachability = new Array();
+                        -var foBehaviour = new Array();
+                        -var loanDiscrepancy = new Array();
+                        -var feeDiscrepancy = new Array();
+                        -var loanFeatureAwareness = new Array();
+                        -var trained = new Array();
+                        -var legalPapers = new Array();
+                        -var loanNotDisbursed = new Array();
+                        -for(var i=0;i<result.length;i++){
+                            -memberReachability[i] = result[i].MemberReachability
+                            -unReachability[i] = result[i].ReasonsForUnreachability
+                            -foBehaviour[i] = result[i].FOBehaviour
+                            -loanDiscrepancy[i] = result[i].DiscrepancyInLoan
+                            -feeDiscrepancy[i] = result[i].DiscrepancyInProcessingFee
+                            -loanFeatureAwareness[i] = result[i].AwarenessOfLoanFeatures
+                            -trained[i] = result[i].TrainedOnFinancialLiterature
+                            -legalPapers[i] = result[i].LegalPaperSigned
+                            -loanNotDisbursed[i] = result[i].MemberReachability
+                        -}
+                        input(type="hidden", name="memberReachability", id="memberReachability",value='#{memberReachability}')
+                        input(type="hidden", name="unReachability", id="unReachability",value='#{unReachability}')
+                        input(type="hidden", name="foBehaviour", id="foBehaviour",value='#{foBehaviour}')
+                        input(type="hidden", name="loanDiscrepancy", id="loanDiscrepancy",value='#{loanDiscrepancy}')
+                        input(type="hidden", name="feeDiscrepancy", id="feeDiscrepancy",value='#{feeDiscrepancy}')
+                        input(type="hidden", name="loanFeatureAwareness", id="loanFeatureAwareness",value='#{loanFeatureAwareness}')
+                        input(type="hidden", name="trained", id="trained",value='#{trained}')
+                        input(type="hidden", name="legalPapers", id="legalPapers",value='#{legalPapers}')
+                        input(type="hidden", name="loanNotDisbursed", id="loanNotDisbursed",value='#{loanNotDisbursed}')
+                    div(data-role="horizontal", data-inline="true",data-theme="b",class="ui-grid-a",style='width:70%;padding-left:60%')
+                        div(id="generateButtonDiv",class='ui-block-a',style='width:20%;')
+                            div(data-role="fieldcontain")
+                                //--if(filePathFlag == "")
+                                a(href='JavaScript:generateReport("Export",#{dateCount})', data-role='button',data-inline='true', data-mini='true') Generate Report
+                        div(id='downloadDiv',class='ui-block-b',style='width:50%;padding-top:1em')
+                            div(data-role="fieldcontain")
+                                //--if(filePathFlag != "")
+                                a(href="Javascript:downloadReport()", target="_blank",rel="external", data-role="default") Download report #{fileSize}
+                div(style = "overflow: auto;",class='container')
+                    -if(result.length==0){
+                        div(align='center')
+                            -if(generationType==1)
+                                p(style='font-weight:bold',class='error-message global-font-details') Your request has been submitted. Reports link will be sent your Email ID.
+                            -else if(reportName == "KYC Verification Failed Request")
+                                p(style='font-weight:bold',class='error-message global-font-details') No Image Hold by the FO
+                            -else
+                                p(style='font-weight:bold',class='error-message global-font-details') No records to display
+                    -}
+                div(data-role="navbar", class="ui-bar no-padding", data-grid="d", id="chartView", style='display:none;width:100%')
+                    ul(id="custom-nav-list",style='width:100%',data-role="horizontal")
+                        li
+                            a(rel="external", data-role="tab" , id="custom-li-chart",class="ui-btn-active") Member Reachability
+                        li
+                            a(rel="external", data-role="tab" , id="custom-li-chart1") Reason for Unreachability
+                        li
+                            a(rel="external", data-role="tab" , id="custom-li-chart2") FO Behaviour
+                        li
+                            a(rel="external", data-role="tab" , id="custom-li-chart3") Discrepancy in Loan
+                        li
+                            a(rel="external", data-role="tab" , id="custom-li-chart4") Discrepancy in Processing fee
+                        li
+                            a(rel="external", data-role="tab" , id="custom-li-chart5") Awarness of Loan features
+                        li
+                            a(rel="external", data-role="tab" , id="custom-li-chart6") Trained on Financial literature
+                        li
+                            a(rel="external", data-role="tab" , id="custom-li-chart7") Legal paper signed
+                        li
+                            a(rel="external", data-role="tab" , id="custom-li-chart8") Loan not disbursed
+                div(id="chart_div")
+                div(id="chart_div1")
+                div(id="chart_div2")
+                div(id="chart_div3")
+                div(id="chart_div4")
+                div(id="chart_div5")
+                div(id="chart_div6")
+                div(id="chart_div7")
+                div(id="chart_div8")
+                table(style='width:100%;display:none',id='memberChartTable')
+                    tr
+                        td(id = 'columnChart',style='width:50%')
+                        td(id = 'pieChart',style='width:50%')
+            div(class="ui-loader-background")

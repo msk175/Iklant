@@ -1,0 +1,193 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'Contra-Cash Transfer'
+
+block scripts
+    include ../headerJqueryMobileBeta-3
+    link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    link(rel='stylesheet', href='/stylesheets/loanSanctionCustom.css')
+    script(type='text/javascript', src='/javascripts/jquery-ui.js')
+    script(type='text/javascript', src='/javascripts/accountsMenu.js')
+    script(type='text/javascript', src='/javascripts/accounting/contraCashTransfer.js')
+
+block content
+    form(id="accountsMenuFormID")
+        div(data-role='page', data-theme='b', id="loginDetailsDiv")
+            +header("",["menu","backHref","logout"],contextPath+ '/client/ci/accounts/accountsMenu',[])
+            div(data-role="navbar")
+                ul(id="custom-nav-list")
+                    li
+                        a(href="JavaScript:operationSubmitFromBM('');", rel="external", data-role="tab" , id="custom-li-1") Contra
+            div(data-role="navbar")
+                ul(id="custom-nav-list")
+                    li
+                        a(href="JavaScript:showBankPaymentForm()", rel="external", data-role="tab" , id="Bank Withdraw") Bank Withdraw
+                    li
+                        a(href="JavaScript:showCashDepositForm()", rel="external", data-role="tab", id="Cash Deposit") Cash Deposit
+                    li
+                        a(href="JavaScript:showFundTransferForm()", rel="external", data-role="tab",id="Fund Transfer") Fund Transfer
+                    li
+                        a(href="JavaScript:showCashTransferForm()", rel="external", data-role="tab",class="ui-btn-active",id="Cash Transfer") Cash Transfer
+            div(data-role="collapsible", id="minutes", data-overlay-theme="a", data-inline="true" , data-collapsed="false",data-content-theme="b")
+                h3 Cash Transfer
+                p(id="errorMsg" ,class="error-message global-font-details",align="center") #{errorMessage}
+                p(id="successMsg" ,class="success-message global-font-details",align="center") #{statusMessage}
+                div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-e")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                        label(for="fromOfficeHierarchyId",id='labelid') From Office Hierarchy *
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain",id="fromOfficeHierarchyDivId")
+                            select(name='fromofficeHierarchy', id='fromOfficeHierarchyId',data-inline="true",data-mini="true", data-icon='grid',data-theme="b", data-overlay-theme="d", data-native-menu="true")
+                                -for(i=0;i<officeHierarchyNameArray.length;i++){
+                                    -if(fromOfficeHierarchyValue == i+1){
+                                        option(value=i+1,selected="") #{officeHierarchyNameArray[i]}
+                                    -}else{
+                                        option(value=i+1) #{officeHierarchyNameArray[i]}
+                                    -}
+                                -}
+                    div(class='ui-block-c')
+                        div(data-role="fieldcontain", data-mini="true")
+                        label(for="fromOfficeId") From Office *
+                    div(class='ui-block-d')
+                        div(data-role="fieldcontain",id="officeDivId")
+                            select(name='fromOffice', id='fromOfficeId',data-inline="true",data-mini="true", data-icon='grid',data-theme="b", data-overlay-theme="b", data-native-menu="true")
+                                option(value='') Select
+                                - for(i=0;i< AccountingDetails.getMainAccountOfficeHierarchyvar().length;i++){
+                                    - if(globalOfficeNum == AccountingDetails.getMainAccountOfficeHierarchyId()[i])
+                                        option(value= "#{AccountingDetails.getMainAccountOfficeHierarchyId()[i]}",selected='selected') #{AccountingDetails.getMainAccountOfficeHierarchyvar()[i]}
+                                    - else
+                                        option(value= "#{AccountingDetails.getMainAccountOfficeHierarchyId()[i]}") #{AccountingDetails.getMainAccountOfficeHierarchyvar()[i]}
+                                - }
+                    div(class='ui-block-e')
+                        div(data-role="fieldcontain", data-mini="true")
+                        label(for="fromAccountId") From Account *
+                    div(class='ui-block-f')
+                        div(data-role="fieldcontain",id="toOfficeAccId")
+                            select(name='fromAccount', id='fromAccountId',data-inline="true",data-mini="true", data-icon='grid',data-theme="b", data-overlay-theme="b", data-native-menu="true")
+                                option(value='') Select
+                                - for(i=0;i< AccountingDetails.getMainAccountvar().length;i++){
+                                    - if(officeId == AccountingDetails.getMainAccountGlcodeOfficeId()[i] | officeId == 1)
+                                        - if(officeId == AccountingDetails.getMainAccountGlcodeOfficeId()[i])
+                                            option(value= "#{AccountingDetails.getMainAccountGlcodeId()[i]}",selected='selected') #{AccountingDetails.getMainAccountvar()[i]}
+                                        - else
+                                            option(value= "#{AccountingDetails.getMainAccountGlcodeId()[i]}") #{AccountingDetails.getMainAccountvar()[i]}
+                                - }
+                div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-e")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                        label(for="toOfficeHierarchyId") To Office Hierarchy *
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain",id="toOfficeHierarchyDivId")
+                            select(name='toofficeHierarchy', id='toOfficeHierarchyId',data-inline="true",data-mini="true", data-icon='grid',data-theme="b", data-overlay-theme="d", data-native-menu="true")
+                                -for(i=0;i<officeHierarchyNameArray.length;i++){
+                                    -if(toOfficeHierarchyValue == i+1){
+                                        option(value=i+1,selected="") #{officeHierarchyNameArray[i]}
+                                    -}else{
+                                        option(value=i+1) #{officeHierarchyNameArray[i]}
+                                    -}
+                                -}
+                    div(class='ui-block-c')
+                        div(data-role="fieldcontain", data-mini="true")
+                        label(for="toOfficeId") To Office *
+                    div(class='ui-block-d')
+                        div(data-role="fieldcontain",id="toOfficeDivId")
+                            select(name='toOffice', id='toOfficeId',data-inline="true",data-mini="true", data-icon='grid',data-theme="b", data-overlay-theme="b", data-native-menu="true")
+                                option(value='',selected='selected') Select
+                                - for(i=0;i< AccountingDetails.getSubAccountOfficeHierarchyvar().length;i++){
+                                    - if(globalOfficeNum == AccountingDetails.getSubAccountOfficeHierarchyId()[i])
+                                        option(value= "#{AccountingDetails.getSubAccountOfficeHierarchyId()[i]}",selected='selected') #{AccountingDetails.getSubAccountOfficeHierarchyvar()[i]}
+                                    - else
+                                        option(value= "#{AccountingDetails.getSubAccountOfficeHierarchyId()[i]}") #{AccountingDetails.getSubAccountOfficeHierarchyvar()[i]}
+                                - }
+                    div(class='ui-block-e')
+                        div(data-role="fieldcontain", data-mini="true")
+                        label(for="toAccountId") To Account *
+                    div(class='ui-block-f')
+                        div(data-role="fieldcontain",id="toOfficeAccId")
+                            select(name='toAccount', id='toAccountId',data-inline="true",data-mini="true", data-icon='grid',data-theme="b", data-overlay-theme="b", data-native-menu="true")
+                                option(value='') Select
+                                - for(i=0;i< AccountingDetails.getSubAccountvar().length;i++){
+                                    - if(officeId == AccountingDetails.getSubAccountGlcodeOfficeId()[i] | officeId == 1)
+                                        - if(officeId == AccountingDetails.getSubAccountGlcodeOfficeId()[i])
+                                            option(value= "#{AccountingDetails.getSubAccountGlcodeId()[i]}",selected='selected') #{AccountingDetails.getSubAccountvar()[i]}
+                                        - else
+                                            option(value= "#{AccountingDetails.getSubAccountGlcodeId()[i]}") #{AccountingDetails.getSubAccountvar()[i]}
+                                - }
+                div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-e")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                        label(for="transactionDateId") Transaction date *
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain")
+                            input(type="text", name="transactionDate", id="transactionDateId", value="#{trxnDate}", readonly='readonly', required='true')
+                    div(class='ui-block-c')
+                        div(data-role="fieldcontain")
+                        label(for="transactionamountId") Transaction Amount *
+                    div(class='ui-block-d')
+                        div(data-role="fieldcontain")
+                            input(type="text", name="transactionAmount", id="transactionamountId", value="#{trxnAmount}", required='true',autocomplete="off",onkeyup='forNumbersWithDot(this)')
+                //div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-e")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                        label(for="chequeDateId") Cheque date
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain")
+                            input(type="text", name="chequeDate", id="chequeDateId", value="", readonly='readonly', required='true')
+                    div(class='ui-block-c')
+                        div(data-role="fieldcontain")
+                        label(for="chequeNoId") Cheque Number
+                    div(class='ui-block-d')
+                        div(data-role="fieldcontain")
+                            input(type="text", name="chequeNo", id="chequeNoId", value="", required='true',autocomplete="off", onkeyup='numeric(this)')
+                div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-e")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain", data-mini="true")
+                        label(for="transactionNotesId",id='labelid') Transaction Notes *
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain")
+                            textarea(name="transactionNotes", id="transactionNotesId", maxlength="250",autocomplete="off",onkeyup='forRemoveSpecialCharcters(this)', style="width:550px; height:80px;") #{notes}
+                div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-b",data-theme="b",id="show")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain",align="left")
+                            a(href='JavaScript:contraCashTransfer()', rel="external",data-theme="b",data-role="button",id="Submit",data-inline="true",data-mini="true") Submit
+                input(type="hidden",id="roleId",name="role",value="#{roleId}", readonly='readonly')
+                input(type="hidden",id="financialYearStartDateId",name="financialYearStartDate",value="#{AccountingDetails.getFinancialYearStartvar()}", readonly='readonly')
+                input(type="hidden",id="transactionMaxDateId",name="transactionMaxDate",value="#{AccountingDetails.getFinancialYearEndvar()}", readonly='readonly')
+                input(type="hidden",id="transactionTypeId",name="transactionType",value="#{AccountingDetails.getTransactionType()}", readonly='readonly')
+                input(type="hidden",id="glcodeId",name="glcodeId",value="#{AccountingDetails.getSubAccountGlcodeId()}", readonly='readonly')
+                input(type="hidden",id="glCodeName",name="glCodeName",value="#{AccountingDetails.getSubAccountvar()}", readonly='readonly')
+                input(type="hidden",id="glCodeOffice",name="glCodeOffice",value="#{AccountingDetails.getSubAccountGlcodeOfficeId()}", readonly='readonly')
+                input(type="hidden",id="fromGlcodeId",name="fromGlcodeId",value="#{AccountingDetails.getMainAccountGlcodeId()}", readonly='readonly')
+                input(type="hidden",id="fromGlCodeName",name="fromGlCodeName",value="#{AccountingDetails.getMainAccountvar()}", readonly='readonly')
+                input(type="hidden",id="fromGlCodeOffice",name="fromGlCodeOffice",value="#{AccountingDetails.getMainAccountGlcodeOfficeId()}", readonly='readonly')
+                input(type="hidden",id="hoId",name="hoId",value="#{AccountingDetails.getHeadOfficeId()}", readonly='readonly')
+                input(type="hidden",id="hoName",name="hoName",value="#{AccountingDetails.getHeadOfficeNameVar()}", readonly='readonly')
+                input(type="hidden",id="roId",name="roId",value="#{AccountingDetails.getRegionalOfficeId()}")
+                input(type="hidden",id="roName",name="roName",value="#{AccountingDetails.getRegionalOfficeNameVar()}")
+                input(type="hidden",id="doId",name="doId",value="#{AccountingDetails.getDivisionalOfficeId()}", readonly='readonly')
+                input(type="hidden",id="doName",name="doName",value="#{AccountingDetails.getDivisionalOfficeNameVar()}", readonly='readonly')
+                input(type="hidden",id="aoId",name="aoId",value="#{AccountingDetails.getAreaOfficeId()}", readonly='readonly')
+                input(type="hidden",id="aoName",name="aoName",value="#{AccountingDetails.getAreaOfficeNameVar()}", readonly='readonly')
+                input(type="hidden",id="boId",name="boId",value="#{AccountingDetails.getBranchOfficeId()}", readonly='readonly')
+                input(type="hidden",id="boName",name="boName",value="#{AccountingDetails.getBranchOfficeNameVar()}", readonly='readonly')
+                input(type="hidden",id="allowedDecimalsId",name="allowedDecimalsId",value="#{AccountingDetails.getAllowedDecimals()}", readonly='readonly')
+                input(type="hidden",id="fromofficeHierarchy",name="fromofficeHierarchy",value="", readonly='readonly')
+                input(type="hidden",id="toofficeHierarchy",name="toofficeHierarchy",value="", readonly='readonly')
+                input(type="hidden",id="toOfficeValue",name="toOfficeValue",value="#{toOfficeValue}", readonly='readonly')
+                input(type="hidden",id="fromOfficeValue",name="fromOfficeValue",value="#{fromOfficeValue}", readonly='readonly')
+                input(type="hidden",id="toAccountValue",name="toAccountValue",value="#{toAccountValue}", readonly='readonly')
+                input(type="hidden",id="fromAccountValue",name="fromAccountValue",value="#{fromAccountValue}", readonly='readonly')
+            div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-b",data-theme="b",id="show")
+                div(class='ui-block-a')
+                    div(data-role="fieldcontain",align="left")
+                div(class='ui-block-b')
+                    div(data-role="fieldcontain",align="center")
+                        a(href=contextPath+ '/client/ci/menu', rel="external",data-icon='home', data-role='button', title=' Home', data-inline='true', data-mini="true") Home
+                div(class='ui-block-c',align="right")
+                    div(data-role="fieldcontain", data-inline="true")
+                        a(href=contextPath+ '/client/ci/accounts/accountsMenu', rel="external",data-icon='back', data-role='button', title=' Back', data-inline="true", data-mini="true") Back
+            div(class="ui-loader-background")

@@ -1,0 +1,36 @@
+extends ./layout
+include ./header
+
+block title
+    title= 'Group Recognition Test'
+
+block scripts
+    include ./headerJqueryMobile-1
+    script(type='text/javascript', src='/javascripts/groupRecognitionTest.js')
+    script(type='text/javascript', src='/javascripts/validation.js')
+
+block content
+    form(id='BMFormId')
+        div(data-role='page', data-theme='b')
+            +header("Group Recognition Test",["welcomeNote","menu","logout"])
+            include ./GroupManagementLayout
+            div(data-role='content')
+                div(class='content-primary')
+                    ul(data-role='listview', data-split-icon='gear', data-split-theme='c', data-filter="true", data-filter-theme='c',  data-filter-placeholder='Search for a group')
+                        -if (errorMsg.indexOf('Failed') > -1){
+                            p(id='errorMessageId',align="center",class='error-message global-font-details') #{errorMsg}
+                        -}
+                        -else{
+                            p(id='successMessage',align="center",class='success-message global-font-details') #{errorMsg}
+                        -}
+                        - for(var i=0;i<groupsName.length;i++) {
+                            li
+                                a(href="JavaScript:recognizeTheGroup('#{groupsId[i]}','#{listGroupsGlobalNumberArray[i]}','#{groupsName[i]}')")
+                                    img(id="image"+groupsName[i],src='/images/edit.png', width='60', height='60', style='margin:8px 10px 10px 20px;')
+                                    h3 #{groupsName[i]}
+                                    label(for='groupsId' , id='labelGroupsId'+i) #{listGroupsGlobalNumberArray[i]} | FieldOfficer : #{fieldOfficerName[i]}
+                        -}
+            input(type="hidden", name="groupId", id="groupId")
+            input(type="hidden", name="centerName", id="centerName")
+            input(type="hidden", name="groupName", id="groupName")
+            div(class="ui-loader-background")

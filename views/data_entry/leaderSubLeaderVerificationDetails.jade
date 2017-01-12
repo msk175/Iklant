@@ -1,0 +1,187 @@
+extends ../layout
+include ../header
+block title
+    title= 'IKLANT- Leader and Sub Leader'
+block scripts
+    link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+    include ../headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/jqx.base.css')
+    link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+    link(rel='stylesheet', href='/stylesheets/popup.css')
+    link(rel="stylesheet", href="/stylesheets/jquery.iviewer.css")
+    link(rel="stylesheet", href="/stylesheets/iklant-table-layout.css")
+    script(type='text/javascript', src='/javascripts/jquery-ui.js')
+    script(type="text/javascript", src="/javascripts/jquery.mousewheel.min.js")
+    script(type="text/javascript", src="/javascripts/jquery.iviewer.js")
+    script(type='text/javascript', src='/javascripts/jqxcore.js')
+    script(type='text/javascript', src="/javascripts/jqxsplitter.js")
+    script(type='text/javascript', src="/javascripts/data_entry/kycValidation.js")
+    script(type='text/javascript', src="/javascripts/leaderAndSubLeaderDetails.js")
+    script(type='text/javascript', src='/javascripts/commonCustom.js')
+    script(type='text/javascript', src='/javascripts/validation.js')
+block content
+    form(id='BMFormId')
+        div(data-role='page', data-theme='b', data-position="fixed")
+            -if(roleId == constantsObj.getDEOroleId()){
+            +header("Leader and Sub Leader Details",["backJavascript","logout"],"backButtonForLeaderSubLeaderVerification",[])
+            -}else{
+            -var rgOpId = constantsObj.getLeaderSubLeaderVerificationOperationId()
+            +header("Leader and Sub Leader Details",["backJavascript","logout"],"operationSubmitFromBM",[rgOpId])
+            -}
+            div(data-theme="b" )
+                p(id='errorLabelId',align="center",class='error-message global-font-details')
+                -if (successMessage.indexOf('failed') > -1){
+                    p(align="center",class='error-message global-font-details') #{successMessage}
+                -}
+                -else{
+                    p(id='successMessage',align="center",class='success-message global-font-details') #{successMessage}
+                -}
+                div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-a",style='width:80%')
+                    div(class='ui-block-a',style='width:10%')
+                        div(data-role="fieldcontain")
+                        label(for="groupName") Group Name
+                    div(class='ui-block-b',style='width:10%')
+                        div(data-role="fieldcontain")
+                        h3 #{leaderSubLeaderDetailsDtoObj.getGroupName()}
+                        input(type="hidden",id="groupNameHidden",name="GroupNameHidden",value="#{leaderSubLeaderDetailsDtoObj.getGroupName()}")
+                        input(type="hidden" ,id="groupIdHidden", name="groupIdHiddenName",value="#{groupId}")
+                        input(type="hidden" ,id="groupLoanCount", name="groupLoanCount",value="#{loanCount}")
+                    div(class='ui-block-c',style='width:10%')
+                        div(data-role="fieldcontain")
+                        label(for="centerName", data-inline="true") Center Name
+                    div(class='ui-block-d',style='width:40%')
+                        div(data-role="fieldcontain")
+                        h3 #{leaderSubLeaderDetailsDtoObj.getCenterName()}
+                        input(type="hidden", name="Center Name", id="centerName", readonly='readonly', value="#{leaderSubLeaderDetailsDtoObj.getCenterName()}")
+            hr
+            div(data-role='content', id="mainSplitter", data-theme="b" )
+                //div(class='vertical-scroll-bar', id="leftPanel")
+                    div(class='buttonWrapper', data-overlay-theme="b",style='display:none;')
+                        a(href='#', rel="external",data-icon='arrow-r', data-role='button', title='Next', data-inline="true", data-mini="true",id='next',data-iconpos="notext")
+                        a(href='#', rel="external",data-icon='arrow-l', data-role='button', title='Previous', data-inline="true", data-mini="true",id='previous',data-iconpos="notext")
+                        a(href='#', rel="external",data-icon='back', data-role='button', title='Rotate Left', data-inline="true", data-mini="true",id='rotateLeft',data-iconpos="notext")
+                        a(href='#', rel="external",data-icon='forward', data-role='button', title='Rotate Right', data-inline="true", data-mini="true",id='rotateRight',data-iconpos="notext")
+                        h3(id='imageName',align='center')
+                    div(class='wrapper',style='display:none;padding-top:2em')
+                div(class='vertical-scroll-bar', id="rightPanel")
+                    div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-solo",id='collapseButtonDiv',style='display:none;')
+                        div(data-role="fieldcontain",data-mini='true')
+                            h3(align='right',style='padding-left:8em;') Leader and Sub Leader Verification Details
+                    div(data-role="collapsible", data-collapsed="false", data-theme="b",data-content-theme="b",class='collapsible_content')
+                        h3 Client Details
+                        div(style = "overflow: auto;height:600px;",width="90%")
+                            table
+                                thead
+                                    tr
+                                        th(style='width:2%')  S.No
+                                        th(style='width:15%') Client Name
+                                        th(style='width:15%') Client Code
+                                        th(style='width:5%')  Is Leader
+                                        th(style='width:10%') Type
+                                        th Action
+                                tbody
+                                -if(leaderSubLeaderDetailsDtoObj != null){
+                                    -for(i=0;i<leaderSubLeaderDetailsDtoObj.getClientIdArray().length;i++){
+                                        tr
+                                            td(class='leaderSubLeader') #{i+1}
+                                            td #{leaderSubLeaderDetailsDtoObj.getClientNameArray()[i]} - #{leaderSubLeaderDetailsDtoObj.getClientLastNameArray()[i]}
+                                                input(type="hidden",id='subGroupCode_#{leaderSubLeaderDetailsDtoObj.getClientIdArray()[i]}',name='subGroupCode_#{leaderSubLeaderDetailsDtoObj.getClientIdArray()[i]}',value="")
+                                                input(type="hidden",id='subGroupClientId_#{leaderSubLeaderDetailsDtoObj.getClientIdArray()[i]}',name='subGroupClientId_#{leaderSubLeaderDetailsDtoObj.getClientIdArray()[i]}',value="")
+                                                input(type="hidden",id='subGroupClientCode_#{leaderSubLeaderDetailsDtoObj.getClientIdArray()[i]}',name='subGroupClientCode_#{leaderSubLeaderDetailsDtoObj.getClientIdArray()[i]}',value="")
+                                                input(type="hidden",id='totalSubGroupMembers_#{leaderSubLeaderDetailsDtoObj.getClientIdArray()[i]}',name='totalSubGroupMembers_#{leaderSubLeaderDetailsDtoObj.getClientIdArray()[i]}',value="")
+                                            td #{leaderSubLeaderDetailsDtoObj.getSubGroupClientGlobalNumberArray()[i]}
+                                            td
+                                                -if(leaderSubLeaderDetailsDtoObj.getSubGroupGlobalNumberArray()[i] != null && (leaderSubLeaderDetailsDtoObj.getLeaderGlobalNumberArray()[i] == leaderSubLeaderDetailsDtoObj.getSubGroupGlobalNumberArray()[i])){
+                                                    input(type='checkbox', name='isLeader_#{i}',id='isLeader_#{leaderSubLeaderDetailsDtoObj.getClientIdArray()[i]}',data-mini='true',value="1",checked="true",onchange="leaderOnChange('#{leaderSubLeaderDetailsDtoObj.getClientIdArray()[i]}')")
+                                                -}else{
+                                                    input(type='checkbox', name='isLeader_#{i}',id='isLeader_#{leaderSubLeaderDetailsDtoObj.getClientIdArray()[i]}',data-mini='true',value="1",onchange="leaderOnChange('#{leaderSubLeaderDetailsDtoObj.getClientIdArray()[i]}')")
+                                                -}
+                                                input(type="hidden", name="isLeaderSelected", id="isLeaderSelected", value="0")
+                                                label(for='isLeader_#{leaderSubLeaderDetailsDtoObj.getClientIdArray()[i]}') Leader
+                                            td
+                                                div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a")
+                                                    div(class='ui-block-a',style="width:15%")
+                                                        div(data-role="fieldcontain")
+                                                            select(name='clientType_#{i}', id='clientType_#{leaderSubLeaderDetailsDtoObj.getClientIdArray()[i]}', data-theme='b', data-icon='grid', data-inline='true', data-mini='true',onchange = "clientTypeOnchange('#{leaderSubLeaderDetailsDtoObj.getClientIdArray()[i]}')")
+                                                                option(value='0') Select
+                                                                -for(var j=0;j< leaderSubLeaderDetailsDtoObj.getLookupIdArray().length; j++) {
+                                                                    -if((leaderSubLeaderDetailsDtoObj.getSubGroupGlobalNumberArray()[i] != null || leaderSubLeaderDetailsDtoObj.getSubGroupGlobalNumberArray()[i] == "") && (constantsObj.getSubLeaderTypeLookUp() == leaderSubLeaderDetailsDtoObj.getLookupIdArray()[j]) ){
+                                                                        option(value=leaderSubLeaderDetailsDtoObj.getLookupIdArray()[j],selected='selected') #{leaderSubLeaderDetailsDtoObj.getLookupNameArray()[j]} 
+                                                                    -}else if((leaderSubLeaderDetailsDtoObj.getSubGroupGlobalNumberArray()[i] == "" || leaderSubLeaderDetailsDtoObj.getSubGroupGlobalNumberArray()[i] == null) && (constantsObj.getMemberTypeLookUp() == leaderSubLeaderDetailsDtoObj.getLookupIdArray()[j]) ){
+                                                                        option(value=leaderSubLeaderDetailsDtoObj.getLookupIdArray()[j],selected='selected') #{leaderSubLeaderDetailsDtoObj.getLookupNameArray()[j]}
+                                                                    -}else{
+                                                                        option(value=leaderSubLeaderDetailsDtoObj.getLookupIdArray()[j]) #{leaderSubLeaderDetailsDtoObj.getLookupNameArray()[j]}
+                                                                    -}
+                                                                -}
+                                                input(type="hidden", name="memberSubGroupCode_#{leaderSubLeaderDetailsDtoObj.getClientIdArray()[i]}", id="memberSubGroupCode_#{leaderSubLeaderDetailsDtoObj.getClientIdArray()[i]}", value="")
+                                            td
+                                                input(type="hidden", name="selectedClientTypeOnChange_#{leaderSubLeaderDetailsDtoObj.getClientIdArray()[i]}", id="selectedClientTypeOnChange_#{leaderSubLeaderDetailsDtoObj.getClientIdArray()[i]}", value='')
+                                                input(type="hidden", name="selectedSubGroupNumber_#{leaderSubLeaderDetailsDtoObj.getClientIdArray()[i]}", id="selectedSubGroupNumber_#{leaderSubLeaderDetailsDtoObj.getClientIdArray()[i]}", value='#{leaderSubLeaderDetailsDtoObj.getSubGroupGlobalNumberArray()[i]}')
+                                                a(href="JavaScript:showSubGroupMembersOnEdit('#{leaderSubLeaderDetailsDtoObj.getClientIdArray()[i]}','#{leaderSubLeaderDetailsDtoObj.getGroupName()}','#{leaderSubLeaderDetailsDtoObj.getSubLeaderGlobalNumberArray().length}')",data-role='button',id="addSubGroupMembersId_#{leaderSubLeaderDetailsDtoObj.getClientIdArray()[i]}" ,name="addSubGroupMembersId_#{i}", data-rel='popup', data-position-to='origin', data-transition='pop', data-inline='true', data-mini='true') Edit
+                                    -}
+                                -}
+                                input(type="hidden", name="subgroupLength", id="subgroupLength", value=leaderSubLeaderDetailsDtoObj.getSubLeaderGlobalNumberArray().length)
+                                -for(i=0;i<leaderSubLeaderDetailsDtoObj.getSubLeaderGlobalNumberArray().length;i++){
+                                    input(type="hidden", name="subClientIdList_#{i}", id="subClientIdList_#{i}", value='#{leaderSubLeaderDetailsDtoObj.getSubClientIdArray()[i]}')
+                                    input(type="hidden", name="subClientNameList_#{i}", id="subClientNameList_#{i}", value='#{leaderSubLeaderDetailsDtoObj.getSubClientNameArray()[i]}')
+                                    input(type="hidden", name="subClientGlobalNumberList_#{i}", id="subClientGlobalNumberList_#{i}", value='#{leaderSubLeaderDetailsDtoObj.getSubClientGlobalNumberArray()[i]}')
+                                    input(type="hidden", name="subLeaderGlobalNumber_#{i}", id="subLeaderGlobalNumber_#{i}", value='#{leaderSubLeaderDetailsDtoObj.getSubLeaderGlobalNumberArray()[i]}')
+                                    input(type="hidden", name="subLeaderClientId_#{i}", id="subLeaderClientId_#{i}", value='#{leaderSubLeaderDetailsDtoObj.getSubLeaderClientIdArray()[i]}')
+                                -}
+                    div(data-role="fieldcontain", id="submitDivId")
+                    -if(roleId == constantsObj.getDEOroleId()){
+                        a(href="JavaScript:submitClientDetailsForLeaderMapping('#{groupId}','#{loanCount}')" , id='clientDetailsSaveId', rel="external",data-theme="b",data-role='button', title=' Submit ', data-inline="true", data-mini="true") Submit Client Details
+                    -}
+                        input(type="hidden",id="reqOfficeHidden",name="reqOfficeHidden",value="#{selectedOfficeId}")
+                        input(type='hidden', name='docTypeIdArrayHidden', id='docTypeIdArrayHiddenId',value='#{docTypeIdArray.length}')
+                        input(type='hidden', name='selectedDocTypeArrayHidden', id='selectedDocTypeArrayHiddenId')
+                        input(type='hidden', name='availDocTypeId', id='availDocTypeId',value='#{availDocTypeIdArray}')
+                        input(type='hidden', name='availDocTypeName', id='availDocTypeName',value='#{availDocTypeNameArray}')
+                        input(type='hidden', name='base64Image', id='base64Image',value='#{base64ImageArray}')
+                        input(type='hidden', name='status', id='status',value='#{status}')
+                        input(type="hidden", name="menuName", id="menuName", value='new')
+                        input(type="hidden", name="clientIdArray", id="clientIdArray", value='#{leaderSubLeaderDetailsDtoObj.getClientIdArray()}')
+                        input(type="hidden", name="clientNameArray", id="clientNameArray", value='#{leaderSubLeaderDetailsDtoObj.getClientNameArray()}')
+                        input(type="hidden", name="isDataVerified", id="isDataVerified", value=1)
+                        div(data-role="popup", data-theme="b", data-overlay-theme="b", id="subGroupMembersDiv",style="width:50%;height:650px;margin-left:auto;",data-position-to="origin")
+                            input(type="hidden", name="selectedSubClient", id="selectedSubClient", value='')
+                            p(id='errorLabelPopupId',align="center",class='error-message global-font-details')
+                            input(type="hidden", name="isNeedPopupId", id="isNeedPopupId", value='0')
+                            h3(align="center" ,class="ui-bar ui-bar-c ui-corner-all") Sub Group Details
+                                div(style = "overflow: auto;height:550px;")
+                                    div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-grid-a")
+                                        div(class='ui-block-a',align="left",style="width:30%;")
+                                            div(data-role='fieldcontain',align="center")
+                                                label(for="genderId",align="center") Sub Group Code*
+                                                input(type='text',name='subGroupCode', id='subGroupCode',data-inline="true",value="")
+                                        div(class='ui-block-b',align="right",style="width:50%;")
+                                            div(data-role='fieldcontain',align='center')
+                                                label(for="Relationship",align="center") Total Members*
+                                                input(type='text',name='totalSubGroupMembers', id='totalSubGroupMembers',data-inline="true",value="",maxlength="1",onkeyup='forNumbers(this)')
+                                    div(style = "overflow: auto;",width="40%")
+                                    table
+                                        thead
+                                            tr
+                                                th(style='width:2%')  S.No
+                                                th(style='width:5%')  Select
+                                                th(style='width:15%') Client Name
+                                                th(style='width:40%') Client Code
+                                        tbody
+                                        -if(leaderSubLeaderDetailsDtoObj != null){
+                                            -for(i=0;i<leaderSubLeaderDetailsDtoObj.getClientIdArray().length;i++){
+                                                tr
+                                                    td(class='leaderSubLeader') #{i+1}
+                                                    td
+                                                        input(type='checkbox', name='subGroupMemberChkBox_#{i}',id='subGroupMemberChkBox_#{leaderSubLeaderDetailsDtoObj.getClientIdArray()[i]}',data-mini='true',value="",onchange="populateSubGroupCodeWhileClientIsChecked('#{leaderSubLeaderDetailsDtoObj.getClientIdArray()[i]}')")
+                                                        label(for='subGroupMemberChkBox_#{leaderSubLeaderDetailsDtoObj.getClientIdArray()[i]}')
+                                                    td #{leaderSubLeaderDetailsDtoObj.getClientNameArray()[i]}  #{leaderSubLeaderDetailsDtoObj.getClientLastNameArray()[i]}
+                                                    td
+                                                        input(type='text',name='subMemberCode_#{i]}', id='subMemberCode_#{leaderSubLeaderDetailsDtoObj.getClientIdArray()[i]}',data-inline="true",value="",onchange='validateSubGroupCode(this,"#{leaderSubLeaderDetailsDtoObj.getClientIdArray()[i]}")')
+                                            -}
+                                        -}
+                                -if(roleId == constantsObj.getDEOroleId()){
+                                    a(href="#subGroupMembersDiv" , id='subGroupDetailsSaveId', rel="external",data-icon='check', data-role='button',data-mini="true", title=' Save ', data-theme="b", data-inline="true") Update
+                                    a(href="#subGroupMembersDiv" , id='subGroupDetailsCancelId',rel="external",data-icon='check', data-role='button',data-mini="true", title='Cancel', data-theme="b",data-inline="true") Reset
+                                -}
+                                    a(href="#subGroupMembersDiv" , id='subGroupDetailsBackId', rel="external",data-icon='back', data-role='button',data-mini="true", title=' Back ', data-theme="b", data-inline="true") Back
+            div(class="ui-loader-background")

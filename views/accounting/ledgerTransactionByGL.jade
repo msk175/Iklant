@@ -1,0 +1,96 @@
+extends ../layout
+include ../header
+block title
+    title= 'Iklant - Menu'
+block scripts
+    link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+    link(rel='stylesheet', href='/stylesheets/jquery.mobile.sevennavbar.css')
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/jquery.mobile.sevennavbar.js')
+    script(type='text/javascript', src='/javascripts/jquery-ui.js')
+    script(type='text/javascript', src='/javascripts/accounting/ledgerTransactions.js')
+    script(type="text/javascript", src="/javascripts/jquery.dataTables.js")
+block content
+    form(id='ledgerViewFormID')
+        div(data-role='page', data-theme='b', id="loginDetailsDiv")
+            +header("",["menu","backJavascript","logout"],'backButtonGenerateTransactionsByLedger',[])
+            div(data-role="navbar")
+                ul
+                    li
+                        a(rel="external", data-role="tab") Ledger Transactions
+            div(data-role="content")
+
+                -if(generalLedgerResult != ""){
+                -if(generalLedgerResult.length>0){
+                    div(id="tbReportTableId",style = "overflow: auto;",class=(generalLedgerResult.length>30)?'container '+detailed:detailed)
+                        div(data-role="collapsible", data-collapsed="false",data-theme="b", data-content-theme="b",id='bankBookReportDiv')
+                            h3 Detailed Transactions #{glcode} - #{ledgerName}
+                            input(type="hidden", name="fromDateLedgerValue", id="fromDateLedgerValue",value="#{fromDateLedgerValue}")
+                            input(type="hidden", name="toDateLedgerValue", id="toDateLedgerValue",value="#{toDateLedgerValue}")
+                            div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-a")
+                                div(class='ui-block-a')
+                                    div(data-role="fieldcontain")
+                                        label(for="labelId",style="font-weight:bold") From Date : #{fromDateLedgerValue} and  To Date: #{toDateLedgerValue}
+                                div(class='ui-block-b',align="right")
+                                    div(data-role="fieldcontain")
+                                        label(for="labelId",style="font-weight:bold") Acc Trxns : #{accFlag} and  MFI Trxns: #{mfiFlag}
+                            div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-a")
+                                div(class='ui-block-a')
+                                    div(data-role="fieldcontain")
+                                        label(id="debitCreditTotal",style="font-weight:bold",align='right')
+                            table(id="fixedLedger_detailedsummary", CLASS="DISPLAY", cellspacing="0", width="99%")
+                                thead
+                                    tr
+                                        th S.No.
+                                        th Office
+                                        th Payment Date
+                                        th Trxn.Type
+                                        th Voucher No
+                                        th Narration
+                                        th Ledger
+                                        th Debit
+                                        th Credit
+                                        - var index = 0;
+                                        - var totalDebit = 0;
+                                        - var totalCredit = 0;
+                                        - for(var i=0;i<generalLedgerResult.length;i++) {
+                                        -if(generalLedgerResult[i].id != null){
+                                        tbody
+                                            tr(class="showhide")
+                                                td #{index+1}
+                                                td #{generalLedgerResult[i].office]
+                                                td #{generalLedgerResult[i].payment_date}
+                                                td #{generalLedgerResult[i].transaction_type}
+                                                td #{generalLedgerResult[i].cheque_or_receipt_num}
+                                                td #{generalLedgerResult[i].narration}
+                                                td #{generalLedgerResult[i].ledger}
+                                                td #{generalLedgerResult[i].debit}
+                                                td #{generalLedgerResult[i].credit}
+                                        - index = index+1;
+                                        - totalDebit = parseInt(totalDebit) + parseInt(generalLedgerResult[i].debit)
+                                        - totalCredit = parseInt(totalCredit) + parseInt(generalLedgerResult[i].credit)
+                                        -}
+                                        - }
+                                input(type="hidden", name="totalDebit", id="totalDebit",value="#{totalDebit}")
+                                input(type="hidden", name="totalCredit", id="totalCredit",value="#{totalCredit}")
+                                input(type="hidden", name="fromDateLedger", id="fromDateLedger",value="#{fromDateLedgerValue}")
+                                input(type="hidden", name="toDateLedger", id="toDateLedger",value="#{toDateLedgerValue}")
+                                -if(accFlag == 'Yes'){
+                                input(type="hidden", name="accOperation", id="accOperation",value="on")
+                                -}else{
+                                input(type="hidden", name="accOperation", id="accOperation",value="")
+                                -}
+                                -if(mfiFlag == 'Yes'){
+                                input(type="hidden", name="mfiOperation", id="mfiOperation",value="on")
+                                -}else{
+                                input(type="hidden", name="mfiOperation", id="mfiOperation",value="")
+                                -}
+                -}
+                -else{
+                    tbody
+                        tr
+                            div(align='center')
+                                span(style='font-weight:bold') No records to display
+                -}
+            -}
+            div(class="ui-loader-background")

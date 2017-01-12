@@ -1,0 +1,210 @@
+extends ../layout
+include ../header
+include ../loanRecoveryNavbar
+
+block title
+    title= 'IKLANT-LoanRecoveryLoans'
+
+block scripts
+    include ../headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/loan_recovery/futureDueLoansAdmin.js')
+    script(type='text/javascript', src='/javascripts/loan_recovery/loanrecoveryLoans.js')
+
+block content
+    form(id='loanListFormID2')
+        div(data-role='page', data-theme='b', id="loginDetailsDiv")
+            +header("",["menu","logout"])
+            +loanRecovery("pastFutureDueLoans")
+            div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-d",id="reasonDiv",align="center")
+                div(class='ui-block-a',id="officelistlabeldiv")
+                    div(data-role="fieldcontain")
+                    label(for='officeNameId',id='labelid') Select Office
+                div(class='ui-block-b',id="officelabeldiv")
+                    div(data-role="fieldcontain")
+                        select(name='officeNameId', id='officeNameId',onchange="getFutureDueLoansForManagers(this.value)",data-icon='grid',data-mini="true",data-inline="true")
+                            option(value='-1') All
+                            -for(var i=0;i<officeIdArray.length;i++){
+                                -if(officeId == officeIdArray[i]) {
+                                    option(value="#{officeIdArray[i]}",selected="selected") #{officeNameArray[i]}
+                                - }
+                                - else {
+                                    option(value="#{officeIdArray[i]}") #{officeNameArray[i]}
+                                - }
+                            -}
+            -if(overDueCountArray.length  == 0) {
+                p(id="errorLabel",align="center") No Groups  Found
+            - }
+
+            - if(overDueCountArray.length > 0) {
+                div(data-role='content')
+                    table(id="npaLoansTableId")
+                        tr
+                            -if(officeId == 1 || officeId == -1) {
+                                th(id = 'sno', style ="text-align:center") Branch Name
+                            -}
+                            -else {
+                                th(id = 'sno', style ="text-align:center") Field Officers
+                            -}
+                            th(id = 'overDueHeader', style ="text-align:center") Over Due Loans
+                            th(id = 'dueHeader', style ="text-align:center") Due Loans
+                            th(id = 'todayHeader1', style ="text-align:center")
+                            th(id = 'todayHeader2', style ="text-align:center")
+                            th(id = 'todayHeader3', style ="text-align:center")
+                            th(id = 'todayHeader4', style ="text-align:center")
+                            th(id = 'todayHeader5', style ="text-align:center")
+                            th(id = 'total', style ="text-align:center") Total
+                            -if(officeId == 1 || officeId == -1) {
+                                -for(var i=0;i<officeIdArray.length;i++) {
+                                    - if(i != officeIdArray.length - 1) {
+                                        tr(class="showhide",id='tablerow')
+                                            td(style ="text-align:center")    #{officeNameArray[i]}
+                                            -if(overDueCountArray[i] == 0) {
+                                                td(style ="text-align:center") #{overDueCountArray[i]}
+                                            -}
+                                            -else {
+                                                td(style ="text-align:center")
+                                                    a(href='#count', onclick="JavaScript:populateGroup(11,#{officeIdArray[i]},-1);", id="tdId", data-role='button', title='count', data-rel='popup', data-transition='pop', data-inline='true', data-mini='true') #{overDueCountArray[i]}
+                                            -}
+                                            -if(dueCountArray[i] == 0) {
+                                                td(style ="text-align:center") #{dueCountArray[i]}
+                                            -}
+                                            -else {
+                                                td(style ="text-align:center")
+                                                    a(href='#count', onclick="JavaScript:populateGroup(22,#{officeIdArray[i]},-1);", id="tdId", data-role='button', title='count', data-rel='popup', data-transition='pop', data-inline='true', data-mini='true') #{dueCountArray[i]}
+                                            -}
+                                            -if(futureDueFirstDayCountArray[i] == 0) {
+                                                td(style ="text-align:center") #{futureDueFirstDayCountArray[i]}
+                                            -}
+                                            -else {
+                                                td(style ="text-align:center")
+                                                    a(href='#count', onclick="JavaScript:populateGroup(1,#{officeIdArray[i]},-1);", id="tdId", data-role='button', title='count', data-rel='popup', data-transition='pop', data-inline='true', data-mini='true') #{futureDueFirstDayCountArray[i]}
+                                            -}
+                                            -if(futureDueSecondDayCountArray[i] == 0) {
+                                                td(style ="text-align:center") #{futureDueSecondDayCountArray[i]}
+                                            -}
+                                            -else {
+                                                td(style ="text-align:center")
+                                                    a(href='#count', onclick="JavaScript:populateGroup(2,#{officeIdArray[i]},-1);", id="tdId", data-role='button', title='count', data-rel='popup', data-transition='pop', data-inline='true', data-mini='true') #{futureDueSecondDayCountArray[i]}
+                                            -}
+                                            -if(futureDueThirdDayCountArray[i] == 0) {
+                                                td(style ="text-align:center") #{futureDueThirdDayCountArray[i]}
+                                            -}
+                                            -else {
+                                                td(style ="text-align:center")
+                                                    a(href='#count', onclick="JavaScript:populateGroup(3,#{officeIdArray[i]},-1);", id="tdId", data-role='button', title='count', data-rel='popup', data-transition='pop', data-inline='true', data-mini='true', data-position-to="window") #{futureDueThirdDayCountArray[i]}
+                                            -}
+                                            -if(futureDueForthDayCountArray[i] == 0) {
+                                                td(style ="text-align:center") #{futureDueForthDayCountArray[i]}
+                                            -}
+                                            -else {
+                                                td(style ="text-align:center")
+                                                    a(href='#count', onclick="JavaScript:populateGroup(4,#{officeIdArray[i]},-1);", id="tdId", data-role='button', title='count', data-rel='popup', data-transition='pop', data-inline='true', data-mini='true', data-position-to="window") #{futureDueForthDayCountArray[i]}
+                                            -}
+                                            -if(futureDueFifthDayCountArray[i] == 0) {
+                                                td(style ="text-align:center") #{futureDueFifthDayCountArray[i]}
+                                            -}
+                                            -else {
+                                                td(style ="text-align:center")
+                                                    a(href='#count', onclick="JavaScript:populateGroup(5,#{officeIdArray[i]},-1);", id="tdId", data-role='button', title='count', data-rel='popup', data-transition='pop', data-inline='true', data-mini='true', data-position-to="window") #{futureDueFifthDayCountArray[i]}
+                                            -}
+                                            td(style ="text-align:center") #{parseInt(overDueCountArray[i])+parseInt(dueCountArray[i])+parseInt(futureDueFirstDayCountArray[i])+parseInt(futureDueSecondDayCountArray[i])+parseInt(futureDueThirdDayCountArray[i])+parseInt(futureDueForthDayCountArray[i])+parseInt(futureDueFifthDayCountArray[i])}
+                                    - }
+                                    - else {
+                                        tr(class="showhide",id='tablerow')
+                                            td(style ="text-align:center")    Total
+                                            td(style ="text-align:center") #{totalOverDueCount}
+                                            td(style ="text-align:center") #{totalDueCountArray}
+                                            td(style ="text-align:center") #{totalFutureDueFirstDayCount}
+                                            td(style ="text-align:center") #{totalFutureDueSecondDayCount}
+                                            td(style ="text-align:center") #{totalFutureDueThirdDayCount}
+                                            td(style ="text-align:center") #{totalFutureDueForthDayCount}
+                                            td(style ="text-align:center") #{totalFutureDueFifthDayCount}
+                                            td(style ="text-align:center") #{parseInt(totalOverDueCount)+parseInt(totalDueCountArray)+parseInt(totalFutureDueFirstDayCount)+parseInt(totalFutureDueSecondDayCount)+parseInt(totalFutureDueThirdDayCount)+parseInt(totalFutureDueForthDayCount)+parseInt(totalFutureDueFifthDayCount)}
+                                    - }
+                                -}
+                            -}
+                            -else {
+                                -for(var i=0;i<=foIdArray.length;i++) {
+                                    - if(i != foIdArray.length) {
+                                        tr(class="showhide",id='tablerow')
+                                            td(style ="text-align:center")    #{foNameArray[i]}
+                                            -if(overDueCountArray[i] == 0) {
+                                                td(style ="text-align:center") #{overDueCountArray[i]}
+                                            -}
+                                            -else {
+                                                td(style ="text-align:center")
+                                                    a(href='#count', onclick="JavaScript:populateGroup(11,#{officeId},#{foIdArray[i]});", id="tdId", data-role='button', title='count', data-rel='popup', data-transition='pop', data-inline='true', data-mini='true') #{overDueCountArray[i]}
+                                            -}
+                                            -if(dueCountArray[i] == 0) {
+                                                td(style ="text-align:center") #{dueCountArray[i]}
+                                            -}
+                                            -else {
+                                                td(style ="text-align:center")
+                                                    a(href='#count', onclick="JavaScript:populateGroup(22,#{officeId},#{foIdArray[i]});", id="tdId", data-role='button', title='count', data-rel='popup', data-transition='pop', data-inline='true', data-mini='true') #{dueCountArray[i]}
+                                            -}
+                                            -if(futureDueFirstDayCountArray[i] == 0) {
+                                                td(style ="text-align:center") #{futureDueFirstDayCountArray[i]}
+                                            -}
+                                            -else {
+                                                td(style ="text-align:center")
+                                                    a(href='#count', onclick="JavaScript:populateGroup(1,#{officeId},#{foIdArray[i]});", id="tdId", data-role='button', title='count', data-rel='popup', data-transition='pop', data-inline='true', data-mini='true') #{futureDueFirstDayCountArray[i]}
+                                            -}
+                                            -if(futureDueSecondDayCountArray[i] == 0) {
+                                                td(style ="text-align:center") #{futureDueSecondDayCountArray[i]}
+                                            -}
+                                            -else {
+                                                td(style ="text-align:center")
+                                                    a(href='#count', onclick="JavaScript:populateGroup(2,#{officeId},#{foIdArray[i]});", id="tdId", data-role='button', title='count', data-rel='popup', data-transition='pop', data-inline='true', data-mini='true') #{futureDueSecondDayCountArray[i]}
+                                            -}
+                                            -if(futureDueThirdDayCountArray[i] == 0) {
+                                                td(style ="text-align:center") #{futureDueThirdDayCountArray[i]}
+                                            -}
+                                            -else {
+                                                td(style ="text-align:center")
+                                                    a(href='#count', onclick="JavaScript:populateGroup(3,#{officeId},#{foIdArray[i]});", id="tdId", data-role='button', title='count', data-rel='popup', data-transition='pop', data-inline='true', data-mini='true', data-position-to="window") #{futureDueThirdDayCountArray[i]}
+                                            -}
+                                            -if(futureDueForthDayCountArray[i] == 0) {
+                                                td(style ="text-align:center") #{futureDueForthDayCountArray[i]}
+                                            -}
+                                            -else {
+                                                td(style ="text-align:center")
+                                                    a(href='#count', onclick="JavaScript:populateGroup(4,#{officeId},#{foIdArray[i]});", id="tdId", data-role='button', title='count', data-rel='popup', data-transition='pop', data-inline='true', data-mini='true', data-position-to="window") #{futureDueForthDayCountArray[i]}
+                                            -}
+                                            -if(futureDueFifthDayCountArray[i] == 0) {
+                                                td(style ="text-align:center") #{futureDueFifthDayCountArray[i]}
+                                            -}
+                                            -else {
+                                                td(style ="text-align:center")
+                                                    a(href='#count', onclick="JavaScript:populateGroup(5,#{officeId},#{foIdArray[i]});", id="tdId", data-role='button', title='count', data-rel='popup', data-transition='pop', data-inline='true', data-mini='true', data-position-to="window") #{futureDueFifthDayCountArray[i]}
+                                            -}
+                                            td(style ="text-align:center") #{parseInt(overDueCountArray[i])+parseInt(dueCountArray[i])+parseInt(futureDueFirstDayCountArray[i])+parseInt(futureDueSecondDayCountArray[i])+parseInt(futureDueThirdDayCountArray[i])+parseInt(futureDueForthDayCountArray[i])+parseInt(futureDueFifthDayCountArray[i])}
+                                    - }
+                                    - else {
+                                        tr(class="showhide",id='tablerow')
+                                            td(style ="text-align:center")    Total
+                                            td(style ="text-align:center") #{totalOverDueCount}
+                                            td(style ="text-align:center") #{totalDueCountArray}
+                                            td(style ="text-align:center") #{totalFutureDueFirstDayCount}
+                                            td(style ="text-align:center") #{totalFutureDueSecondDayCount}
+                                            td(style ="text-align:center") #{totalFutureDueThirdDayCount}
+                                            td(style ="text-align:center") #{totalFutureDueForthDayCount}
+                                            td(style ="text-align:center") #{totalFutureDueFifthDayCount}
+                                            td(style ="text-align:center") #{parseInt(totalOverDueCount)+parseInt(totalDueCountArray)+parseInt(totalFutureDueFirstDayCount)+parseInt(totalFutureDueSecondDayCount)+parseInt(totalFutureDueThirdDayCount)+parseInt(totalFutureDueForthDayCount)+parseInt(totalFutureDueFifthDayCount)}
+                                    - }
+                                -}
+                            -}
+                    div(class='content-primary',data-theme="a")
+                        div(data-role="popup",id="count")
+                            a(href="#", data-rel="back",data-theme="a", data-role="button",data-icon="delete" ,data-iconpos="notext", class="ui-btn-right")
+                            div(id="groupListPopup")
+            - }
+            input(type="hidden",id="accountId",name="accountId",value="")
+            input(type="hidden",id="accountTypeId",name="accountTypeId",value="1")
+            input(type="hidden",id="globalAccountNum",name="globalAccountNum",value="")
+            input(type="hidden",id="clientName",name="groupName",value="")
+            input(type="hidden",id="customerId",name="customerId",value="")
+            input(type="hidden",id="redirectionPageId",name="redirectionPageId",value="2")
+            input(type="hidden",id="roleIdHidden",name="roleIdHidden",value="#{roleId}")
+            input(type="hidden",id="OfficeIdhidden",name="OfficeIdhidden",value="#{officeId}")
+            div(class="ui-loader-background")

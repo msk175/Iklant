@@ -1,0 +1,178 @@
+#header{
+	align:left;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: medium;
+}
+#errorField{
+	color:red;
+	align:center;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 18px;
+}
+#errorFieldTop{
+	color:red;
+	align:center;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 18px;
+}
+#note{
+	color:red;
+	align:left;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 13px;
+}
+#alertMessage {
+	color:red;
+	font-size:medium;
+	font-weight:bold;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 13px;
+}
+#rmApprovalAlertMessage {
+    color:yellow;
+    font-size:medium;
+    font-weight:bold;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+}
+#errorLabel {
+	color:red;
+	align:center;
+	font-family: Arial, Helvetica, sans-serif;
+	font-weight: bold;
+}
+#errorLabelId{
+	color:red;
+	align:center;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 18px;
+}
+#groupCreationAlertMessage {
+	color:red;
+	font-size:medium;
+	font-weight:bold;
+}
+#successMessage {
+	color:green;
+	font-size:medium;
+	font-weight:bold;
+
+}
+#loginDetails {
+    position:fixed;
+    top:25%;
+    left:36%;
+    border: 0px solid #ccc;
+    /*width:20em*/
+}
+
+
+#label {
+	width:100px;
+}
+#menuLabel{
+	color:black;
+}
+#stage {
+	color:red;
+}
+
+#popupPanel-popup {
+    right: 0 !important;
+    left: auto !important;
+}
+#popupPanel {
+    width: 200px;
+    border: 0px solid #000;
+    border-right: none;
+    background: rgba(0,0,0,.5);
+    margin: -1px 0;
+}
+#popupPanel .ui-btn {
+    margin:2px 0px 0px 0px;
+}
+table {
+    color: black;
+    background: #fff;
+    border: 1px solid #b4b4b4;
+    font: bold 17px helvetica;
+    padding: 0;
+    margin-top:10px;
+    width: 100%;
+    -webkit-border-radius: 8px;
+}
+     
+table tr td {
+    color: #666;
+    border-bottom: 1px solid #b4b4b4;
+    border-right: 1px solid #b4b4b4;
+    padding: 10px 10px 10px 10px;
+    background-image: -webkit-linear-gradient(top, #fdfdfd, #eee);
+}
+         
+table tr td:last-child {
+    border-right: none;
+}
+
+table tr:last-child td {
+    border-bottom: none;
+}
+table th{
+font-family: Tahoma, Geneva, sans-serif;
+font-size: 15px;
+color : white;
+border-bottom: 1px solid ;
+border-right: 1px solid;
+padding: 10px 10px 10px 10px;
+background-color :#5E87B0;
+}
+.totalRow{
+    color:#3c1b39
+}
+.hideContent{
+    display: none;
+}
+
+#loadingImageId{
+    padding-left:50em;
+}
+
+#overlay{
+    float:left;
+    padding:8px;
+    margin:16px;
+    border:1px solid red;
+    width:200px;
+    height:50px;
+    background-color:#000000;
+    color:white;
+}
+.redBackGround {
+    background: red !important;
+}
+
+.popUpContent {
+    font-weight: bold;
+    font-size: 18px;
+}
+#next,#previous,#collapse,#rotateRight,#rotateLeft,#expand{
+    float: right;
+}
+
+.oldDE{
+    float: left;
+}
+#map_canvas{
+    width:100%;
+    height:670px;
+}
+
+#map_canvas_path{
+    width:100%;
+    height:670px;
+}
+
+*{
+    padding: 0;
+    margin: 0;
+}

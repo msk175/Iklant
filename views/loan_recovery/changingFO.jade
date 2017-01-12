@@ -1,0 +1,105 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'IKLANT-ChangingFO'
+
+block scripts
+    include ../headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/loan_recovery/changingFO.js')
+
+block content
+    form(id="assignROFormId")
+        div(data-role='page', data-theme='b', id="gridplus")
+            +header("Changing Field Officer",["menu","logout"],"",[])
+            div(data-role="navbar")
+                ul
+                    li
+                        a(href=contextPath + '/client/ci/LRGroups/assignFOLoad', rel="external", data-role="tab" , id="assignRONavBarId",class="ui-btn-active") Changing Field Officer
+            div(data-role="content",id="assignRODivId")
+                p(id ='errorField',data-theme="e",align='center',class='error-message global-font-details')
+                p(id='successMessage',align="center",class='success-message global-font-details') #{statusMessage}
+                -if(dateValue < 11 || roleId == constantsObj.getSMHroleId() ){
+                div(data-role='horizontal', id="menu", class="ui-bar ui-grid-a")
+                    div(class='ui-block-a')
+                    div(class='ui-block-a',align="left")
+                        div(data-role="fieldcontain")
+                            select(name='office', onchange='branchNameChange()',data-theme="b", id='office',data-inline='true', data-icon='grid', data-mini='true', data-native-menu="true")
+                                option(value='') Select Branch name
+                                -for(var j=0;j<officeId.length; j++) {
+                                    -if(officeValue == officeId[j]){
+                                        option(value=officeId[j],selected="selected") #{officeName[j]}
+                                    -}else{
+                                        option(value="#{officeId[j]}") #{officeName[j]}
+                                    -}
+                                - }
+                    div(class='ui-block-a',align="left")
+                        div(data-role="fieldcontain")
+                            select(name='currentFO', onchange='foNameChange()',data-theme="b", id='currentFOId',data-inline='true', data-icon='grid', data-mini='true', data-native-menu="true")
+                                option(value='') Select Current Field Officer
+                                -for(var j=0;j<userId.length; j++) {
+                                    -if(userIdValue == userId[j]){
+                                        option(value="#{userId[j]}",selected="selected") #{userName[j]}
+                                    -}else{
+                                        option(value="#{userId[j]}") #{userName[j]}
+                                    -}
+                                - }
+                    div(class='ui-block-b',align="right")
+                        div(data-role="fieldcontain")
+                            select(name='selectRO', data-theme="b", id='selectROId',data-inline='true', data-icon='grid', data-mini='true', data-native-menu="true")
+                                option(value='') Select Target FO
+                                -for(var j=0;j<userId.length; j++) {
+                                    option(value="#{userId[j]}") #{userName[j]}
+                                - }
+                            a(href="JavaScript:assignFOSubmission(#{LoanRecoveryGroupsObject.length});", rel="external", data-role='button', title='assign', data-inline="true",data-mini="true") Assign
+                div(style = "overflow: auto;")
+                    -    if(LoanRecoveryGroupsObject.length > 10){
+                        div(data-role="horizontal",class="ui-bar ui-grid-b")
+                            div(class='ui-block-a',align="left")
+                                a(href='#', data-role='button',id='NPAGroupLoansPrevId', data-inline='true', data-mini='true',data-icon='arrow-l',data-iconpos="left") Prev
+                            div(class='ui-block-b',align="center")
+                                a(href='#', data-role='button',id='NPAGroupLoansPageNoId', data-inline='true', data-mini='true') Records 1 - 10 of #{LoanRecoveryGroupsObject.length}
+                            div(class='ui-block-c',align="right")
+                                a(href='#', data-role='button',id='NPAGroupLoansNextId', data-inline='true', data-mini='true', data-icon='arrow-r',data-iconpos="right") Next
+                    - }
+                    -if(LoanRecoveryGroupsObject != ""){
+                        table(id="npaLoansTableId")
+                            tr
+                                th(class='center-text') S.NO
+                                th(class='center-text') Check
+                                th(class='center-text') Group Code
+                                th(class='center-text') Group Name
+                                //-th(class='center-text') Group Address
+                                th(class='center-text') Group Status
+                                -for(var i=0;i<LoanRecoveryGroupsObject.length;i++) {
+                                    tr(class="showhide")
+                                        td(class='center-text')    #{i+1}
+                                        td(class='center-text')
+                                            div(data-role="fieldcontain", data-inline="true",style="width:50px")
+                                                label(for='checkGroupId'+i)
+                                                input(type="checkbox", name='checkGroup'+i, id='checkGroupId'+i, data-mini="false", data-inline="true")
+                                        td(style ="text-align:left")    #{LoanRecoveryGroupsObject[i].getIklantGroupName()}
+                                        td(style ="text-align:left")    #{LoanRecoveryGroupsObject[i].getGroupName()}
+                                        //-td(style ="text-align:left")    #{LoanRecoveryGroupsObject[i].getGlAddress()}
+                                        td(style ="text-align:left")    #{LoanRecoveryGroupsObject[i].getStatusName()}
+                                        td(style ="display:none")       #{LoanRecoveryGroupsObject[i].getCustomerId()}
+                                        td(style ="display:none")    #{LoanRecoveryGroupsObject[i].getiklantGroupId()}
+                                -}
+                    -}else{
+                        div(data-role='horizontal', id="menuOne", class="ui-bar ui-grid-a")
+                            div(class='ui-block-f')
+                                div(class='ui-block-i',align="center")
+                                    div(data-role="fieldcontain")
+                                        label(id="norecords",class='label') No records to display !
+                    -}
+                    input(type="hidden",name="isCheckedGroup",id="isCheckedGroupÏd")
+                    input(type="hidden",name="accountId",id="accountIdÏd")
+                    input(type="hidden",name="iklantGroupId",id="iklantGroupIdÏd")
+                 -var statusId = new Array();
+                 input(type="hidden",name="statusId",id="statusIdId",value=statusId)
+                -}else {
+                    p(id ='errorField',data-theme="e",align='center',class='error-message global-font-details') For you this facility is available only on 1 to 10 of every month starting. Still if you want to change FO request to RM
+                -}
+
+            div(class="ui-loader-background")

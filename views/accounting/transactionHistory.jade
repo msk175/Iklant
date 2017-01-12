@@ -1,0 +1,119 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'Transaction History'
+
+block scripts
+    link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+    include ../headerJqueryMobileBeta-3
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/jquery-ui.js')
+    script(type="text/javascript", src="/javascripts/transactionHistory.js")
+    script(type="text/javascript", src="/javascripts/jquery.dataTables.js")
+
+block content
+    form(id='officeWiseTransactionHistory')
+        div(data-role='page', data-theme='b')
+            input(type='hidden', name='reportPageName', id='reportPageName', value="officeWiseTransactionHistory")
+            input(type='hidden', name='report_download_flag', id='report_download_flag', value="#{download_report}")
+            input(type='hidden', name='selectedDocName', id='selectedDocName', value="#{fileLocation}")
+            input(type='hidden', name='reportType', id='reportType')
+            input(type='hidden', name='reportId', id='reportId',value='#{reportId}')
+            div(data-role="header", data-theme="a", class="ui-bar ui-grid-a", data-overlay-theme="c")
+                div(class="ui-block-a")
+                    img(id='groupIcon', style="margin:5px 10px 0 0; text-align:right;",src='/images/iklant.png')
+                div(class="ui-block-b",align="right")
+                    h3(align="right",style="margin:20px 10px 0 0")
+                    a(href=contextPath + '/client/ci/menu', rel="external",data-icon='home', data-role='button', title=' Home', data-inline='true') Home
+                    a(href=contextPath + '/client/ci/accounts/accountsMenu', rel="external",data-icon='arrow-l', data-role='button', title=' Back', data-inline="true") Back
+                    a(href=contextPath + '/client/ci/logout',  rel="external",data-icon='back', data-role='button', title=' Logout ', data-inline="true") Logout
+            div(data-role="navbar",id="navid")
+                ul(id="custom-nav-list")
+                    li
+                        a(rel="external", data-role="tab" , id="table-li-1",class="ui-btn-active") Transaction History
+            div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b",id='demandCollectionDiv')
+                h3 Select Date to View Transaction History
+                p(id="alert-message",class='error-message global-font-details',align="center")
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a")
+                    div(class='ui-block-c',style="width:15%")
+                        div(data-role="fieldcontain")
+                        label(class="label") Transaction Date
+                    div(class='ui-block-d',style="width:18%")
+                        div(data-role="fieldcontain")
+                            input(type="text", name="todate", value="#{todate}",id="todate",readonly = "readonly", required='true',class='toDate')
+                    - if(roleId == constantsObj.getSMHroleId()) {
+                        div(class='ui-block-c',style="width:9%")
+                            div(data-role="fieldcontain")
+                            label(id="report_label_top") Office
+                        div(class='ui-block-c',style="width:18%")
+                            div(data-role='fieldcontain')
+                                select(name='listoffice', id='listoffice', data-theme='b', data-icon='grid', data-inline='true', data-mini='true')
+                                    option(value='-1') All
+                                    -for(i=0;i<officeIdArray.length;i++){
+                                        -if(officeValue == officeIdArray[i]){
+                                            option(value=officeIdArray[i],selected="selected") #{officeNameArray[i]}
+                                        -}
+                                        -else{
+                                            option(value=officeIdArray[i]) #{officeNameArray[i]}
+                                        -}
+                                    - }
+                    -}
+                div(data-role="horizontal", data-inline="true",data-theme="b",id="show",class="ui-grid-a",style='width:100%;')
+                    div(class='ui-block-b',style='width:34%;')
+                        div(data-role="fieldcontain",align="center")
+                            a(href='JavaScript:transactionHistoryReport("officeWiseTransactionHistory","Detailed")',  rel="external",data-theme="b",data-role='button',data-mini='true', data-inline="true") Generate Report
+                    div(class='ui-block-b',style='width:33%;')
+                        div(data-role="fieldcontain",align="left")
+                            a(href='#', data-role='button',id='downloadExcel', data-inline='true', data-mini='true',onclick='transactionHistoryReport("officeWiseTransactionHistory","Download")') Export To Excel
+            -if(result != null){
+                -if(result.length>0){
+                    div(id="cashBookReportTableId",style = "overflow: auto;",class=(result.length>10)?'container '+detailed:detailed)
+                        div(data-role="collapsible", data-collapsed="false",data-theme="b", data-content-theme="b",id='bankBookReportDiv')
+                            h3 Detailed Transaction History
+                            table(id="fixedHeader_detailedsummary", CLASS="DISPLAY", cellspacing="0", width="100%")
+                                thead
+                                    tr
+                                        th S.No.
+                                        th Office
+                                        th Voucher No
+                                        th Cheque No
+                                        th Customer
+                                        th Narration
+                                        th Account No
+                                        th Debit
+                                        th Credit
+                                        th Trxn Amount
+                                        th Transaction Date
+                                        th Payment Date
+                                        th Report Type
+                                    -if(result.length != 0){
+                                        - for(var i=0;i<result.length;i++) {
+                                            -if(result[i].id != null){
+                                        tbody
+                                            tr(class="showhide")
+                                                td #{i+1}
+                                                td #{result[i].office}
+                                                td #{result[i].voucher_number}
+                                                td #{result[i].cheque_number}
+                                                td #{result[i].customer}
+                                                td #{result[i].narration}
+                                                td #{result[i].account_num}
+                                                td #{result[i].debit_acc_name}
+                                                td #{result[i].credit_acc_name}
+                                                td #{result[i].trxn_amount}
+                                                td #{result[i].transaction_date}
+                                                td #{result[i].payment_date}
+                                                td #{result[i].report_type}
+                                                -}
+                                        - }
+                                    -}
+                -}
+                -else{
+                    tbody
+                        tr
+                            div(align='center')
+                                span(style='font-weight:bold') No records to display
+                -}
+            -}
+            div(class="ui-loader-background")

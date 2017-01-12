@@ -1,0 +1,274 @@
+!!! 5
+html(lang = "en")
+    head
+        title= 'IKLANT-Dashboard'
+        meta(charset='utf-8')
+        meta(name="viewport", content="initial-scale=1.0, user-scalable=no")
+        link(rel="stylesheet", href="/stylesheets/jquery.mobile-1.3.0-beta.1.min.css")
+        link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+        link(rel='stylesheet', href='/stylesheets/iklantStyle.css')
+        script(type='text/javascript', src='/javascripts/jquery-1.8.3.min.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile-1.3.0-beta.1.min.js')
+        script(type='text/javascript', src='/javascripts/jquery-ui.js')
+        script(type='text/javascript', src='/javascripts/loanOutstandingReport.js')
+        script(type='text/javascript', src='/javascripts/common.js')
+    body(id="pageID")
+        form(id="loanOutstandingReportForm")
+            div(data-role='page', data-theme='b', id="loginDetailsDiv")
+                div(data-role="header", data-theme="a", class="ui-bar ui-grid-a", data-overlay-theme="c")
+                    div(class="ui-block-a")
+                        img(id='groupIcon',src='/images/iklant.png')
+                    div(class="ui-block-b",align="right",style="padding:25px 50px 0 0;")
+                        a(href=contextPath + '/client/ci/menu', rel="external",data-icon='arrow-l', data-role='button', title='Back', data-inline='true') Back
+                        a(href=contextPath + '/client/ci/logout',  rel="external",data-icon='back', data-role='button', title=' Logout ', data-inline="true") Logout
+                div(data-role="navbar")
+                    ul(id="custom-nav-list")
+                        li
+                            a(rel="external", data-role="tab") Loan Outstanding Report
+                div(data-role="content")
+                    div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b")
+                        h3 Report Details
+                        p(align="left",style="color:red;font-weigth:bold",id="errorStartDateId")
+                        p(align="left",style="color:red;font-weigth:bold",id="errorEndDateId")
+                        p(align="left",style="color:red;font-weigth:bold",id="errorCompareDateId")
+                        p(align="left",style="color:red;font-weigth:bold",id="errorCategoryId")
+                        div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-c")
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain")
+                                label(for="startDateId") Start Date
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain")
+                                    input(type="text", name="startDate", id="startDateId", value=loanOutstandingHolder.getStartDate(), required='true')
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain")
+                                label(for="endDateId") End Date
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain")
+                                    input(type="text", name="endDate", id="endDateId", value=loanOutstandingHolder.getEndDate(), required='true')
+                        div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-c")
+                            div(class='ui-block-a')
+                                div(data-role='fieldcontain')
+                                label(for="officeId",class="labelStyle") Office
+                            div(class='ui-block-b')
+                                div(data-role='fieldcontain', id='officeDivId')
+                                    select(name='office', id='officeId', data-theme='b',data-mini='true',data-native-menu='true')
+                                        option(value='-1') All
+                                        -for(i=0;i<loanOutstandingHolder.getOffices().length;i++){
+                                            - if(loanOutstandingHolder.getOfficeId() == loanOutstandingHolder.getOffices()[i].getId()) {
+                                                option(value=loanOutstandingHolder.getOffices()[i].getId(), selected="selected") #{loanOutstandingHolder.getOffices()[i].getName()}
+                                            - }
+                                            - else {
+                                                option(value=loanOutstandingHolder.getOffices()[i].getId()) #{loanOutstandingHolder.getOffices()[i].getName()}
+                                            - }
+                                        - }
+                            div(class='ui-block-a')
+                                div(data-role='fieldcontain')
+                                label(for="loanOfficerId",class="labelStyle") Loan Officer
+                            div(class='ui-block-b')
+                                div(data-role='fieldcontain',id='loanOfficerDivId')
+                                    select(name='loanOfficer', id='loanOfficerId', data-theme='b',data-mini='true', data-native-menu='true')
+                                        option(value='-1') All
+                                        -for(i=0;i<loanOutstandingHolder.getLoanOfficers().length;i++){
+                                            - if(loanOutstandingHolder.getLoanOfficerId() == loanOutstandingHolder.getLoanOfficers()[i].getPersonnelId()) {
+                                                option(value=loanOutstandingHolder.getLoanOfficers()[i].getPersonnelId(), selected="selected") #{loanOutstandingHolder.getLoanOfficers()[i].getDisplayName()}
+                                            - }
+                                            - else {
+                                                option(value=loanOutstandingHolder.getLoanOfficers()[i].getPersonnelId()) #{loanOutstandingHolder.getLoanOfficers()[i].getDisplayName()}
+                                            - }
+                                        - }
+                        div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-c")
+                            div(class='ui-block-a')
+                                div(data-role='fieldcontain')
+                                label(for="productCategoryId",class="labelStyle") Product Category
+                            div(class='ui-block-b')
+                                div(data-role='fieldcontain',id='productCategoryDivId')
+                                    select(name='productCategory', id='productCategoryId', data-theme='b',data-mini='true',data-native-menu='true')
+                                        option(value='-1') All
+                                        -for(i=0;i<loanOutstandingHolder.getPrdCategories().length;i++){
+                                            - if(loanOutstandingHolder.getCategoryId() == loanOutstandingHolder.getPrdCategories()[i].getPrdCatId()) {
+                                                option(value=loanOutstandingHolder.getPrdCategories()[i].getPrdCatId(), selected="selected") #{loanOutstandingHolder.getPrdCategories()[i].getPrdCatName()}
+                                            - }
+                                            - else {
+                                                option(value=loanOutstandingHolder.getPrdCategories()[i].getPrdCatId()) #{loanOutstandingHolder.getPrdCategories()[i].getPrdCatName()}
+                                            - }
+                                        - }
+                        div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-c")
+                            div(class='ui-block-a')
+                                div(data-role='fieldcontain')
+                                label(for="categoryId",class="labelStyle") Category
+                            div(class='ui-block-b')
+                                div(data-role='fieldcontain',id='categoryDivId')
+                                    select(name='category', id='categoryId', data-theme='b',data-mini='true', data-native-menu='true')
+                                        option(value='0') Select
+                                        option(value='1') Interest Rate
+                                        option(value='2') Loan Amount
+                                        option(value='3') Loan Cycle
+                                        option(value='4') Loan Product
+                                        option(value='5') Loan Purpose
+                                        option(value='6') Loan Size
+                                        option(value='7') State
+                            div(class='ui-block-a',id='selectedCategoryLabelDivId')
+                                div(data-role="fieldcontain")
+                                label(for="selectedCategoryId",id="selectedCategoryLabelId")
+                            div(class='ui-block-b',id='selectedCategoryTextDivId')
+                                div(data-role="fieldcontain",id='subCategoryDivId')
+                                    select(name='subCategory', id='subCategoryId', data-theme='b',data-mini='true',data-native-menu='true')
+
+                        div(data-role="fieldcontain")
+                            a(href='#',  rel="external",data-theme="b",data-icon='check', data-role='button',data-mini='false', data-inline="true",id="submitId") Submit
+                            a(href=contextPath + '/client/ci/menu',  rel="external",data-theme="b",data-icon='back',id="back", data-role='button', data-inline="true") Back
+                        -var officeIds = new Array();
+                        -var offices = new Array();
+                        -for(var i=0;i<loanOutstandingHolder.getOffices().length;i++){
+                            -officeIds[i] = loanOutstandingHolder.getOffices()[i].getId();
+                            -offices[i] = loanOutstandingHolder.getOffices()[i].getName();
+                        -}
+                        input(type='hidden', name='officeIds', id='officeIdsId', value=officeIds)
+                        input(type='hidden', name='offices', id='officesId', value=offices)
+
+                        -var loanOfficerIds = new Array();
+                        -var loanOfficerNames = new Array();
+                        -for(var i=0;i<loanOutstandingHolder.getLoanOfficers().length;i++){
+                            -loanOfficerIds[i] = loanOutstandingHolder.getLoanOfficers()[i].getPersonnelId();
+                            -loanOfficerNames[i] = loanOutstandingHolder.getLoanOfficers()[i].getDisplayName();
+                        -}
+                        input(type='hidden', name='loanOfficerIds', id='loanOfficerIdsId', value=loanOfficerIds)
+                        input(type='hidden', name='loanOfficerNames', id='loanOfficerNamesId', value=loanOfficerNames)
+
+                        -var productCategoryIds = new Array();
+                        -var productCategorys = new Array();
+                        -for(var i=0;i<loanOutstandingHolder.getPrdCategories().length;i++){
+                            -productCategoryIds[i] = loanOutstandingHolder.getPrdCategories()[i].getPrdCatId();
+                            -productCategorys[i] = loanOutstandingHolder.getPrdCategories()[i].getPrdCatName();
+                        -}
+                        input(type='hidden', name='productCategoryIds', id='productCategoryIdsId', value=productCategoryIds)
+                        input(type='hidden', name='productCategorys', id='productCategorysId', value=productCategorys)
+
+                        -var interestRateIds = new Array();
+                        -var interestRates = new Array();
+                        -for(var i=0;i<loanOutstandingHolder.getInterestRates().length;i++){
+                            -interestRateIds[i] = loanOutstandingHolder.getInterestRates()[i].getPortfolioId();
+                            -interestRates[i] = loanOutstandingHolder.getInterestRates()[i].getPortfolioName();
+                        -}
+                        input(type='hidden', name='interestRateIds', id='interestRateIdsId', value=interestRateIds)
+                        input(type='hidden', name='interestRates', id='interestRatesId', value=interestRates)
+
+                        -var loanAmountIds = new Array();
+                        -var loanAmountNames = new Array();
+                        -for(var i=0;i<loanOutstandingHolder.getLoanAmounts().length;i++){
+                            -loanAmountIds[i] = loanOutstandingHolder.getLoanAmounts()[i].getPortfolioId();
+                            -loanAmountNames[i] = loanOutstandingHolder.getLoanAmounts()[i].getPortfolioName();
+                        -}
+                        input(type='hidden', name='loanAmountIds', id='loanAmountIdsId', value=loanAmountIds)
+                        input(type='hidden', name='loanAmountNames', id='loanAmountNamesId', value=loanAmountNames)
+
+                        -var loanCycleIds = new Array();
+                        -var loanCycleNames = new Array();
+                        -for(var i=0;i<loanOutstandingHolder.getLoanCycles().length;i++){
+                            -loanCycleIds[i] = loanOutstandingHolder.getLoanCycles()[i].getPortfolioId();
+                            -loanCycleNames[i] = loanOutstandingHolder.getLoanCycles()[i].getPortfolioName();
+                        -}
+                        input(type='hidden', name='loanCycleIds', id='loanCycleIdsId', value=loanCycleIds)
+                        input(type='hidden', name='loanCycleNames', id='loanCycleNamesId', value=loanCycleNames)
+
+                        -var loanProductIds = new Array();
+                        -var loanProductNames = new Array();
+                        -for(var i=0;i<loanOutstandingHolder.getLoanProducts().length;i++){
+                            -loanProductIds[i] = loanOutstandingHolder.getLoanProducts()[i].getPortfolioId();
+                            -loanProductNames[i] = loanOutstandingHolder.getLoanProducts()[i].getPortfolioName();
+                        -}
+                        input(type='hidden', name='loanProductIds', id='loanProductIdsId', value=loanProductIds)
+                        input(type='hidden', name='loanProductNames', id='loanProductNamesId', value=loanProductNames)
+
+                        -var loanPurposeIds = new Array();
+                        -var loanPurposeNames = new Array();
+                        -for(var i=0;i<loanOutstandingHolder.getLoanPurposes().length;i++){
+                            -loanPurposeIds[i] = loanOutstandingHolder.getLoanPurposes()[i].getPortfolioId();
+                            -loanPurposeNames[i] = loanOutstandingHolder.getLoanPurposes()[i].getPortfolioName();
+                        -}
+                        input(type='hidden', name='loanPurposeIds', id='loanPurposeIdsId', value=loanPurposeIds)
+                        input(type='hidden', name='loanPurposeNames', id='loanPurposeNamesId', value=loanPurposeNames)
+
+                        -var loanSizeIds = new Array();
+                        -var loanSizeNames = new Array();
+                        -for(var i=0;i<loanOutstandingHolder.getLoanSizes().length;i++){
+                            -loanSizeIds[i] = loanOutstandingHolder.getLoanSizes()[i].getPortfolioId();
+                            -loanSizeNames[i] = loanOutstandingHolder.getLoanSizes()[i].getPortfolioName();
+                        -}
+                        input(type='hidden', name='loanSizeIds', id='loanSizeIdsId', value=loanSizeIds)
+                        input(type='hidden', name='loanSizeNames', id='loanSizeNamesId', value=loanSizeNames)
+
+                        -var stateIds = new Array();
+                        -var stateNames = new Array();
+                        -for(var i=0;i<loanOutstandingHolder.getStates().length;i++){
+                            -stateIds[i] = loanOutstandingHolder.getStates()[i].getPortfolioId();
+                            -stateNames[i] = loanOutstandingHolder.getStates()[i].getPortfolioName();
+                        -}
+                        input(type='hidden', name='stateIds', id='stateIdsId', value=stateIds)
+                        input(type='hidden', name='stateNames', id='stateNamesId', value=stateNames)
+
+                        -if(isReportLoaded == 1){
+                            div(id="LoanDisbursalSummaryId")
+                                table(id="LoanDisbursalSummaryTableId")
+                                    thead
+                                        tr
+                                            th(style ="text-align:center") Category
+                                            th(style ="text-align:center") Principal
+                                            th(style ="text-align:center") Principal Paid
+                                            th(style ="text-align:center") Principal OS
+                                    tbody
+                                        -for(var i=0; i<LoanOutstandingSummaryList.length;i++){
+                                            tr
+                                                td(style ="text-align:center") #{LoanOutstandingSummaryList[i].getPortfolioName()}
+                                                td(style ="text-align:center") #{LoanOutstandingSummaryList[i].getPrincipal()}
+                                                td(style ="text-align:center") #{LoanOutstandingSummaryList[i].getPrincipalPaid()}
+                                                td(style ="text-align:center") #{LoanOutstandingSummaryList[i].getPrincipalOutstanding()}
+                                            -if(i == LoanOutstandingSummaryList.length-1){
+                                                tr
+                                                    td
+                                                    td
+                                                    td
+                                                    td
+                                                        a(href='#',  rel="external",data-theme="b",data-icon='check', id="detailId", data-role='button',data-mini='true', data-inline="true") Detail
+                                            -}
+                                        -}
+                            div(id="LoanOutstandingDetailId",style="display:none")
+                                -if(LoanOutstandingDetailList.length >10){
+                                    div(data-role="horizontal",class="ui-bar ui-grid-b")
+                                        div(class='ui-block-a',align="left")
+                                            a(href='#', data-icon='check', data-role='button',id='LoanOutstandingDetailPrevId', ,data-inline='true', data-mini='true') Prev
+                                        div(class='ui-block-b',align="center")
+                                            a(href='#', data-icon='check', data-role='button',id='LoanOutstandingDetailPageNoId', ,data-inline='true', data-mini='true')
+                                        div(class='ui-block-c',align="right")
+                                            a(href='#', data-icon='check', data-role='button',id='LoanOutstandingDetailNextId', ,data-inline='true', data-mini='true') Next
+                                -}
+                                table(id="LoanOutstandingDetailTableId")
+                                    thead
+                                        tr
+                                            th(style ="text-align:center") S No
+                                            th(style ="text-align:center") Category
+                                            th(style ="text-align:center") Group Name
+                                            th(style ="text-align:center") Loan Account #
+                                            th(style ="text-align:center") Principal
+                                            th(style ="text-align:center") Principal Paid
+                                            th(style ="text-align:center") Principal OS
+                                    tbody
+                                        - for( var i = 0; i < LoanOutstandingDetailList.length; i++ ) {
+                                            tr(class="showhide")
+                                                td(align="center") #{i+1}
+                                                td(align="center") #{LoanOutstandingDetailList[i].getPortfolioName()}
+                                                td(align="center") #{LoanOutstandingDetailList[i].getGroupName()}
+                                                td(align="center") #{LoanOutstandingDetailList[i].getLoanAccount()}
+                                                td(align="center") #{LoanOutstandingDetailList[i].getPrincipal()}
+                                                td(align="center") #{LoanOutstandingDetailList[i].getPrincipalPaid()}
+                                                td(align="center") #{LoanOutstandingDetailList[i].getPrincipalOutstanding()}
+                                        -}
+
+
+                        - }
+                        input(type='hidden', name='selectedCategory', id='selectedCategoryId', value=loanOutstandingHolder.getPortfolioCategoryId())
+                        input(type='hidden', name='selectedSubCategory', id='selectedSubCategoryId', value=loanOutstandingHolder.getPortfolioSubCategoryId())
+                div(class="ui-loader-background")

@@ -1,0 +1,164 @@
+extends ./layout
+include ./header
+
+block title
+    title= 'IKLANT-Dashboard'
+
+block scripts
+    link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+    include ./headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/jquery-ui.js')
+    script(type="text/javascript", src="/javascripts/reportmgmt.js")
+    script(type='text/javascript', src='/javascripts/dashboardvalidation.js')
+
+block content
+    form(id='BMFormId')
+        div(data-role='page', data-theme='b')
+            -var operationReport = constantsObj.getOperationalReports()
+            +header("",["backHref","menu","logout"],contextPath + '/client/ci/reportsMenuByCategory/'+operationReport)
+            div(data-role="navbar",id="navid")
+                ul(id="custom-nav-list")
+                    li
+                        a(rel="external", data-role="tab" , id="table-li-1",class="ui-btn-active") DashBoard - LD Tracking
+            -if(roleId == constantsObj.getSMHroleId()|| roleId == constantsObj.getAMHroleId()) {
+            div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b",id="trailBalanceDiv")
+                h3 Please select Office to Generate DashBoard for respective Office
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a",style='width:100%')
+                    div(class='ui-block-b',style="width:10%")
+                        div(data-role='fieldcontain')
+                        label(id="report_label_top") Select Office
+                    div(class='ui-block-c',style="width:10%")
+                        div(data-role='fieldcontain')
+                            select(name='listofficefordashboard', id='listofficefordashboard',onchange = 'generateDashboardReport(this)', data-theme='b', data-icon='bank', data-inline='true', data-mini='true')
+
+                                option(value='0') Select Office
+                                -for(i=0;i<officeIdArray.length;i++){
+                                    -if(officeValue == officeIdArray[i]){
+                                        option(value=officeIdArray[i],selected="selected") #{officeNameArray[i]}
+                                    -}
+                                    -else{
+                                        option(value=officeIdArray[i]) #{officeNameArray[i]}
+                                    -}
+                                - }
+            -}
+            div
+                - if(dashBoardObject != 0){
+                    -if(dashBoardObject.getRoleId().length != 0) {
+                        table
+                            tr
+                                th Role
+                                th User Name
+                                th Preliminary Verification
+                                th KYC Uploading
+                                th KYC Updating
+                                th KYC Data Verification
+                                th CBA
+                                th Assigning FO
+                                th Field Verification
+                                th Appraisal
+                                th Loan Authorize
+                                th Loan Sanction
+                                th Rejected Groups
+                            -for(var i=0;i<dashBoardObject.getRoleId().length; i++) {
+                                tr
+                                    td(style ="text-align:center") #{dashBoardObject.getRoleName()[i]}
+                                    td(style ="text-align:center") #{dashBoardObject.getUserName()[i]}
+                                    td(style ="text-align:center")
+                                        -if(dashBoardObject.getPvCount()[i] != '-'){
+                                            a(href='#count', onclick="JavaScript:populateGroup('#{dashBoardObject.getOfficeId()[i]}','#{dashBoardObject.getUserId()[i]}','#{constantsObj.getNewGroup()}');", id="tdId", data-role='button', title=' count ', data-rel='popup', data-transition='pop', data-inline='true', data-mini='true',data-position-to='window') #{dashBoardObject.getPvCount()[i]}
+                                        -}
+                                    td(style ="text-align:center")
+                                        -if(dashBoardObject.getKycUploadCount()[i] != '-'){
+                                            a(href='#count', onclick="JavaScript:populateGroup('#{dashBoardObject.getOfficeId()[i]}','#{dashBoardObject.getUserId()[i]}','#{constantsObj.getPreliminaryVerified()}');", id="tdId", data-role='button', title=' count ', data-rel='popup', data-transition='pop', data-inline='true', data-mini='true',data-position-to='window') #{dashBoardObject.getKycUploadCount()[i]}
+                                        -}
+                                    td(style ="text-align:center") -
+                                    td(style ="text-align:center") -
+                                    td(style ="text-align:center") -
+                                    td(style ="text-align:center") -
+                                    td(style ="text-align:center")
+                                        -if(dashBoardObject.getFvCount()[i] != '-'){
+                                            a(href='#count', onclick="JavaScript:populateGroup('#{dashBoardObject.getOfficeId()[i]}','#{dashBoardObject.getUserId()[i]}','#{constantsObj.getAssignedFO()}');", id="tdId", data-role='button', title=' count ', data-rel='popup', data-transition='pop', data-inline='true', data-mini='true',data-position-to='window') #{dashBoardObject.getFvCount()[i]}
+                                        -}
+                                    td(style ="text-align:center") -
+                                    td(style ="text-align:center") -
+                                    td(style ="text-align:center") -
+                                    td(style ="text-align:center")
+                                        -if(dashBoardObject.getRejectedCount()[i] != '-'){
+                                            a(href='#count', onclick="JavaScript:populateRejectedGroup('#{dashBoardObject.getOfficeId()[i]}','#{dashBoardObject.getUserId()[i]}');", id="tdId", data-role='button', title=' count ', data-rel='popup', data-transition='pop', data-inline='true', data-mini='true',data-position-to='window') #{dashBoardObject.getRejectedCount()[i]}
+                                        -}
+                            -}
+                                tr
+                                    td(style ="text-align:center") DEO
+                                    td(style ="text-align:center") -
+                                    td(style ="text-align:center") -
+                                    td(style ="text-align:center") -
+                                    td(style ="text-align:center")
+                                        -if(dashBoardObject.getKycUpdatingCount()[1] != '-'){
+                                            a(href='#count', onclick="JavaScript:populateGroup('#{officeValue}','#{dashBoardObject.getUserId()[i]}','#{constantsObj.getKYCUploaded()}');", id="tdId", data-role='button', title=' count ', data-rel='popup', data-transition='pop', data-inline='true', data-mini='true',data-position-to='window') #{dashBoardObject.getKycUpdatingCount()[1]}
+                                        -}
+                                    td(style ="text-align:center")
+                                        -if(dashBoardObject.getDataVerificationCount()[1] != '-'){
+                                            a(href='#count', onclick="JavaScript:populateGroup('#{officeValue}','#{dashBoardObject.getUserId()[i]}','#{constantsObj.getKYCCompleted()}');", id="tdId", data-role='button', title=' count ', data-rel='popup', data-transition='pop', data-inline='true', data-mini='true',data-position-to='window') #{dashBoardObject.getDataVerificationCount()[1]}
+                                        -}
+                                    td(style ="text-align:center")
+                                        -if(dashBoardObject.getCreditCheckCount()[1] != '-'){
+                                            a(href='#count', onclick="JavaScript:populateGroup('#{officeValue}','#{dashBoardObject.getUserId()[i]}','#{constantsObj.getDataVerificationOperationId()}');", id="tdId", data-role='button', title=' count ', data-rel='popup', data-transition='pop', data-inline='true', data-mini='true',data-position-to='window') #{dashBoardObject.getCreditCheckCount()[1]}
+                                        -}
+                                    td(style ="text-align:center") -
+                                    td(style ="text-align:center") -
+                                    td(style ="text-align:center") -
+                                    td(style ="text-align:center") -
+                                    td(style ="text-align:center") -
+                                    td(style ="text-align:center") -
+                                tr
+                                    td(style ="text-align:center") BM
+                                    td(style ="text-align:center") -
+                                    td(style ="text-align:center") -
+                                    td(style ="text-align:center") -
+                                    td(style ="text-align:center") -
+                                    td(style ="text-align:center") -
+                                    td(style ="text-align:center") -
+                                    td(style ="text-align:center")
+                                        -if(dashBoardObject.getAssignFoCount()[1] != '-'){
+                                            a(href='#count', onclick="JavaScript:populateGroup('#{officeValue}','#{dashBoardObject.getUserId()[i]}','#{constantsObj.getCreditBureauAnalysedStatus()}');", id="tdId", data-role='button', title=' count ', data-rel='popup', data-transition='pop', data-inline='true', data-mini='true',data-position-to='window') #{dashBoardObject.getAssignFoCount()[1]}
+                                        -}
+                                    td(style ="text-align:center") -
+                                    td(style ="text-align:center")
+                                        -if(dashBoardObject.getAppraisalCount()[1] != '-'){
+                                            a(href='#count', onclick="JavaScript:populateGroup('#{officeValue}','#{dashBoardObject.getUserId()[i]}','#{constantsObj.getFieldVerified()}');", id="tdId", data-role='button', title=' count ', data-rel='popup', data-transition='pop', data-inline='true', data-mini='true',data-position-to='window') #{dashBoardObject.getAppraisalCount()[1]}
+                                        -}
+                                    td(style ="text-align:center") -
+                                    td(style ="text-align:center")
+                                        -if(dashBoardObject.getLoanSanctionCount()[1] != '-'){
+                                            a(href='#count', onclick="JavaScript:populateGroup('#{officeValue}','#{dashBoardObject.getUserId()[i]}','#{constantsObj.getAuthorizedStatus()}');", id="tdId", data-role='button', title=' count ', data-rel='popup', data-transition='pop', data-inline='true', data-mini='true',data-position-to='window') #{dashBoardObject.getLoanSanctionCount()[1]}
+                                        -}
+                                    td(style ="text-align:center") -
+                                tr
+                                    td(style ="text-align:center") SMH
+                                    td(style ="text-align:center") -
+                                    td(style ="text-align:center") -
+                                    td(style ="text-align:center") -
+                                    td(style ="text-align:center") -
+                                    td(style ="text-align:center") -
+                                    td(style ="text-align:center") -
+                                    td(style ="text-align:center") -
+                                    td(style ="text-align:center") -
+                                    td(style ="text-align:center") -
+                                    td(style ="text-align:center")
+                                        -if(dashBoardObject.getLoanAuthorizeCount()[1] != '-'){
+                                            a(href='#count', onclick="JavaScript:populateGroup('#{officeValue}','#{dashBoardObject.getUserId()[i]}','#{constantsObj.getAppraisedStatus()}');", id="tdId", data-role='button', title=' count ', data-rel='popup', data-transition='pop', data-inline='true', data-mini='true',data-position-to='window') #{dashBoardObject.getLoanAuthorizeCount()[1]}
+                                        -}
+                                    td(style ="text-align:center") -
+                                    td(style ="text-align:center") -
+                        div(class='content-primary',data-theme="a")
+                            div(data-role="popup",id="count")
+                                a(href="#", data-rel="back",data-theme="a", data-role="button",data-icon="delete" ,data-iconpos="notext", class="ui-btn-right")
+                                div(id="divId")
+                    -}
+                    - else {
+                        p(id="errorField",align="center",class='error-message global-font-details') No Results Found For Branch
+                    - }
+                - }
+            div(class="ui-loader-background")

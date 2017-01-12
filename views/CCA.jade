@@ -1,0 +1,62 @@
+!!! 5
+html(lang = "en")
+    head
+        title= 'Apex Abhishek - Editing Groups'
+        meta(charset='utf-8')
+        meta(name='viewport',content='width=device-width, initial-scale=1')
+        meta(http-equiv='Cache-Control', content='no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0')
+        meta(http-equiv='Pragma', content='no-cache')
+        meta(http-equiv='Expires', content='-1')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+        link(rel='stylesheet', href='/stylesheets/dialogStyle.css')
+        script(type='text/javascript', src='/javascripts/jquery-1.7.1.min.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile.custom.js')
+        script(type='text/javascript', src='/javascripts/cca.js')
+        script(type='text/javascript', src='/javascripts/common.js')
+    body
+        form(id="ccaQuestions")
+            div(data-role='page', data-theme='a')
+                div(data-role="header", data-theme="a", class="ui-bar ui-grid-e")
+                    div(class="ui-block-a")
+                        img(id='groupIcon', src='/images/iklant.png')
+                        h3(for="value", style="margin:20px 10px 0 0; text-align:right;") Client Credit Appraisal
+                div(data-role="horizontal", class="ui-bar ui-grid-b")
+                    div(class="ui-block-a")
+                    div(class="ui-block-b")
+                        div(data-role="horizontal", class="ui-bar ui-grid-a")
+                            div(class="ui-block-a")
+                                label(for="clientName") Client Name
+                            div(class="ui-block-b")
+                                select(name='clientName', id='clientName', data-theme='a', data-icon='arrow-d', data-inline='true', data-native-menu="false", data-mini="true")
+                                    option(value='1') Coimbatore
+                                    option(value='2') Erode
+                                    option(value='3') Chennai
+                                    option(value='4') Salem
+                    div(class="ui-block-c")
+                div(data-role="content", id="groupdetails", data-theme="a", data-overlay-theme="a", data-inline="true")
+                    div(data-role="fieldcontain", data-mini="true")
+                        table
+                            tr
+                                th(width='100px')
+                                    h3 S.No
+                                th(width='550px')
+                                    h3 Questions
+                                th
+                                    h3 Answer
+                            -for(var i=0;i<questionsObj.getQuestionIdArray().length;i++) {
+                            tr
+                                td(align="center")
+                                    p #{questionsObj.getQuestionIdArray()[i]}
+                                td
+                                    p #{questionsObj.getQuestionNameArray()[i]}
+                                td(align="center")
+                                    select(name='choices[i]', id='choices[i]', data-theme='a', data-icon='arrow-d', data-inline='false', data-native-menu="false", disabled="true")
+                                        option(value=selectedAnswerId[i]) #{selectedAnswerId[i]}
+                            -}
+                div(data-role="fieldcontain", data-inline="true")
+                    a(href='#internalloan3',  rel="external",data-icon='check', data-role='button', title=' Add ', data-inline="true", id='AddGroup') Save
+                    a(href=contextPath + '/client/ci/menu', rel="external",data-icon='back', data-role='button', title=' Back', data-inline="true") Back
+                div(class="ui-loader-background")

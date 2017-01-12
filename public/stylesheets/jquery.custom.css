@@ -1,0 +1,33 @@
+.ui-icon-bank {
+	background-image: url("/images/bank.png");
+        background-size: 20px 20px;
+}
+
+.ui-icon-loan {
+	background-image: url("/images/loan.png");
+        background-size: 20px 20px;
+}
+
+.ui-icon-minutes {
+	background-image: url("/images/minutes.png");
+        background-size: 20px 20px;
+}
+
+.ui-li-static {
+   font-size:20px
+}
+.ui-loader-background {
+    width:100%;
+    height:100%;
+    top:0;
+    padding: 0;
+    margin: 0;
+    background: rgba(0, 0, 0, 0.3);
+    display:none;
+    position: fixed;
+    z-index:100;
+}
+
+.ui-loading .ui-loader-background {
+    display:block;
+}

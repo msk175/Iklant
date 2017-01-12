@@ -1,0 +1,116 @@
+extends ./layout
+include ./header
+
+block title
+    title= 'IKLANT-ReportManagement'
+
+block scripts
+    include ./headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/reportmgmt.js')
+
+block content
+    form(id='reportformid')
+        div(data-role='page', data-theme='b')
+            +header("Report Management",["backHref","menu","logout"],contextPath + '/client/ci/reportsMenu')
+            input(type='hidden', name='cl', id='cls', value= "")
+            input(type='hidden', name='temp', id='temp', value= "")
+            input(type='hidden', name='ledgerValue', id='ledgerValue', value= "")
+            div(data-role="collapsible", data-collapsed="false",  data-content-theme="b",id="reportMenu")
+                - if(categoryId == constantsObj.getFinancialReports()) {
+                    h3 Financial
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                        div(class='ui-block-a')
+                            table
+                                tr
+                                    th Reports
+                                    -for(var i=0;i<reportResult.length;i++){
+                                        -if(reportResult[i].report_id == constantsObj.getBankBookReport() && reportResult[i].is_voucher == 0){
+                                            tr
+                                                td
+                                                    div(data-role="fieldcontain", data-mini="true")
+                                                        a(href=contextPath + '/client/ci/reportManagement/Bank/#{reportResult[i].description}/#{categoryId}/#{reportResult[i].report_id}',id="#{reportResult[i].description}",rel="external",data-theme='a', title='#{reportResult[i].report_name}', data-inline='true',style = "font-family:Arial Black") #{reportResult[i].report_name}
+                                        -}
+                                        -else if(reportResult[i].report_id == constantsObj.getCashBookReport()&& reportResult[i].is_voucher == 0){
+                                            tr
+                                                td
+                                                    div(data-role="fieldcontain", data-mini="true")
+                                                        a(href=contextPath + '/client/ci/reportManagement/Cash/#{reportResult[i].description}/#{categoryId}/#{reportResult[i].report_id}',id="#{reportResult[i].description}",rel="external",data-theme='a', title='#{reportResult[i].report_name}', data-inline='true',style = "font-family:Arial Black") #{reportResult[i].report_name}
+                                        -}
+                                        -else if(reportResult[i].is_voucher == 0){
+                                            tr
+                                                td
+                                                    div(data-role="fieldcontain", data-mini="true")
+                                                        a(href=contextPath + '/client/ci/reportManagement/0/#{reportResult[i].description}/#{categoryId}/#{reportResult[i].report_id}',id="#{reportResult[i].description}",rel="external",data-theme='a', title='#{reportResult[i].report_name}', data-inline='true',style = "font-family:Arial Black") #{reportResult[i].report_name}
+                                        -}
+                                    -}
+                        div(class='ui-block-b')
+                            table
+                                tr
+                                    th Voucher
+                                    -for(var i=0;i<reportResult.length;i++){
+                                        -if(reportResult[i].report_id == constantsObj.getBankBookReport() && reportResult[i].is_voucher != 0){
+                                            tr
+                                                td
+                                                    div(data-role="fieldcontain", data-mini="true")
+                                                        a(href=contextPath + '/client/ci/reportManagement/Bank/#{reportResult[i].description}/#{categoryId}/#{reportResult[i].report_id}',id="#{reportResult[i].description}",rel="external",data-theme='a', title='#{reportResult[i].report_name}', data-inline='true',style = "font-family:Arial Black") #{reportResult[i].report_name}
+                                        -}
+                                        -else if(reportResult[i].report_id == constantsObj.getCashBookReport()&& reportResult[i].is_voucher != 0){
+                                            tr
+                                                td
+                                                    div(data-role="fieldcontain", data-mini="true")
+                                                        a(href=contextPath + '/client/ci/reportManagement/Cash/#{reportResult[i].description}/#{categoryId}/#{reportResult[i].report_id}',id="#{reportResult[i].description}",rel="external",data-theme='a', title='#{reportResult[i].report_name}', data-inline='true',style = "font-family:Arial Black") #{reportResult[i].report_name}
+                                        -}
+                                        -else if(reportResult[i].is_voucher != 0){
+                                            tr
+                                                td
+                                                    div(data-role="fieldcontain", data-mini="true")
+                                                        a(href=contextPath + '/client/ci/reportManagement/0/#{reportResult[i].description}/#{categoryId}/#{reportResult[i].report_id}',id="#{reportResult[i].description}",rel="external",data-theme='a', title='#{reportResult[i].report_name}', data-inline='true',style = "font-family:Arial Black") #{reportResult[i].report_name}
+                                        -}
+                                    -}
+                - }
+                - else if(categoryId == constantsObj.getManagementReports()) {
+                    h3 Management
+                    -for(var i=0;i<reportResult.length;i++){
+                        div(data-role="fieldcontain", data-mini="true")
+                            a(href=contextPath + '/client/ci/reportManagement/0/#{reportResult[i].description}/#{categoryId}/#{reportResult[i].report_id}',id="#{reportResult[i].description}",rel="external",data-theme='a', title='#{reportResult[i].report_name}', data-inline='true',style = "font-family:Arial Black") #{reportResult[i].report_name}
+                    -}
+                    div(data-role="fieldcontain", data-mini="true")
+                        a(href=contextPath + '/client/ci/showNPAMenuPage',rel="external", data-theme='a', data-inline='true' , id="npaReportId",style = "font-family:Arial Black") NPA
+                -}
+                - else if(categoryId == constantsObj.getOperationalReports()) {
+                    h3 Operational
+                    -for(var i=0;i<reportResult.length;i++){
+                        div(data-role="fieldcontain", data-mini="true")
+                            a(href=contextPath + '/client/ci/reportManagement/0/#{reportResult[i].description}/#{categoryId}/#{reportResult[i].report_id}',id="#{reportResult[i].description}",rel="external",data-theme='a', title='#{reportResult[i].report_name}', data-inline='true',style = "font-family:Arial Black") #{reportResult[i].report_name}
+                    -}
+                    div(data-role="fieldcontain", data-mini="true")
+                        a(href='#',rel="external", data-theme='a', data-inline='true' , id="docVerificationAnchorId",style = "font-family:Arial Black") Document Verification
+                    -if(roleId != constantsObj.getGuestUserRoleId()){
+                        div(data-role="fieldcontain", data-mini="true")
+                            a(href='#',rel="external", data-theme='a', data-inline='true' , id="equifaxReportsId",style = "font-family:Arial Black") Equifax
+                    - }
+                - }
+                - else if(categoryId == constantsObj.getGroupsReports()) {
+                    h3 Groups
+                    -for(var i=0;i<reportResult.length;i++){
+                        div(data-role="fieldcontain", data-mini="true")
+                            a(href=contextPath + '/client/ci/reportManagement/0/#{reportResult[i].description}/#{categoryId}/#{reportResult[i].report_id}',id="#{reportResult[i].description}",rel="external",data-theme='a', title='#{reportResult[i].report_name}', data-inline='true',style = "font-family:Arial Black") #{reportResult[i].report_name}
+                    -}
+                - }
+                - else if(categoryId == constantsObj.getGroupMembersReports()) {
+                    h3 Group Members
+                    h5(style="color:red;") Note: Group Members Report only for Operational Purpose and not for Financial Purpose.
+                    -for(var i=0;i<reportResult.length;i++){
+                        div(data-role="fieldcontain", data-mini="true")
+                            a(href=contextPath + '/client/ci/reportManagement/0/#{reportResult[i].description}/#{categoryId}/#{reportResult[i].report_id}',id="#{reportResult[i].description}",rel="external",data-theme='a', title='#{reportResult[i].report_name}', data-inline='true',style = "font-family:Arial Black") #{reportResult[i].report_name}
+                    -}
+                - }
+                - else if(categoryId == constantsObj.getPortfolioReports()) {
+                    h3 Portfolio
+                    -for(var i=0;i<reportResult.length;i++){
+                        div(data-role="fieldcontain", data-mini="true")
+                            a(href=contextPath + '/client/ci/reportManagement/0/#{reportResult[i].description}/#{categoryId}/#{reportResult[i].report_id}',id="#{reportResult[i].description}",rel="external",data-theme='a', title='#{reportResult[i].report_name}', data-inline='true',style = "font-family:Arial Black") #{reportResult[i].report_name}
+                    -}
+                -}
+            div(class="ui-loader-background")

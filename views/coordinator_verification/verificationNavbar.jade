@@ -1,0 +1,44 @@
+mixin verificationNavbar(navTitle)
+   div(data-role="navbar",class="ui-bar no-padding ui-navbar ui-mini",role="navigation")
+      ul(id="custom-nav-list")
+         li
+            -if(navTitle == 'groupCountDashboard'){
+               a(href=contextPath + '/client/ci/kycverification/client/groupCountDashBoard', rel="external", data-role="tab",class="ui-btn-active") KYC Verification Dashboard
+            -}
+            - else {
+               a(href=contextPath + '/client/ci/kycverification/client/groupCountDashBoard', rel="external", data-role="tab") KYC Verification Dashboard
+            -}
+         - if(roleId != constantsObj.getBMroleId()) {
+            li
+               -if(navTitle == 'freshGroups'){
+                  a(href=contextPath + '/client/ci/getFreshGroupsForVerifcation/1', rel="external", data-role="tab",class="ui-btn-active") Fresh Groups
+               -}
+               - else {
+                  a(href=contextPath + '/client/ci/getFreshGroupsForVerifcation/1', rel="external", data-role="tab") Fresh Groups
+               -}
+         - }
+         - if(roleId == constantsObj.getBMroleId()) {
+            li
+               -if(navTitle == 'rejectedByDEO') {
+                  a(href=contextPath + '/client/ci/getFreshGroupsForVerifcation/4', rel="external", data-role="tab",class="ui-btn-active") Query by DEO
+               -}
+               - else {
+                  a(href=contextPath + '/client/ci/getFreshGroupsForVerifcation/4', rel="external", data-role="tab") Query by DEO
+               -}
+         - }
+         li
+            -if(navTitle == 'imageRecapturedList'){
+               a(href=contextPath + '/client/ci/getFreshGroupsForVerifcation/2', rel="external", data-role="tab",class="ui-btn-active") Query cleared By FO
+            -}
+            - else {
+               a(href=contextPath + '/client/ci/getFreshGroupsForVerifcation/2', rel="external", data-role="tab") Query cleared By FO
+            -}
+
+         li
+            -if(navTitle == 'Infoqueue'){
+               a(href=contextPath + '/client/ci/getFreshGroupsForVerifcation/3', rel="external", data-role="tab",class="ui-btn-active") Hold groups in fo queue
+            -}
+            - else {
+               a(href=contextPath + '/client/ci/getFreshGroupsForVerifcation/3', rel="external", data-role="tab") Hold groups in fo queue
+            -}
+

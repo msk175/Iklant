@@ -1,0 +1,199 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'IKLANT-Dashboard'
+
+block scripts
+    include ../headerJqueryMobile-1
+    script(type='text/javascript', src='/javascripts/ExpensesTracking.js')
+
+block content
+    form(id="expensesTrackingFormId")
+        div(data-role='page', data-theme='b', id="loginDetailsDiv")
+            +header("",["menu","backHref","logout"],contextPath + '/client/ci/accounts/accountsMenu')
+            div(data-role="navbar")
+                ul(id="custom-nav-list")
+                    li
+                        a(href="JavaScript:operationSubmitFromBM('');", rel="external", data-role="tab" , id="custom-li-1") Expenses Tracking
+            div(data-role="collapsible", id="minutes", data-overlay-theme="a", data-inline="true" , data-collapsed="false",data-content-theme="b")
+                h3 Receipts and Payments
+                p(align="left",style="color:red;font-weight:bold",id="errorMsgForTransactionDateId") #{expenseTrackMonthClosingError}
+                p(align="left",style="color:red;font-weight:bold",id="errorMsgForTransactionDateId")
+                p(align="left",style="color:red;font-weight:bold",id="errorMsgForOfficeHierarchyId")
+                p(align="left",style="color:red;font-weight:bold",id="errorMsgForOfficeId")
+                p(align="left",style="color:red;font-weight:bold",id="errorMsgForTransactionTypeId")
+                p(align="left",style="color:red;font-weight:bold",id="errorMsgForMainAccountId")
+                p(align="left",style="color:red;font-weight:bold",id="errorMsgForAccountHeadId")
+                p(align="left",style="color:red;font-weight:bold",id="errorMsgForAmountId")
+                p(align="left",style="color:red;font-weight:bold",id="errorMsgForChequeNoId")
+                p(align="left",style="color:red;font-weight:bold",id="errorMsgForChequeDateId")
+                p(align="left",style="color:red;font-weight:bold",id="errorMsgForBranchNameId")
+                p(align="left",style="color:red;font-weight:bold",id="errorMsgForBankBranchId")
+                p(align="left",style="color:red;font-weight:bold",id="errorMsgForTransactionNotesId")
+                p(align="left",style="color:red;font-weight:bold",id="errorMsgForDecimalId")
+                div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-d")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                        label(for="transactionDateId") Transaction date
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain")
+                            input(type="text", name="transactionDate", id="transactionDateId", value=expenseTrackingHolder.getTrxnDateStr(), readonly='readonly', required='true')
+                div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-d")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                        label(for="officeHierarchyId") Office Hierarchy
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain",id="officeHierarchyDivId")
+                            select(name='officeHierarchy', id='officeHierarchyId',data-inline="true",data-mini="true", data-icon='grid',data-theme="b", data-overlay-theme="d", data-native-menu="true")
+                                option(value='',selected='selected') Select
+                                option(value='1') Head Office
+                                option(value='2') Regional Office
+                                option(value='3') Divisional Office
+                                option(value='4') Area Office
+                                option(value='5') Branch Office
+                                option(value='6') Center
+                                option(value='7') Group
+                    div(class='ui-block-c')
+                        div(data-role="fieldcontain", data-mini="true")
+                            label(for="officeId") Office
+                    div(class='ui-block-d')
+                        div(data-role="fieldcontain",id="officeDivId")
+                            select(name='office', id='officeId',data-inline="true",data-mini="true", data-icon='grid',data-theme="b", data-overlay-theme="b", data-native-menu="true")
+                                option(value='',selected='selected') Select
+                                -for(var i=0;i<expenseTrackingHolder.getOffices().length;i++){
+                                    -if(expenseTrackingHolder.getOffices()[i].getGlobalOfficeNum() != ""){
+                                        -if(expenseTrackingHolder.getOffices()[i].getGlobalOfficeNum() == expenseTrackingHolder.getOffice()){
+                                            option(value=expenseTrackingHolder.getOffices()[i].getGlobalOfficeNum(),selected='selected') #{expenseTrackingHolder.getOffices()[i].getDisplayName()}
+                                        -}
+                                        -else{
+                                            option(value=expenseTrackingHolder.getOffices()[i].getGlobalOfficeNum()) #{expenseTrackingHolder.getOffices()[i].getDisplayName()}
+                                        -}
+                                    -}
+                                -}
+                div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-d")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain", data-mini="true")
+                        label(for="transactionTypeId") Transaction Type
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain",id="transactionTypeDivId")
+                            select(name='transactionType', id='transactionTypeId',data-inline="true",data-mini="true", data-icon='grid',data-theme="b", data-overlay-theme="d", data-native-menu="true")
+                                option(value='',selected='selected') Select
+                                option(value='CR') Cash Receipt
+                                option(value='CP') Cash Payment
+                                option(value='BR') Bank Receipt
+                                option(value='BP') Bank Payment
+                    div(class='ui-block-c')
+                        div(data-role="fieldcontain", data-mini="true")
+                        label(for="mainAccountId") Main Account
+                    div(class='ui-block-d')
+                        div(data-role="fieldcontain", id="mainAccountDivId")
+                            select(name='mainAccount', id='mainAccountId',data-inline="true",data-mini="true", data-icon='grid',data-theme="b", data-overlay-theme="d", data-native-menu="true")
+                                option(value='',selected='selected') Select
+                                -for(var i=0;i<expenseTrackingHolder.getMainAccCodes().length;i++){
+                                    -if(expenseTrackingHolder.getMainAccCodes()[i].getGlcode() != ""){
+                                        -if(expenseTrackingHolder.getMainAccCodes()[i].getGlcode() == expenseTrackingHolder.getMainAccount()){
+                                            option(value=expenseTrackingHolder.getMainAccCodes()[i].getGlcode(), selected='selected') #{expenseTrackingHolder.getMainAccCodes()[i].getGlcode()} - #{expenseTrackingHolder.getMainAccCodes()[i].getGlname()}
+                                        -}
+                                        -else{
+                                            option(value=expenseTrackingHolder.getMainAccCodes()[i].getGlcode()) #{expenseTrackingHolder.getMainAccCodes()[i].getGlcode()} - #{expenseTrackingHolder.getMainAccCodes()[i].getGlname()}
+                                        -}
+                                    -}
+                                -}
+                div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-d")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain", data-mini="true")
+                        label(for="accountHeadId") Account Head
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain", id="accountHeadDivId")
+                            select(name='accountHead', id='accountHeadId',data-inline="true",data-mini="true", data-icon='grid',data-theme="b", data-overlay-theme="d", data-native-menu="true")
+                                option(value='',selected='selected') Select
+                                -for(var i=0;i<expenseTrackingHolder.getAccHeadCodes().length;i++){
+                                    -if(expenseTrackingHolder.getAccHeadCodes()[i].getGlcode() != ""){
+                                        -if(expenseTrackingHolder.getAccHeadCodes()[i].getGlcode() == expenseTrackingHolder.getAccountHead()){
+                                            option(value=expenseTrackingHolder.getAccHeadCodes()[i].getGlcode(), selected='selected') #{expenseTrackingHolder.getAccHeadCodes()[i].getGlcode()} - #{expenseTrackingHolder.getAccHeadCodes()[i].getGlname()}
+                                        -}
+                                        -else{
+                                            option(value=expenseTrackingHolder.getAccHeadCodes()[i].getGlcode()) #{expenseTrackingHolder.getAccHeadCodes()[i].getGlcode()} - #{expenseTrackingHolder.getAccHeadCodes()[i].getGlname()}
+                                        -}
+                                    -}
+                                -}
+                    div(class='ui-block-c')
+                        div(data-role="fieldcontain", data-mini="true")
+                        label(for="amountId") Amount
+                    div(class='ui-block-d')
+                        div(data-role="fieldcontain")
+                            input(type="text", name="amount", id="amountId", value=expenseTrackingHolder.getAmount() ,required='true',onkeyup='forNumbers(this)')
+
+                div(id="chequeDetailId")
+                    div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-d")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                            label(for="chequeNoId") Cheque No
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain")
+                                input(type="text", name="chequeNo", id="chequeNoId", value=expenseTrackingHolder.getChequeNo() ,required='true',onkeyup='forNumbers(this)')
+                        div(class='ui-block-c')
+                            div(data-role="fieldcontain", data-mini="true")
+                            label(for="chequeDateId") Cheque Date
+                        div(class='ui-block-d')
+                            div(data-role="fieldcontain")
+                                input(type="text", name="chequeDate", id="chequeDateId", value=expenseTrackingHolder.getChequeDate(), readonly='readonly' ,required='true')
+                    div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-d")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain", data-mini="true")
+                            label(for="branchNameId") Branch Name
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain")
+                                input(type="text", name="branchName", id="branchNameId", value=expenseTrackingHolder.getBankName() ,required='true',onkeyup='forNamesValidation(this)')
+                        div(class='ui-block-c')
+                            div(data-role="fieldcontain", data-mini="true")
+                            label(for="bankBranchId") Bank Branch
+                        div(class='ui-block-d')
+                            div(data-role="fieldcontain")
+                                input(type="text", name="bankBranch", id="bankBranchId", value=expenseTrackingHolder.getBankBranch() ,required='true',onkeyup='forNamesValidation(this)')
+                div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-d")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain", data-mini="true")
+                        label(for="transactionNotesId") Transaction Notes
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain")
+                            textarea(name="transactionNotes", id="transactionNotesId", maxlength="250", style="width:450px; height:80px;",onkeyup='forRemoveSpecialCharcters(this)') #{expenseTrackingHolder.getNotes()}
+                div(data-role="fieldcontain", data-inline="true")
+                    a(href='#internalloan3',  rel="external",data-icon='star', data-role='button', title=' Add ', data-inline="true", id='save') Save
+                    a(href=contextPath + '/client/ci/accounts/accountsMenu', rel="external",data-icon='back', data-role='button', title=' Back', data-inline="true") Back
+                input(type='hidden', name='financialYearStartDate', id='financialYearStartDateId', value="#{expenseTrackingHolder.getFinancialYearStartDate()}")
+                input(type='hidden', name='financialYearEndDate', id='financialYearEndDateId', value="#{expenseTrackingHolder.getFinancialYearEndDate()}")
+                -var officeId = new Array();
+                -var officeName = new Array();
+                -for(var i=0;i<expenseTrackingHolder.getOffices().length;i++){
+                    -officeId[i] = expenseTrackingHolder.getOffices()[i].getGlobalOfficeNum();
+                    -officeName[i] = expenseTrackingHolder.getOffices()[i].getDisplayName();
+                -}
+                input(type='hidden', name='officeIds', id='officeIdsId', value=officeId)
+                input(type='hidden', name='officeNames', id='officeNamesId', value=officeName)
+
+                -var mainAccId = new Array();
+                -var mainAccName = new Array();
+                -for(var i=0;i<expenseTrackingHolder.getMainAccCodes().length;i++){
+                    -mainAccId[i] = expenseTrackingHolder.getMainAccCodes()[i].getGlcode();
+                    -mainAccName[i] = expenseTrackingHolder.getMainAccCodes()[i].getGlname();
+                -}
+                input(type='hidden', name='mainAccId', id='mainAccIdId', value=mainAccId)
+                input(type='hidden', name='mainAccName', id='mainAccNameId', value=mainAccName)
+
+                -var accountHeadsId = new Array();
+                -var accountHeadsName = new Array();
+                -for(var i=0;i<expenseTrackingHolder.getAccHeadCodes().length;i++){
+                    -accountHeadsId[i] = expenseTrackingHolder.getAccHeadCodes()[i].getGlcode();
+                    -accountHeadsName[i] = expenseTrackingHolder.getAccHeadCodes()[i].getGlname();
+                -}
+                input(type='hidden', name='accountHeadsId', id='accountHeadsIdId', value=accountHeadsId)
+                input(type='hidden', name='accountHeadsName', id='accountHeadsNameId', value=accountHeadsName)
+
+                input(type='hidden', name='selectedOfficeHierarchy', id='selectedOfficeHierarchyId', value=expenseTrackingHolder.getOfficeHierarchy())
+                input(type='hidden', name='selectedTransactionType', id='selectedTransactionTypeId', value=expenseTrackingHolder.getTrxnType())
+                input(type='hidden', name='currentSelectValue', id='currentSelectValueId', value="")
+                input(type='hidden', name='validateEndDate', id='validateEndDateId', value="#{expenseTrackingHolder.getValidateEndDate()}")
+                input(type='hidden', name='allowedDecimals', id='allowedDecimalsId', value="#{expenseTrackingHolder.getAllowedDecimals()}")
+            div(class="ui-loader-background")

@@ -1,0 +1,165 @@
+extends ./layout
+include ./header
+
+block title
+    title= 'IKLANT-GroupCreation'
+
+block scripts
+    link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+    include ./headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    link(rel='stylesheet', href='/stylesheets/jquery.timepicker.css')
+    script(type='text/javascript', src='/javascripts/jquery-ui.js')
+    script(type='text/javascript', src="/javascripts/newGroup.js")
+    script(type='text/javascript', src='/javascripts/validation.js')
+    script(type='text/javascript', src='/javascripts/jquery.timepicker.js')
+
+block content
+    form(id="BMFormId")
+        div(data-role='page', data-theme='b')
+            +header("New Group Creation",["menu","logout"],'',[])
+            include ./GroupManagementLayout
+            div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b")
+                h3 Group Details
+                p(id ='errorField',data-theme="e",align='center',class='error-message global-font-details')
+                div(data-role="content", data-theme="c", data-overlay-theme="c", data-inline="true", id="groupDetailsDiv")
+                    div(data-role="fieldcontain", data-mini="true")
+                        label(for="groupName", data-inline="true") Group Name *
+                        input(type="text", name="groupName",maxlength="30",autocomplete="off", id="groupName",readonly="readonly",value="#{nextGroupName}")
+                        input(type='hidden', name='groupNameArrayHidden', id='groupNameArrayHidden', value="#{groupNames}")
+                    div(data-role="fieldcontain")
+                        label(for="centerName") Center Name *
+                        input(type="text", name="centerName",maxlength="50", id="centerName",autocomplete="off", required='true',onkeyup='forNamesValidation(this)')
+                    div(data-role="fieldcontain")
+                        label(for="branchName") Branch Name *
+                        select(name='branchName', id='branchName', data-theme='b', data-icon='bank', data-inline='true', data-native-menu="false", disabled="disabled")
+                            option(value=officeId) #{officeName}
+                        input(type='hidden', name='branchNameHidden', id='branchNameHiddenId')
+                    div(data-role="fieldcontain")
+                        label(for="areaName") Area Name *
+                        select(name='areaName', id='areaName', data-theme='b', data-icon='bank', data-inline='true', data-native-menu="false")
+                            option(value='0') Select
+                            -for(var i=0;i<areaCodes.length; i++) {
+                                option(value=areaCodes[i]) #{areaNames[i]}
+                            - }
+                    div(data-role="fieldcontain")
+                        label(for="createdDatePicker") Group Formed Date *
+                        input(type="text", name="createdDatePicker", id="createdDatePicker", value="", required='true', readonly="readonly")
+                    div(data-role="fieldcontain")
+                        label(for="loanType") Loan Type *
+                        select(name='loanType',data-theme="b", id='loanType',data-inline='true', data-icon='grid', data-mini='true', data-native-menu="false")
+                            option(value='0') Select
+                            -for(var i=0;i<loanTypeIdArray.length; i++) {
+                                option(value=loanTypeIdArray[i]) #{loanTypeArray[i]}
+                            - }
+                    //div(data-role="fieldcontain")
+                        div(class="ui-grid-c")
+                            div(class="ui-block-a",style="width:22%")
+                                div(data-role="fieldcontain")
+                                    label(for="choice") Client Details
+                            div(class="ui-block-b",style="width:30%")
+                                div(data-role="fieldcontain")
+                                    label(for='enterId') Enter
+                                    input(type='radio', name='radio', id='enterId', data-inline="true",checked="checked")
+                            div(class="ui-block-c",style="width:30%")
+                                div(data-role="fieldcontain")
+                                    label(for='skipId') Skip
+                                    input(type='radio', name='radio', id='skipId', data-inline="true")
+                    //div(data-role="fieldcontain",id="totalClientsDivId")
+                        label(for="totalClientsId") Total Number of Clients*
+                        input(type="text", name="totalClients",id="totalClientsId",autocomplete="off", required='true',onkeyup='numeric(this)')
+                    ul(data-role="controlgroup", data-type="horizontal", class="localnav")
+                div(data-role="collapsible", data-collapsed="false", id="meetingScheduleDivId", data-theme="b", data-overlay-theme="b")
+                    h3 Meeting Schedule
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                                label(for='week') Week(S)
+                                input(type='radio', name='meetingschedule', id='week', data-inline="true",value="1")
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain")
+                                label(for='month') Month(S)
+                                input(type='radio', name='meetingschedule', id='month', data-inline="true",value="2")
+                    div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b", id="weekdiv")
+                        h3 If weeks,Specify The Following
+                        div(data-role="fieldcontain")
+                            label(for="frequency") Frequency Of Meeting
+                            div(data-role="horizontal",id="frequency", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-a")
+                                div(class='ui-block-a')
+                                    div(data-role="fieldcontain")
+                                        label(for="recurevery") Recur Every
+                                        input(type="text", name="recurevery", id="recurevery",autocomplete="off",maxlength="1", value= '' , required='true',onkeyup='forNumbers(this)')
+                                div(class='ui-block-b')
+                                    div(data-role="fieldcontain")
+                                        label(for="daylist") Week(s) on
+                                        select(name='daylist', id='daylist', data-theme='b', data-icon='grid', data-inline='true',data-mini="true", data-native-menu="false")
+                                            option(value='0',selected='selected') --select--
+                                            option(value='1') Monday
+                                            option(value='2') Tuesday
+                                            option(value='3') Wednesday
+                                            option(value='4') Thursday
+                                            option(value='5') Friday
+                                            option(value='6') Saturday
+                                            option(value='7') Sunday
+
+                                input(type="hidden", name="dayorder", id="dayorder", value= '' , required='true')
+                        div(data-role="fieldcontain")
+                            label(for="location") Location Of Meeting*
+                            input(type="text", name="location",autocomplete="off",maxlength="50", id="location", value= '' , required='true',onkeyup='forNamesValidation(this)')
+                        div(data-role="fieldcontain")
+                            label(for="meetingTime") Time Of Meeting*
+                            input(type="time", name="meetingTime",autocomplete="off", id="meetingTime", value= '' , required='required',time-format='H:m:s')
+                    div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b", id="monthsdiv")
+                        h3 If months,Specify the Following
+                        div(data-role="fieldcontain")
+                            label(for="frequencymonth") Frequency Of Meeting
+                            div(data-role="horizontal",id="frequencymonth", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                                div(class='ui-block-a')
+                                    div(data-role="fieldcontain")
+                                        label(for="day") Day
+                                        input(type="text", name="day",autocomplete="off",maxlength="2", id="day", value= '' , required='true',onkeyup='forNumbers(this)')
+                                div(class='ui-block-b')
+                                    div(data-role="fieldcontain")
+                                        label(for="onemonth") of every
+                                        input(type="text", name="onemonth",autocomplete="off", id="onemonth", value= "1" , readonly="readonly")
+                                        label(for="hid")    month(s)
+                                        input(type="hidden", name="hid", id="hid", value= '' , required='true')
+                            div(data-role="fieldcontain")
+                                label(for="locationmonth") Location Of Meeting*
+                                input(type="text", name="locationmonth",autocomplete="off",maxlength="50", id="locationmonth", value= '' , required='true',onkeyup='forNamesValidation(this)')
+                            div(data-role="fieldcontain")
+                                label(for="meetingTimeMonth") Time Of Meeting*
+                                input(type="time", name="meetingTimeMonth",autocomplete="off", id="meetingTimeMonth", value= '' , required='required',time-format='H:m:s')
+                //div(data-role="collapsible", id="memberDetailsDivId", data-theme="e", data-overlay-theme="a", data-inline="true")
+                    h3 Members Details
+                    div(data-role="fieldcontain", id="internalLoanDetails")
+                        a(href='#internalloan', data-icon='plus', data-role='button',id='addClient', title=' Add ', data-rel='popup', data-position-to='window', data-transition='pop', data-inline='true', data-mini='true') Add
+                    div(data-role='content' , id="abc")
+                        div(class='content-primary')
+                            div(id='addClientDivId')
+                div(data-role="popup", id="internalloan", data-theme="a", data-overlay-theme="b", class="ui-content")
+                    h3(align="center") Member details
+                    p(id="errorLabel",align="center",class='error-message global-font-details')
+                    div(data-role="fieldcontain", data-mini="true")
+                        label(for="clientName", data-inline="true") FirstName*
+                        input(type="text", name="clientName",maxlength="30",autocomplete="off", id="clientName", value="",onkeyup='forNamesValidation(this)')
+                    div(data-role="fieldcontain", data-mini="true")
+                        label(for="clientLastNameId", data-inline="true") LastName*
+                        input(type="text", name="clientLastName",maxlength="30",autocomplete="off", id="clientLastNameId", value="",onkeyup='forNamesValidation(this)')
+                    div(data-role="fieldcontain", data-inline="true")
+                        a(href='#memberDetailsDivId',  rel="external",data-icon='check', data-role='button', title=' Add ', data-inline="true", id='saveClient') Save
+                        a(href='#internalloan', rel="external",data-icon='back', data-role='button', title=' Back', data-inline="true") Back
+            input(type='hidden', name='clientNames', id='clientNamesId')
+            input(type='hidden', name='clientLastNames', id='clientLastNamesId')
+            input(type='hidden', name='overdues', id='overduesId')
+            div(data-role="fieldcontain", data-inline="true")
+                a(href='#',  rel="external", data-role='button', title=' Add ', data-inline="true",data-mini="true", id='AddGroup') Create Group
+                -if(source) {
+                    a(href=contextPath + '/client/ci/menu', rel="external",data-icon='back', data-role='button', data-mini="true",title=' Back', data-inline="true") Back
+                -}
+                -else {
+                    a(href=contextPath + '/client/ci/groups', rel="external",data-icon='back', data-role='button',data-mini="true", title=' Back', data-inline="true") Back
+                -}
+                a(href='#', rel="external",data-icon='refresh', data-role='button', title=' Clear',data-mini="true", data-inline="true",id="clearId") Clear
+            div(class="ui-loader-background")

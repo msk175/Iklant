@@ -1,0 +1,35 @@
+!!! 5
+html(lang = "en")
+    head
+        title= 'IKLANT-LoanSanction'
+        meta(charset='utf-8')
+        meta(name='viewport',content='width=device-width, initial-scale=1')
+        meta(http-equiv='Cache-Control', content='no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0')
+        meta(http-equiv='Pragma', content='no-cache')
+        meta(http-equiv='Expires', content='-1')
+        link(rel="stylesheet", href='/stylesheets/jquery.mobile-1.3.0-beta.1.min.css')
+        link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+        link(rel='stylesheet', href='/stylesheets/dialogStyle.css')
+        link(rel='stylesheet', href='/stylesheets/iklantStyle.css')
+        link(rel='stylesheet', href='/stylesheets/loanSanctionCustom.css')
+        script(type='text/javascript', src='/javascripts/jquery-1.8.3.min.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile-1.3.0-beta.1.min.js')
+        script(type='text/javascript', src='/javascripts/1.10.0/jquery-ui.js')
+        script(type='text/javascript', src='/javascripts/validation.js')
+        script(type='text/javascript', src='/javascripts/common.js')
+    body
+        form(id='preclosureForm')
+            div(data-role='page', data-theme='b', id="loginDetailsDiv")
+                div(data-role="header", data-theme="a", class="ui-bar ui-grid-a",style ="background:#38404B", data-overlay-theme="c")
+                    div(class="ui-block-a")
+                        img(id='groupIcon', style="margin:5px 10px 0 0; text-align:right;",src='/images/iklant.png')
+                    div(class="ui-block-b",align="right")
+                        h3(align="right",style="margin:20px 10px 0 0")
+                        img(id='groupIcon',style="vertical-align:middle", src='/images/logoff.png')
+                div(data-role="content")
+                    div(data-role="fieldcontain")
+                        p(id="errorLabel",align ="center")  Page Expired.Click Login Button.
+                        a(href=contextPath + '/client/ci/login',rel="external", data-role='button', data-theme='b',data-icon='check',data-mini="true", title=' Login ', data-inline='true') Login
+                div(class="ui-loader-background")

@@ -1,0 +1,106 @@
+extends ./layout
+include ./header
+
+block title
+    title= 'IKLANT-ReintiateClient'
+
+block scripts
+    include ./headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+    link(rel='stylesheet', href='/stylesheets/dialogStyle.css')
+    script(type='text/javascript', src='/javascripts/rejectedClient.js')
+    script(type='text/javascript', src='/javascripts/reintiateClient.js')
+    script(type='text/javascript', src='/javascripts/validation.js')
+
+block content
+    form(id='BMFormId',enctype='multipart/form-data')
+        div(data-role='page', data-theme='b')
+            input(type='hidden', name='clientid', id='clientid', value= clientId)
+            -var rcOpId = constantsObj.getRejectedClientOperationId();
+            +header("Reintiate Client",["backJavascript","logout"],"operationSubmitFromBM",[rcOpId])
+            div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b")
+                h3 Client-Details
+                p(id ='errorField',data-theme="e",align='center')
+                p(align='center',style='color:green;font-weight:bold') #{statusMessage}
+                div(data-role="content", id="members123", data-theme="c", data-overlay-theme="c", data-inline="true")
+                    div(data-role="fieldcontain", data-mini="true")
+                        label(for="clientname", data-inline="true") Client Name
+                        input(type="text", name="clientname", id="clientname", value="#{client_name}", required='true', readonly="readonly")
+                        input(type='hidden', name='rejectedClient', id='rejectedClient', value='#{client_name}')
+                    div(data-role="fieldcontain", data-mini="true")
+                        label(for="clientglnum", data-inline="true") Client Global Number
+                        input(type="text", name="clientglnum", id="clientglnum", value="#{client_global_number}", required='true', readonly="readonly")
+                    div(data-role="fieldcontain", data-mini="true")
+                        label(for="goupglnum", data-inline="true") Group Name
+                        input(type="text", name="goupglnum", id="goupglnum", value="#{group_name}", required='true', readonly="readonly")
+                    div(data-role="fieldcontain", data-mini="true")
+                        label(for="centername", data-inline="true") Center Name
+                        input(type="text", name="centername", id="centername", value="#{center_name}", required='true', readonly="readonly")
+                    div(data-role="fieldcontain", data-mini="true")
+                        label(for="rejectedstage", data-inline="true") Rejected-Stage
+                        input(type="text", name="rejectedstage", id="rejectedstage", value="#{client_status_desc}", required='true', readonly="readonly")
+                    div(data-role="fieldcontain", data-mini="true")
+                        label(for="remarks", data-inline="true") Remarks To Reintiate
+                        input(type="text", name="remarks", id="remarks", autocomplete="off",maxlength="250",required='true',onkeyup='forRemoveSpecialCharcters(this)',onfocusout='forRemoveSpecialCharcters(this)',value=((remarks != null)&& (roleId == constantsObj.getSMHroleId()))?'#{remarks}':'',readonly=(roleId == constantsObj.getSMHroleId())?'readonly':undefined)
+                        -if(roleId == constantsObj.getSMHroleId() || remarksForRejection != null){
+                        div(data-role="fieldcontain", data-mini="true")
+                            label(for="remarksToReject", data-inline="true") Remarks for Rejection
+                            input(type="text", name="remarksToReject", id="remarksToReject", autocomplete="off",maxlength="250",required='true',onfocusout='forRemoveSpecialCharcters(this)',value=((remarksForRejection != null) && (roleId != constantsObj.getSMHroleId()))?'#{remarksForRejection}':'',readonly=(roleId != constantsObj.getSMHroleId())?'readonly':undefined, style=(roleId != constantsObj.getSMHroleId())?'color:red':'')
+                            -}
+                            div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a",style='width:100%;')
+                        div(class='ui-block-e',style='width:22%;')
+                            div(data-role="fieldcontain")
+                                -if(roleId != constantsObj.getSMHroleId())
+                                    a(href="JavaScript:openNOCPopup(#{clientId},'#{client_name}','uploadNOC_1')", id='uploadNOC_1', data-theme="b",data-inline='true',data-role='button', title=' Upload NOC', data-mini="true",data-rel="popup",data-position-to='window') Upload NOC
+                        div(class='ui-block-b',style='width:10%;')
+                            div(data-role='fieldcontain')
+                                label(for="members", data-inline="true") Document Type
+                        div(class='ui-block-c',style='width:20%;')
+                            div(data-role="fieldcontain")
+                                select(name='members', onchange = 'JavaScript:downloadClientDocuments(this.value,#{clientId})',data-theme="b", id='members',data-inline='true', data-icon='grid', data-mini='true', data-native-menu="true")
+                                    option(value='0') Select Doc Type
+                                    -for(var j=0;j< docTypeIdArray.length; j++) {
+                                        option(value= docTypeIdArray[j]) #{docTypeNameArray[j]}
+                                    - }
+                        div(class='ui-block-d',style='width:20%;')
+                            div(data-role="fieldcontain")
+                                label(for="documents", data-inline="true") List Of Document
+                        div(class='ui-block-e',style='width:10%;')
+                            div(data-role="fieldcontain")
+                            select(name='documents', onchange = 'JavaScript:downloadDocuments(this.value)',data-theme="b", id='documents',data-inline='true', data-icon='grid', data-mini='true', data-native-menu="true")
+                                option(value='0') Select Doc
+                    div(data-role="fieldcontain", data-mini="true")
+                    -if(roleId != constantsObj.getGuestUserRoleId()){
+                        -if(client_status_id != 25){
+                            a(href='JavaScript:reintiateClient()',rel="external",  data-role='button', data-theme='b', title=' Save ', data-inline='true' , id="saveGroupId", data-mini="true") Reintiate
+                        -if(roleId == constantsObj.getSMHroleId())
+                            a(href="JavaScript:rejectClient(#{clientId})", id='rejectClient', data-theme="b",data-inline='true',data-icon='delete', data-role='button', title=' Reject', data-mini="true",data-rel="popup",data-position-to='window') Reject
+                        -}
+                    -}
+                        a(href='JavaScript:operationSubmitFromBM(#{constantsObj.getRejectedClientOperationId()})', rel="external",data-icon='back', data-role='button', title=' Back', data-inline='true', data-mini="true") Back
+                        input(type='hidden', name='clientstatus', id='clientstatus', value= client_status_id)
+                        input(type='hidden', name='groupstatus', id='groupstatus', value= group_status_id)
+                        input(type='hidden', name='groupId', id='groupId', value= groupId)
+                        input(type='hidden', name='selectedDocName', id='documentPath', value= "")
+                        input(type='hidden', name='roleid', id='roleid', value= roleId)
+                        input(type='hidden', name='reqOfficeHidden', id='reqOfficeHidden', value= officeId)
+                        input(type='hidden', name='selectedClientForNOCUpload', id='selectedClientForNOCUpload', value="")
+                        input(type='hidden', name='selectedClientNameForNOCUpload', id='selectedClientNameForNOCUpload', value="")
+                        input(type='hidden', name='rejectedClientName', id='rejectedClientID', value="")
+                        input(type='hidden', name='pageName', id='pageName', value="reintiateClient")
+                div(data-role="popup", id="uploadNOC", data-inline='true',data-theme="a",align='center') Upload NOC
+                    div(data-role="collapsible", data-collapsed="false",data-theme="a", data-content-theme="c")
+                        div
+                            span(id='normalMessage') Please select a file/files to upload
+                            span(id='errorMessage',style='color:red;font-weight: bold;display:none')
+                        div(data-role="fieldcontain", data-mini="true",id='checkBoxDiv')
+                            input(type='checkbox', name='isMultipleDocCheck', id='isMultipleDocCheckID', data-inline="true")
+                            label(for='isMultipleDocCheckID',id="isMultipleDocCheckIDLabel") Multiple Files
+                            input(type="hidden", name="isMultipleDocument" , id="isMultipleDocumentId" , value="false", checked='false')
+                        div(data-role="fieldcontain", data-mini="true",id="multipleDocDivId")
+                            input(type="file", name="multipleUploadDocument" , id="multipleUploadDocumentId" , multiple="multiple")
+                            a(href='JavaScript:uploadNOC(#{groupId})',data-icon='check',data-role='button',data-inline='true', data-mini='true',data-theme="b") Upload
+                        div(data-role="fieldcontain", data-mini="true",id="singleDocDivId")
+                            input(type="file", name="singleUploadDocument" , id="singleUploadDocumentId")
+                            a(href='JavaScript:uploadNOC(#{groupId})',data-icon='check',data-role='button',data-inline='true', data-mini='true',data-theme="b") Upload
+            div(class="ui-loader-background")

@@ -1,0 +1,155 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'IKLANT-LoanRecovery'
+
+block scripts
+    link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+    include ../headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/loanAccInfoList.css')
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/loan_recovery/LoanRecoveryLoanAccount.js')
+
+    //- LoanSanctionForm1.jade
+    link(rel='stylesheet', href='/stylesheets/jquery.timepicker.css')
+    script(type='text/javascript', src='/javascripts/jquery-ui.js')
+    script(type='text/javascript', src='/javascripts/loan_disbursement/loanSanctionForm1.js')
+    script(type='text/javascript', src='/javascripts/jquery.timepicker.js')
+
+block content
+    form(id='LoanAccountFormID')
+        div(data-role='page', data-theme='b', id="loginDetailsDiv")
+            +header("",["menu","backJavascript","logout"],"backToSearch",[roleId])
+            div(data-role="navbar")
+                ul(id="custom-nav-list")
+                    li
+                        a(href="JavaScript:operationSubmitFromBM('');", rel="external", data-role="tab") Loan Recovery
+            div(data-role="collapsible", id="minutes", data-overlay-theme="a", data-inline="true" , data-collapsed="false", data-content-theme="b")
+                h3 #{groupName} - Account Information
+                    label(for="loanOfficerName",style="float:right") #{loanOfficerName}
+                    label(for="loanOfficerNameId",style="float:right") Loan Officer : &nbsp;
+                //div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-a")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                            label(for="loanOfficerNameId",id="labelid") Loan Officer : &nbsp;
+                            label(for="loanOfficerName") #{loanOfficerName}
+                            - if(roleId != constantsObj.getFOroleId()) {
+                                div(class='ui-block-b',align="right")
+                                div(data-role="fieldcontain")
+                                a(href="JavaScript:getClientListForLoanSanction('#{createLoanCustomerId}');", rel="external",data-icon="arrow-l",data-iconpos="right", data-role='button', title='Create Loan', data-inline="true") Create Loan
+                            - }
+            - if(roleId != constantsObj.getFOroleId()) {
+                div(data-role="fieldcontain",align="right")
+                    a(href="JavaScript:getClientListForLoanSanction('#{createLoanCustomerId}');", rel="external",data-icon="arrow-r",data-iconpos="right",data-mini="true", data-role='button', title='Create Loan', data-inline="true") Create Loan
+            - }
+            div(data-role="content" , style="overflow: auto;" , class="ui-content" , role="main")
+                div(data-role="navbar")
+                    ul(id="custom-nav-main")
+                        li
+                            a(rel="external", data-role="tab" , id="custom-li-mainTab1",class="ui-btn-active ") Open Loans
+                        - if(roleId != constantsObj.getFOroleId()) {
+                        li
+                            a(rel="external", data-role="tab" , id="custom-li-mainTab4") Closed Loans
+                        - }
+                div(data-role="content",id="activeId",style = "overflow: auto;")
+                    table(border='0')
+                        tbody
+                            tr
+                                td(class='center-text') S.No
+                                td(class='center-text') Loan Account No
+                                td(class='center-text') Status
+                                td(class='center-text') Outstanding Balance
+                                td(class='center-text') Amount Due
+                            - for( var i = 0; i < activeLoanAccountInformation.getGlobalAccountNum().length; i++ ) {
+                                tr
+                                    td(class='center-text') #{i+1}
+                                    td(class='center-text')
+                                        a(href="JavaScript:loanRecoveryLoanAccountFormSubmission('#{activeLoanAccountInformation.getGlobalAccountNum()[i]}','#{activeLoanAccountInformation.getAccountId()[i]}','#{roleId}')",  rel="external", data-role='button', title=' Add ', data-inline="true", id='saveClient') #{activeLoanAccountInformation.getGlobalAccountNum()[i]}
+                                    td(class='center-text')
+                                        - if(activeLoanAccountInformation.getAccountStateId()[i] == 9) {
+                                            img(src='/images/red.jpg',style='width:20px;height:20px;vertical-align:top')
+                                            span(style="")  #{activeLoanAccountInformation.getAccountStateName()[i]}
+                                        - }
+                                        - else if(activeLoanAccountInformation.getAccountStateId()[i] == 1 || activeLoanAccountInformation.getAccountStateId()[i] == 2){
+                                            img(src='/images/yellow.jpg',style='width:20px;height:20px;vertical-align:top')
+                                            span(style="")  #{activeLoanAccountInformation.getAccountStateName()[i]}
+                                        -}
+                                        - else {
+                                            img(src='/images/green.jpg',style='width:20px;height:20px;vertical-align:top')
+                                            span(style="")  #{activeLoanAccountInformation.getAccountStateName()[i]}
+                                        -}
+
+                                    td(class='center-text') #{activeLoanAccountInformation.getOutstandingBalance()[i]}
+                                    td(class='center-text') #{activeLoanAccountInformation.getTotalAmountDue()[i]}
+                            - }
+                div(data-role="content",id="inactiveId",style = "overflow: auto;")
+                    div(id="inactiveSubContentId")
+                        div(id="inactiveClosedObligId",style = "overflow: auto;")
+                            table(border='0')
+                                tbody
+                                    tr
+                                        td(class='center-text') S.No
+                                        td(class='center-text') Loan Account No
+                                        td(class='center-text') Status
+                                        td(class='center-text') Outstanding Balance
+                                        td(class='center-text') Amount Due
+                                    - var j =0;
+                                    - for( var i = 0; i < closedLoanAccountsInformation.getGlobalAccountNum().length; i++ ) {
+                                        - if(closedLoanAccountsInformation.getAccountStateId()[i] == 6) {
+                                            tr
+                                                td #{j+1}
+                                                td(class='center-text')
+                                                    a(href="JavaScript:showPaidEntries('#{closedLoanAccountsInformation.getGlobalAccountNum()[i]}','#{closedLoanAccountsInformation.getAccountId()[i]}')",  rel="external", data-role='button', title=' Add ', data-inline="true", id='saveClient') #{closedLoanAccountsInformation.getGlobalAccountNum()[i]}
+                                                td(class='center-text')
+                                                    img(src='/images/black.jpg',style='width:20px;height:20px;vertical-align:top')
+                                                    span(style="")  #{closedLoanAccountsInformation.getAccountStateName()[i]}
+                                                td(class='center-text') #{closedLoanAccountsInformation.getOutstandingBalance()[i]}
+                                                td(class='center-text') #{closedLoanAccountsInformation.getTotalAmountDue()[i]}
+                                                - j++;
+                                            - }
+                                    - }
+                        div(id="inactiveReshWriteOffId",style = "overflow: auto;")
+                            table(border='0')
+                                tbody
+                                    tr
+                                        td(class='center-text') S.No
+                                        td(class='center-text') Loan Account No
+                                        td(class='center-text') Status
+                                        td(class='center-text') Outstanding Balance
+                                        td(class='center-text') Amount Due
+                                    - var j =0;
+                                    - for( var i = 0; i < closedLoanAccountsInformation.getGlobalAccountNum().length; i++ ) {
+                                        - if(closedLoanAccountsInformation.getAccountStateId()[i] == 7 || closedLoanAccountsInformation.getAccountStateId()[i] == 8) {
+                                            tr
+                                                td(class='center-text') #{j+1}
+                                                td(class='center-text')
+                                                    a(href="#",  rel="external", data-role='button', title=' Add ', data-inline="true", id='saveClient') #{closedLoanAccountsInformation.getGlobalAccountNum()[i]}
+                                                td(class='center-text')
+                                                    img(src='/images/black.jpg',style='width:20px;height:20px;vertical-align:top')
+                                                    span(style="")  #{closedLoanAccountsInformation.getAccountStateName()[i]}
+                                                td(class='center-text') #{closedLoanAccountsInformation.getOutstandingBalance()[i]}
+                                                td(class='center-text') #{closedLoanAccountsInformation.getTotalAmountDue()[i]}
+                                            - j++;
+                                            - }
+                                    - }
+                        div(data-role="navbar",id="subInactiveId")
+                            ul(id="custom-nav-subInactive")
+                                li
+                                    a(rel="external", data-role="tab" , id="custom-li-subInactiveTab1",class="ui-btn-active ") Closed Obligation met
+                                li
+                                    a(rel="external", data-role="tab" , id="custom-li-subInactiveTab2") Reschedule/Write Off
+            div(data-role="horizontal",class="ui-bar ui-grid-b")
+                div(class='ui-block-a')
+                div(class='ui-block-b')
+                    div(data-role="fieldcontain",align="center")
+                        a(href=contextPath + '/client/ci/menu', rel="external",data-icon='home', data-role='button', title=' Home', data-inline='true', data-mini="true") Home
+                div(class='ui-block-c')
+                    div(data-role="fieldcontain", data-inline="true",align="right")
+                        a(href="JavaScript:backToSearch('#{roleId}')", rel="external",data-icon='back', data-role='button', title=' Back', data-inline="true", data-mini="true") Back
+                    input(type='hidden', name='loanStatus', id='loanStatusId', value="")
+                    input(type="hidden",id="accountId",name="accountId",value="")
+                    input(type="hidden",id="accountTypeId",name="accountTypeId",value="1")
+                    input(type="hidden",id="globalAccountNum",name="globalAccountNum",value="")
+                    input(type="hidden",id="flagId",name="flag",value="1")
+            div(class="ui-loader-background")

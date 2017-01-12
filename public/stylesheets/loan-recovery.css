@@ -1,0 +1,15 @@
+#popupPanel-popup {
+    left: 0 !important;
+    right: auto !important;
+}
+#popupPanel {
+    width: 260px;
+    border: 1px solid #000;
+    border-right: none;
+    background: rgba(0,0,0,.6);
+    margin: -1px 0;
+
+}
+#popupPanel .ui-btn {
+    margin: 1em 15px;
+}

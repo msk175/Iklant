@@ -1,0 +1,53 @@
+extends ./layout
+include ./header
+block title
+    title= 'Leader and Sub Leader Verification'
+block scripts
+    include ./headerJqueryMobile-1
+    script(type='text/javascript', src="/javascripts/leaderAndSubLeaderDetails.js")
+    script(type='text/javascript', src='/javascripts/validation.js')
+block content
+    form(id='BMFormId')
+        div(data-role='page', data-theme='b')
+            +header("Leader and Sub Leader Verification",["welcomeNote","menu","logout"])
+            input(type='hidden', name='alertMessageHidden', id='alertMessageHidden', value="#{}")
+            include ./GroupManagementLayout
+            div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a",style='width:100%')
+                -if(office == constantsObj.getApexHeadOffice()){
+                    div(class='ui-block-a',style="width:49%",align='right')
+                        div(data-role='fieldcontain')
+                        label(id="report_label_top",class='label') Select Office
+                    div(class='ui-block-b',style="width:2%")
+                    div(class='ui-block-b',style="width:49%")
+                        div(data-role='fieldcontain')
+                            select(name='listoffice', id='listoffice', data-theme='b', data-icon='bank', data-inline='true', data-mini='true')
+                                option(value='0') Select Office
+                                -for(i=0;i<officeIdArray.length;i++){
+                                    -if(officeValue == officeIdArray[i]){
+                                        option(value=officeIdArray[i], selected='selected') #{officeNameArray[i]}
+                                    -}
+                                    -else{
+                                        option(value=officeIdArray[i]) #{officeNameArray[i]}
+                                    -}
+                                - }
+                -}
+                div(class='ui-block-c',style="width:100%")
+                    div(data-role='content')
+                        div(class='content-primary')
+                            ul(data-role='listview', data-split-icon='gear', data-split-theme='c', data-filter="true", data-filter-theme='c',  data-filter-placeholder='Search for a group')
+                                p(id='alertMessage',align='center',class='error-message global-font-details')    #{errorMessage}
+                                    - for( var i = 0; i < groupsName.length; i++ ) {
+                                        li
+                                            a(href="JavaScript:getClientDetailsWhileOnchange('#{groupsId[i]}','#{loanCount[i]}',1);")
+                                                -if(error_msg_array[i] == 1){
+                                                    h3(id='alertMessage',class='error-message global-font-details') No Clients in this group to Update
+                                                -}
+                                                img(src='/images/edit.png', width='60', height='60', style='margin:8px 10px 10px 20px;')
+                                                h3(id='#{groupsName[i]}') #{groupsName[i]} &nbsp;&nbsp;&nbsp; [ Date : #{dataEntryDate[i]} ]
+                                                //input(type='hidden', name='groupsLabelId', id='f #{groupsName[i]}', value="#{groupsName[i]}")
+                                                label(for='groupsId' , id='labelGroupsId'+i) #{listGroupsGlobalNumberArray[i]} | FieldOfficer : #{fieldOfficerName[i]} | TotalClients : #{totalClientsCountArray[i]} | ActiveClients : #{activeClients[i]}
+                                    -}
+                    input(type="hidden", name="groupId", id="groupId")
+                    input(type="hidden", name="operationId", id="operationId", value='31')
+                    input(type="hidden", name="menuName", id="menuName", value='new')
+            div(class="ui-loader-background")

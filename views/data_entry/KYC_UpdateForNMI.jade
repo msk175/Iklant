@@ -1,0 +1,560 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'IKLANT-NMIForm'
+
+block scripts
+    link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+    include ../headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+    link(rel='stylesheet', href='/stylesheets/popup.css')
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/jquery-ui.js')
+    script(type='text/javascript', src="/javascripts/data_entry/kycValidation.js")
+
+block content
+    form(id='BMFormId')
+        div(data-role='page', data-theme='b')
+            +header("KYC Updating",["backJavascript","logout"],"cancelNMIUpdate",[])
+            div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b")
+                h3 KYC Updating
+                p(id='errorLabelId',align="center",class='error-message global-font-details')
+                p(id='successMessage',align="center",class='error-message global-font-details') #{successMessage}
+                div(data-role="content", data-theme="c", data-overlay-theme="c", data-inline="true")
+                    div(data-role='fieldcontain',align='left')
+                        label(for="groupName") Group Name
+                        input(type="text", name="Group Name", id="groupName",readonly='readonly',value="#{prospectGroup.getGroup_name()}")
+                        input(type="hidden",id="groupNameHidden",name="GroupNameHidden",value="#{prospectGroup.getGroup_name()}")
+                        input(type="hidden" ,id="groupIdHidden", name="groupIdHiddenName",value="#{groupId}")
+                    div(data-role="fieldcontain", data-mini="true")
+                        label(for="centerName", data-inline="true") Center Name
+                        input(type="text", name="Center Name", id="centerName", readonly='readonly', value="#{prospectGroup.getCenter_name()}")
+                    div(data-role='fieldcontain',align='left')
+                        label(for="memberName") Member Name
+                        select(name='MemberName',rel = "external",onchange="JavaScript:memberNameOnchangeForNMIClients()", data-mini="true" ,id="memberName",data-inline="true",autofocus="autofocus", data-theme='b', data-icon='arrow-d', data-native-menu="true")
+                            option(value="0")    Select
+                            -for(i=0;i< clientNames.length;i++){
+                                -if(clientId[i]==clientNameID)
+                                    option(value=clientId[i],selected='selected') #{clientNames[i]}
+                                -else
+                                    option(value=clientId[i]) #{clientNames[i]}
+                            - }
+                            input(type="hidden",id="memberNameIdHidden",name="MemberNameIdHidden",value="")
+                            input(type="hidden",id="flagHiddenId",name="flagHidden",value= flag )
+                    div(data-role="fieldcontain", data-mini="true")
+                        label(for="neededinformationforclient", data-inline="true") Needed Information
+                        input(type="text", name="neededinformation", id="neededinformationforclient", readonly='readonly', value="#{prospectClientPersonalObject.getRemarks()}")
+                    div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-solo")
+                        div(data-role="fieldcontain",data-mini='true',class='oldDE')
+                            a(href='#', rel="external",data-icon='plus', data-role='button', title='Expand', data-inline="true", data-mini="true",id='expand',data-iconpos="notext")
+                            a(href='#', rel="external",data-icon='minus', data-role='button', title='Collapse', data-inline="true", data-mini="true",id='collapse',data-iconpos="notext")
+                    div(data-role="collapsible", data-collapsed="true", data-theme="b",data-content-theme="b",class='collapsible_content')
+                        h3 Member Personal Details
+                        div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-a")
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain")
+                                    label(for="membFirstNameId") First Name*
+                                    input(type="text", name="MembFirstName",maxlength="100",onkeyup='forAlphaNumericWoutSlash(this)',autocomplete="off",id="membFirstNameId",required='true', value="#{prospectClientPersonalObject.getMembFirstName()}")
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain")
+                                    label(for='membLastNameId') Last Name*
+                                    input(type='text', name='MembLastName',maxlength="100",onkeyup='forNamesValidation(this)',autocomplete="off", id='membLastNameId', value="#{prospectClientPersonalObject.getMembLastName()}")
+                        div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-a")
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain")
+                                    label(for="dateOfBirth") Date Of Birth*
+                                    input(type="text", name="DateOfBirth", id="dateOfBirth", value="#{prospectClientPersonalObject.getDate_of_birth()}", required='true', readonly="readonly")
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain")
+                                    label(for='contactNumber')    Mobile Number*
+                                    input(type='text', name='ContactNumber',autocomplete="off", id='contactNumber', maxlength="12", data-inline="true",value="#{prospectClientPersonalObject.getMobile_number()}",onkeyup='forPhoneNumbers(this)')
+                            div(class='ui-block-c')
+                                div(data-role="fieldcontain")
+                                    label(for='landlineNumber')    Landline Number
+                                    input(type='text', name='landlineNumber',autocomplete="off", id='landlineNumber', maxlength="12", data-inline="true",value="#{prospectClientPersonalObject.getLandline_number()}",onkeyup='forPhoneNumbers(this)')
+                        div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-a")
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain")
+                                    label(for='addressDetails') Address Details*
+                                    textarea(name='AddressDetails', id='addressDetails',maxlength="250",data-inline="true",onkeyup='forAddress(this)') #{prospectClientPersonalObject.getAddress()}
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain")
+                                    label(for='pinCode') Pin Code*
+                                    input(type='text', name='PinCode', id='pinCode',autocomplete="off",maxlength="6", data-inline="true",value="#{prospectClientPersonalObject.getPincode()}",onkeyup='forNumbers(this)')
+                        div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-a")
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain")
+                                    label(for='RationCardNo') Ration Card Number*
+                                    input(type='text', name='RationCardNumber', id='RationCardNo', maxlength="35",onkeyup='forAlphaNumeric(this)', autocomplete="off", data-inline="true",value="#{prospectClientPersonalObject.getRation_card_number()}")
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain")
+                                    label(for='voterIdID') Voter ID
+                                    input(type='text', name='voterId', id='voterIdID',autocomplete="off", maxlength="30",onkeyup='forAlphaNumeric(this)',data-inline="true",value="#{prospectClientPersonalObject.getVoter_id()}")
+                        div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-a")
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain")
+                                    label(for='gasNumberId') Gas Number
+                                    input(type='text', name='GasNumber', id='gasNumberId',autocomplete="off",maxlength="30",onkeyup='forRemoveSpecialCharcters(this)',data-inline="true",value="#{prospectClientPersonalObject.getGas_number()}")
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain")
+                                    label(for='aadhaarNoId') Aadhaar Number
+                                    input(type='text', name='AadhaarNo', id='aadhaarNoId',autocomplete="off",maxlength="30",onkeyup='forAlphaNumeric(this)', data-inline="true",value="#{prospectClientPersonalObject.getAadhaar_number()}")
+                        div(data-role="fieldcontain")
+                            input(type='checkbox', name='otherIdsName', id='otherIdsID', data-inline="true")
+                            label(for='otherIdsID',id='otherIdsLabelID') Other ID
+                            input(type='hidden', name='otherIdsNameHidden', id='otherIdsIDHidden', data-inline="true")
+                            input(type='hidden', name='OtherIdsHiddenFetch', id='otherIdsHiddenFetch', data-inline="true",value="#{prospectClientPersonalObject.getIs_other_id()}")
+                        div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-a")
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain",id="OtherIdNameDiv")
+                                    label(for='otherIdIDName') Name of Other ID 1
+                                    input(type='text', name='otherIdName', id='otherIdIDName',maxlength="100",onkeyup='forNamesValidation(this)',autocomplete="off", data-inline="true",value="#{prospectClientPersonalObject.getOther_id_name()}")
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain",id="otherIdIDDiv")
+                                    label(for='otherIdID') Other ID Number 1
+                                    input(type='text', name='otherId', id='otherIdID',maxlength="30", onkeyup='forRemoveSpecialCharcters(this)',autocomplete="off", data-inline="true",value="#{prospectClientPersonalObject.getOther_id()}")
+                        div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-a")
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain",id="OtherIdNameDiv2")
+                                    label(for='otherIdIDName') Name of Other ID 2
+                                    input(type='text', name='otherIdName2', id='otherIdIDName2',maxlength="100",onkeyup='forNamesValidation(this)',autocomplete="off", data-inline="true",value="#{prospectClientPersonalObject.getOther_id_name2()}")
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain",id="otherIdIDDiv2")
+                                    label(for='otherIdID') Other ID Number 2
+                                    input(type='text', name='otherId2', id='otherIdID2',maxlength="30", onkeyup='forRemoveSpecialCharcters(this)',autocomplete="off", data-inline="true",value="#{prospectClientPersonalObject.getOther_id2()}")
+                        div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-a")
+                            div(class='ui-block-a')
+                                div(data-role='fieldcontain',align='left')
+                                    label(for="gender") Gender*
+                                    select(name='genderValue',rel = "external", data-mini="true" ,data-inline="true",autofocus="autofocus", id='gender', data-theme="b", data-icon='arrow-d', data-native-menu="false")
+                                        option(value='0',selected='selected') Select
+                                        -for(i=0;i<lookupEntityObj.getGender().length;i++){
+                                            -if(lookupEntityObj.getGender()[i]==prospectClientPersonalObject.getGender())
+                                                option(value=lookupEntityObj.getGender()[i],selected='selected') #{lookupEntityObj.getGenderName()[i]}
+                                            -else
+                                                option(value=lookupEntityObj.getGender()[i]) #{lookupEntityObj.getGenderName()[i]}
+                                        - }
+                        div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-a")
+                            div(class='ui-block-a')
+                                div(data-role='fieldcontain',align='left')
+                                    label(for="maritalStatus") MaritalStatus*
+                                    select(name='MaritalStatus',rel = "external", data-mini="true" ,data-inline="true",autofocus="autofocus", id='maritalStatus', data-theme="b", data-icon='arrow-d', data-native-menu="false")
+                                        option(value='0',selected='selected') Select
+                                        -for(i=0;i<lookupEntityObj.getMaritalStatus().length;i++){
+                                            -if(lookupEntityObj.getMaritalStatus()[i]==prospectClientPersonalObject.getMarital_status())
+                                                option(value=lookupEntityObj.getMaritalStatus()[i],selected='selected') #{lookupEntityObj.getMaritalStatusName()[i]}
+                                            -else
+                                                option(value=lookupEntityObj.getMaritalStatus()[i]) #{lookupEntityObj.getMaritalStatusName()[i]}
+                                        - }
+                            div(class='ui-block-b')
+                                div(data-role='fieldcontain',align='left')
+                                    label(for="nationality") Nationality
+                                    select(name='nationality',rel = "external", data-mini="true" ,data-inline="true",autofocus="autofocus", id='nationality', data-theme="b", data-icon='arrow-d', data-native-menu="false")
+                                        option(value='0',selected='selected') Select
+                                        -for(i=0;i<lookupEntityObj.getNationality().length;i++){
+                                            -if(lookupEntityObj.getNationality()[i]==prospectClientPersonalObject.getNationality())
+                                                option(value=lookupEntityObj.getNationality()[i],selected='selected') #{lookupEntityObj.getNationalityName()[i]}
+                                            -else
+                                                option(value=lookupEntityObj.getNationality()[i]) #{lookupEntityObj.getNationalityName()[i]}
+                                        - }
+
+                        div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-a")
+                            div(class='ui-block-a')
+                                div(data-role='fieldcontain',align='left')
+                                    label(for="religion") Religion
+                                    select(name='Religion',rel = "external", data-mini="true" ,data-inline="true",autofocus="autofocus", id='religion', data-theme="b", data-icon='arrow-d', data-native-menu="false")
+                                        option(value='0',selected='selected') Select
+                                        -for(i=0;i<lookupEntityObj.getReligion().length;i++){
+                                            -if(lookupEntityObj.getReligion()[i]==prospectClientPersonalObject.getReligion())
+                                                option(value=lookupEntityObj.getReligion()[i],selected='selected') #{lookupEntityObj.getReligionName()[i]}
+                                            -else
+                                                option(value=lookupEntityObj.getReligion()[i]) #{lookupEntityObj.getReligionName()[i]}
+                                        - }
+
+                            div(class='ui-block-b')
+                                div(data-role='fieldcontain',align='left')
+                                    label(for="caste") Caste
+                                    select(name='Caste',rel = "external", data-mini="true" ,data-inline="true",autofocus="autofocus", id='caste', data-theme="b", data-icon='arrow-d', data-native-menu="false")
+                                        option(value='0',selected='selected') Select
+                                        -for(i=0;i<lookupEntityObj.getCaste().length;i++){
+                                            -if(lookupEntityObj.getCaste()[i]==prospectClientPersonalObject.getCaste())
+                                                option(value=lookupEntityObj.getCaste()[i],selected='selected') #{lookupEntityObj.getCasteName()[i]}
+                                            -else
+                                                option(value=lookupEntityObj.getCaste()[i]) #{lookupEntityObj.getCasteName()[i]}
+                                        - }
+
+                        div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-a")
+                            div(class='ui-block-a')
+                                div(data-role='fieldcontain',align='left')
+                                    label(for="educationDetails") Education Details*
+                                    select(name='EducationDetails',rel = "external", data-mini="true" ,data-inline="true",autofocus="autofocus", id='educationDetails', data-theme="b", data-icon='arrow-d', data-native-menu="false")
+                                        option(value='0',selected='selected') Select
+                                        -for(i=0;i<lookupEntityObj.getEducationalDetails().length;i++){
+                                            -if(lookupEntityObj.getEducationalDetails()[i]==prospectClientPersonalObject.getEducational_details())
+                                                option(value=lookupEntityObj.getEducationalDetails()[i],selected='selected') #{lookupEntityObj.getEducationalDetailsName()[i]}
+                                            -else
+                                                option(value=lookupEntityObj.getEducationalDetails()[i]) #{lookupEntityObj.getEducationalDetailsName()[i]}
+                                        - }
+                            div(class='ui-block-b')
+                                div(data-role='fieldcontain',align='left')
+                                    label(for="loanPurpose") LoanPurpose*
+                                    select(name='LoanPurpose',rel = "external", data-mini="true" ,data-inline="true",autofocus="autofocus", id='loanPurpose', data-theme="b", data-icon='arrow-d', data-native-menu="false")
+                                        option(value='0',selected='selected') Select
+                                        -for(i=0;i<lookupEntityObj.getLoanPurpose().length;i++){
+                                            -if(lookupEntityObj.getLoanPurpose()[i]==prospectClientPersonalObject.getLoan_purpose())
+                                                option(value=lookupEntityObj.getLoanPurpose()[i],selected='selected') #{lookupEntityObj.getLoanPurposeName()[i]}
+                                            -else
+                                                option(value=lookupEntityObj.getLoanPurpose()[i]) #{lookupEntityObj.getLoanPurposeName()[i]}
+                                        - }
+
+                        div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-a")
+                            div(class='ui-block-a')
+                                div(data-role='fieldcontain')
+                                    label(for="relationship") Relationship*
+                                    select(name='relationshipValue',rel = "external", data-mini="true" ,id="relationship",data-inline="true",autofocus="autofocus", data-theme="b", data-icon='arrow-d', data-native-menu="false")
+                                        option(value='0',selected='selected') Select
+                                        -for(i=0;i<lookupEntityObj.getRelationship().length;i++){
+                                            -if(lookupEntityObj.getRelationship()[i]==prospectClientPersonalObject.getGuardian_relationship())
+                                                option(value=lookupEntityObj.getRelationship()[i],selected='selected') #{lookupEntityObj.getRelationshipName()[i]}
+                                            -else
+                                                option(value=lookupEntityObj.getRelationship()[i]) #{lookupEntityObj.getRelationshipName()[i]}
+                                        - }
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain")
+                                    label(for='husband/FatherName',align='left') FirstName of the Relation*
+                                    input(type='text', name='HusbandOrFatherName',autocomplete="off", maxlength="100",onkeyup='forNamesValidation(this)', id='husbandOrFatherName', data-inline="true",value="#{prospectClientPersonalObject.getGuardian_name()}")
+
+                        div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-a")
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain",align='left')
+                                    label(for='husband/FatherLastName',align='left') LastName of the Relation*
+                                    input(type='text', name='HusbandOrFatherLastName',maxlength="100",autocomplete="off",onkeyup='forNamesValidation(this)', id='husbandOrFatherLastNameId', data-inline="true",value="#{prospectClientPersonalObject.getGuardian_lastname()}")
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain",align='left')
+                                    label(for='husband/FatherAge',align='left') DateOfBirth of the Relation
+                                    input(type='text', name='HusbandOrFatherAge', id='husbandOrFatherAge', data-inline="true",value="#{prospectClientPersonalObject.getGuardian_dob()}", readonly="readonly")
+                    div(data-role="collapsible", data-collapsed="true", data-theme="b", data-content-theme="b",class='collapsible_content')
+                        h3 Guarantor Details
+                        div(data-role="fieldcontain")
+                            label(for='guarantorName') Guarantor Name*
+                            input(type='text', name='GuarantorName',autocomplete="off", id='guarantorName',maxlength="100",onkeyup='forNamesValidation(this)',data-inline="true",value="#{prospectClientGuarantorObject.getGuarantorName()}")
+                        div(data-role="fieldcontain")
+                            label(for="guarantorAge") Guarantor Date Of Birth
+                            input(type="text", name="GuarantorAge", id="guarantorAge", value="#{prospectClientGuarantorObject.getGuarantorDob()}", required='true', readonly="readonly")
+                        div(data-role='fieldcontain',align='left')
+                            label(for="guarantorRelationship") Guarantor Relationship*
+                            select(name='GuarantorRelationship',onchange="JavaScript:forRelationShipChange()",rel = "external", data-mini="true" ,data-inline="true",autofocus="autofocus", id='guarantorRelationship', data-theme="b", data-icon='arrow-d', data-native-menu="false")
+                                option(value='0',selected='selected') Select
+                                -for(i=0;i<lookupEntityObj.getGuarantorRelationship().length;i++){
+
+                                    -if(lookupEntityObj.getGuarantorRelationship()[i]==prospectClientGuarantorObject.getGuarantorRelationship())
+                                        option(value=lookupEntityObj.getGuarantorRelationship()[i],selected='selected') #{lookupEntityObj.getGuarantorRelationshipName()[i]}
+                                    -else
+                                        option(value=lookupEntityObj.getGuarantorRelationship()[i]) #{lookupEntityObj.getGuarantorRelationshipName()[i]}
+                                - }
+                            div(data-role="fieldcontain",id="otherIdRelationShipDiv")
+                                label(for="otherRelationShipName") Other Relationship Name*
+                                input(type='text', name='otherRelationShipName',id="otherRelationShipName",required='true',autocomplete="off", maxlength="30",onkeyup='forAlphaNumeric(this)', data-inline="true",value="#{prospectClientGuarantorObject.getOtherGuarantorRelationshipName()}")
+                        div(data-role="fieldcontain")
+                            label(for="guarantorId") Guarantor ID*
+                            input(type="text", name="guarantorId",id="guarantorId",onkeyup='forAlphaNumeric(this)', autocomplete="off",value="#{prospectClientGuarantorObject.getGuarantorId()}",  maxlength="30",required='true')
+                        div(data-role="fieldcontain")
+                            label(for="guarantorAddress") Guarantor Address*
+                            textarea(name="GuarantorAddress", id="guarantorAddress", value="", maxlength="250",required='true',onkeyup='forAddress(this)') #{prospectClientGuarantorObject.getGuarantorAddress()}
+                    div(data-role="collapsible", data-overlay-theme="b", data-collapsed="true", data-theme="b", data-content-theme="b",class='collapsible_content')
+                        h3 Family income
+                        div(data-role="fieldcontain")
+                            a(href='#addFamilyMembers', data-icon='plus', data-role='button', title=' addFamilyMembers ', data-rel='popup', data-position-to='window', data-transition='pop', data-inline='true', data-mini='true') Add Family Members
+                            div(data-role='content')
+                                div(class='content-primary')
+                                    - for( var i = 0; i < prospectClientFamilyFetchObject.getMember_name().length; i++ ) {
+                                        ul(data-role="listview", data-split-theme="b",data-inset="true" )
+                                            li(data-theme="b",id ='clientLiId'+i)
+                                                a(href="#", data-rel='popup', data-position-to='window', data-transition='pop', data-inline='true', data-mini='true')
+                                                    label( ) #{prospectClientFamilyFetchObject.getMember_name()[i]}
+                                                a(href="JavaScript:clientRemove(this,'"+i+"','#{prospectClientFamilyFetchObject.getMember_name()[i]}','#{prospectClientFamilyFetchObject.getMember_income()[i]}','#{prospectClientFamilyFetchObject.getMember_relationship()[i]}')" ,data-role="delete" ,data-icon="delete")
+                                                input(type ="hidden",value="#{prospectClientFamilyFetchObject.getMember_income()[i]}")
+                                        - }
+                                    div(id="addFamilyMembersDivId")
+                                    input(type='hidden', name='deleteclientNamehidden', id='deletecnameid', value="")
+                                    input(type='hidden', name='deleteclientRelationhidden', id='deletecrelationid', value="")
+                                    input(type='hidden', name='deleteclientIncomehidden', id='deletecincomeid', value="")
+                        //adding family members popup
+                        div(data-role="popup", data-theme="b", data-overlay-theme="b", id="addFamilyMembers")
+                            h3(align="center" ,class="ui-bar ui-bar-c ui-corner-all") Family Members
+                                p(id='errorLabelPopupId',align="center",class='error-message global-font-details')
+                                div(data-role="fieldcontain")
+                                    label(for='familyMemberName',align="left") Name*
+                                    input(type='text', name='FamilyMemberName',autocomplete="off", id='familyMemberName',maxlength="50",onkeyup='forNamesValidation(this)',data-inline="true")
+                                div(data-role="fieldcontain")
+                                    label(for="age",align="left") DateOfBirth
+                                    input(type="text", name="Age", id="age", value="", required='true', readonly="readonly")
+                                div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-grid-a")
+                                    div(class='ui-block-a',align="left")
+                                        div(data-role='fieldcontain',align="center")
+                                            label(for="genderId",align="center") Gender*
+                                            select(name='gender',rel = "external", data-mini="true" ,autofocus="autofocus", id='genderId', data-theme="b", data-icon='arrow-d', data-native-menu="false")
+                                                option(value='0',selected='selected') Select
+                                                -for(i=0;i<lookupEntityObj.getGender().length;i++){
+                                                    option(value="#{lookupEntityObj.getGender()[i]}") #{lookupEntityObj.getGenderName()[i]}
+                                                - }
+                                    div(class='ui-block-b',align="right")
+                                        div(data-role='fieldcontain',align='center')
+                                            label(for="Relationship",align="center") Relationship*
+                                            select(name='Relationship',rel = "external", data-mini="true" ,autofocus="autofocus", id='Relationship', onchange="JavaScript:forFamilyRelationShipChange()",data-theme="b", data-icon='arrow-d', data-native-menu="false")
+                                                option(value='0',selected='selected') Select
+                                                -for(i=0;i<lookupEntityObj.getFamilyRelationship().length;i++){
+                                                    option(value="#{lookupEntityObj.getFamilyRelationship()[i]}") #{lookupEntityObj.getFamilyRelationshipName()[i]}
+                                                - }
+                                div(data-role="fieldcontain",id="otherIdFamilyRelationShipDiv")
+                                    label(for="otherRelationShipName") OtherRelationshipName*
+                                    input(type='text', name='otherIdFamilyRelation',id="otherIdFamilyRelation",required='true', maxlength="100",onkeyup='forAlphaNumeric(this)', autocomplete="off", data-inline="true")
+                                div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-grid-a")
+                                    div(class='ui-block-a',align='left')
+                                        div(data-role='fieldcontain',align='center')
+                                            label(for="education",align="center") Education
+                                            select(name='Education',rel = "external", data-mini="true" ,autofocus="autofocus", id='education', data-theme="b", data-icon='arrow-d', data-native-menu="false")
+                                                option(value='0',selected='selected') Select
+                                                -for(i=0;i<lookupEntityObj.getEducationalDetails().length;i++){
+                                                    option(value="#{lookupEntityObj.getEducationalDetails()[i]}") #{lookupEntityObj.getEducationalDetailsName()[i]}
+                                                - }
+                                    div(class='ui-block-b',align='right')
+                                        div(data-role='fieldcontain',align='center')
+                                            label(for="occupation",align="center") Occupation
+                                            select(name='Occupation',rel = "external", data-mini="true" ,autofocus="autofocus", id='occupation', data-theme="b", data-icon='arrow-d', data-native-menu="false")
+                                                option(value='0',selected='selected') Select
+                                                -for(i=0;i<lookupEntityObj.getOccupation().length;i++){
+                                                    option(value="#{lookupEntityObj.getOccupation()[i]}") #{lookupEntityObj.getOccupationName()[i]}
+                                                - }
+                                div(data-role="fieldcontain")
+                                    label(for='income',align='left') Income*
+                                    input(type='text', name='Income',autocomplete="off", id='income',maxlength="11",data-inline="true",onkeyup='forNumbers(this)')
+                                div(data-role="fieldcontain")
+                                a(href='',id='addFamilyMembersSaveId', rel="external",data-icon='check', data-role='button',data-mini="true", title=' Save ', data-theme="b", data-inline="true") Save
+                                a(href='#addFamilyMembers' ,id='addFamilyMembersCancelId', rel="external",data-icon='back', data-role='button',data-mini="true", title=' Back', data-inline="true") Back
+
+                        input(type='hidden', name='nameHidden', id='nameIdHidden', data-inline="true")
+                        input(type='hidden', name='ageHidden', id='ageIdHidden', data-inline="true")
+                        input(type='hidden', name='genderHidden', id='genderIdHidden', data-inline="true")
+                        input(type='hidden', name='relationshipHidden', id='relationshipIdHidden', data-inline="true")
+                        input(type='hidden', name='otherRelationshipHidden', id='otherRelationshipHidden', data-inline="true")
+                        input(type='hidden', name='educationHidden', id='educationIdHidden', data-inline="true")
+                        input(type='hidden', name='occupationHidden', id='occupationIdHidden', data-inline="true")
+                        input(type='hidden', name='incomeHidden', id='incomeIdHidden', data-inline="true")
+                        div(data-role="fieldcontain")
+                            label(for='familyTotalIncome') Family Total Income*
+                            input(type='text',readonly='readonly', name='FamilyTotalIncome', id='familyTotalIncome',onkeyup='forNumbers(this)',data-inline="true",value="#{prospectClient.getFamily_monthly_income()}")
+                        div(data-role="fieldcontain")
+                            label(for='familyMonthlyExpenses') Family Monthly Expenses*
+                            input(type='text', name='FamilyMonthlyExpenses',autocomplete="off", maxlength="11", id='familyMonthlyExpenses', data-inline="true",value="#{prospectClient.getFamily_monthly_expense()}",onkeyup='forNumbers(this)')
+                    div(data-role="collapsible", data-collapsed="true", data-theme="b", data-content-theme="b",id="houseHoldDetails")
+                        h3 House Details
+                        div(data-role='fieldcontain',align='left')
+                            label(for="house") House*
+                            select(name='House',onchange="JavaScript:houseTypeOnchange()",rel = "external", data-mini="true" ,data-inline="true",autofocus="autofocus", id='house', data-theme="b", data-icon='arrow-d', data-native-menu="false")
+                                option(value='0',selected='selected') Select
+                                -for(i=0;i<lookupEntityObj.getHouse().length;i++){
+                                    -if(lookupEntityObj.getHouse()[i]==prospectClientHouseDetailObject.getHouse_type())
+                                        option(value=lookupEntityObj.getHouse()[i],selected='selected') #{lookupEntityObj.getHouseName()[i]}
+                                    -else
+                                        option(value=lookupEntityObj.getHouse()[i]) #{lookupEntityObj.getHouseName()[i]}
+                                - }
+                        div(data-role="fieldcontain")
+                            label(for='timePeriod',id="timePeriodLabelId") Time Period
+                            input(type='text', name='TimePeriod',autocomplete="off", id='timePeriod',maxlength="50", data-inline="true",value="#{prospectClientHouseDetailObject.getTime_period()}",onkeyup='forAlphaNumeric(this)')
+                        div(data-role="fieldcontain")
+                            label(for='housesqft') House Sq.ft
+                            input(type='text', name='Housesqft',autocomplete="off", maxlength="11",id='housesqft', data-inline="true",value="#{prospectClientHouseDetailObject.getHouse_sqft()}",onkeyup='forNumbers(this)')
+                        div(data-role="horizontal",align="left", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-a")
+                            div(class='ui-block-a',align="left")
+                                div(data-role='fieldcontain',align="center")
+                                    label(for="houseCeilingType",align="left") HouseCeilingType*
+                                    select(name='HouseCeilingType',rel = "external", data-mini="true" ,data-inline="true",autofocus="autofocus", id='houseCeilingType', data-theme="b", data-icon='arrow-d', data-native-menu="false")
+                                        option(value='0',selected='selected') Select
+                                        -for(i=0;i<lookupEntityObj.getHouseCeiling().length;i++){
+                                            -if(lookupEntityObj.getHouseCeiling()[i]==prospectClientHouseDetailObject.getHouse_ceiling_type())
+                                                option(value=lookupEntityObj.getHouseCeiling()[i],selected='selected') #{lookupEntityObj.getHouseCeilingName()[i]}
+                                            -else
+                                                option(value=lookupEntityObj.getHouseCeiling()[i]) #{lookupEntityObj.getHouseCeilingName()[i]}
+                                        - }
+                            div(class='ui-block-b')
+                                div(data-role='fieldcontain',align='center')
+                                    label(for="houseWallType",align="left") HouseWallType
+                                    select(name='HouseWallType',rel = "external", data-mini="true" ,data-inline="true",autofocus="autofocus", id='houseWallType', data-theme="b", data-icon='arrow-d', data-native-menu="false")
+                                        option(value='0',selected='selected') Select
+                                        -for(i=0;i<lookupEntityObj.getHouseWall().length;i++){
+                                            -if(lookupEntityObj.getHouseWall()[i]==prospectClientHouseDetailObject.getHouse_wall_type())
+                                                option(value=lookupEntityObj.getHouseWall()[i],selected='selected') #{lookupEntityObj.getHouseWallName()[i]}
+                                            -else
+                                                option(value=lookupEntityObj.getHouseWall()[i]) #{lookupEntityObj.getHouseWallName()[i]}
+                                        - }
+                        div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-a")
+                            div(class='ui-block-a')
+                                div(data-role='fieldcontain',align='center')
+                                    label(for="houseFlooringDetails",align="left") HouseFlooringDetails*
+                                    select(name='HouseFlooringDetails',rel = "external", data-mini="true" ,data-inline="true",autofocus="autofocus", id='houseFlooringDetails', data-theme="b", data-icon='arrow-d', data-native-menu="false")
+                                        option(value='0',selected='selected') Select
+                                        -for(i=0;i<lookupEntityObj.getHouseFloor().length;i++){
+                                            -if(lookupEntityObj.getHouseFloor()[i]==prospectClientHouseDetailObject.getHouse_flooring_detail())
+                                                option(value=lookupEntityObj.getHouseFloor()[i],selected='selected') #{lookupEntityObj.getHouseFloorName()[i]}
+                                            -else
+                                                option(value=lookupEntityObj.getHouseFloor()[i]) #{lookupEntityObj.getHouseFloorName()[i]}
+                                        - }
+                            div(class='ui-block-b')
+                                div(data-role='fieldcontain',align='center')
+                                    label(for="housetoilet",align="left") House Toilet*
+                                    select(name='HouseToilet',rel = "external", data-mini="true" ,data-inline="true",autofocus="autofocus", id='housetoilet', data-theme="b", data-icon='arrow-d', data-native-menu="false")
+                                        option(value='0',selected='selected') Select
+                                        -for(i=0;i<lookupEntityObj.getHouseToilet().length;i++){
+                                            -if(lookupEntityObj.getHouseToilet()[i]==prospectClientHouseDetailObject.getHouse_toilet())
+                                                option(value=lookupEntityObj.getHouseToilet()[i],selected='selected') #{lookupEntityObj.getHouseToiletName()[i]}
+                                            -else
+                                                option(value=lookupEntityObj.getHouseToilet()[i]) #{lookupEntityObj.getHouseToiletName()[i]}
+                                        - }
+                        div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-grid-d")
+                            div(class='ui-block-a',align="center")
+                                div(data-role='fieldcontain',align="center")
+                                    label(for="vehicleDetails") VehicleDetails*
+                            div(class='ui-block-b',align="left")
+                                div(data-role="fieldcontain")
+                                    input(type='checkbox', name='Bi-CycleName', id='bicycle', data-inline="true")
+                                    label(for='bicycle',id='bicycleID') Bi-Cycle
+                                div(data-role="fieldcontain")
+                                    input(type='checkbox', name='ScooterName', id='scooter', data-inline="true")
+                                    label(for='scooter',id='scooterID') Scooter
+                                div(data-role="fieldcontain")
+                                    input(type='checkbox', name='MopedName', id='moped', data-inline="true")
+                                    label(for='moped',id='mopedID') Moped
+                                div(data-role="fieldcontain")
+                                    input(type='checkbox', name='BikeName', id='bike', data-inline="true")
+                                    label(for='bike',id='bikeID') Bike
+                                div(data-role="fieldcontain")
+                                    input(type='checkbox', name='CarName', id='car', data-inline="true")
+                                    label(for='car',id='carID') Car
+                                div(data-role="fieldcontain")
+                                    input(type='checkbox', name='OthersName', id='others', data-inline="true")
+                                    label(for='others',id='othersID') Others
+                            div(class='ui-block-c',align="center")
+                                div(data-role='fieldcontain',align='center')
+                                label(for='houseRooomDetails') HouseRooomDetails
+                            div(class='ui-block-d',align="right")
+                                div(data-role="fieldcontain")
+                                    input(type='checkbox', name='HallName', id='hall', data-inline="true")
+                                    label(for='hall',id='hallID') Hall
+                                div(data-role="fieldcontain")
+                                    input(type='checkbox', name='KitchenName', id='kitchen', data-inline="true")
+                                    label(for='kitchen',id='kitchenID') Kitchen
+                                div(data-role="fieldcontain")
+                                    input(type='checkbox', name='1RoomName', id='1room', data-inline="true")
+                                    label(for='1room',id='1roomID') One Room
+                                div(data-role="fieldcontain")
+                                    input(type='checkbox', name='2RoomsName', id='2rooms', data-inline="true")
+                                    label(for='2rooms',id='2roomsID') Two Rooms
+                                div(data-role="fieldcontain")
+                                    input(type='checkbox', name='3RoomsName', id='3rooms', data-inline="true")
+                                    label(for='3rooms',id='3roomsID') Three Rooms
+                        //hidden textbox for checkbox value assign
+                        div(data-role="fieldcontain")
+                            input(type='hidden', name='household', id='hiddenHousehold', data-inline="true")
+                            input(type='hidden', name='householdFetch', id='hiddenHouseholdFetch', data-inline="true",value="#{prospectClientHouseDetailObject.getHousehold_details()}")
+                        div(data-role="fieldcontain")
+                            input(type='hidden', name='vehicles', id='hiddenVehicle', data-inline="true")
+                            input(type='hidden', name='vehiclesFetch', id='hiddenVehicleFetch', data-inline="true",value="#{prospectClientHouseDetailObject.getVehicle_details()}")
+                        div(data-role="fieldcontain")
+                            input(type='hidden', name='houseroom', id='hiddenHouseroom', data-inline="true")
+                            input(type='hidden', name='houseroomFetch', id='hiddenHouseroomFetch', data-inline="true",value="#{prospectClientHouseDetailObject.getHouse_room_detail()}")
+                    div(data-role="collapsible", data-collapsed="true", data-theme="b", data-content-theme="b",class='collapsible_content')
+                        h3 Bank Account Details
+                        div(data-role='fieldcontain',align='left')
+                            input(type='checkbox', name='BankAccount', id='bankAccount', data-inline="true")
+                            label(for='bankAccount') Bank Account
+                            input(type='hidden', name='BankAccountHidden', id='bankAccountHidden', data-inline="true")
+                            input(type='hidden', name='BankAccountHiddenFetch', id='bankAccountHiddenFetch', data-inline="true",value="#{prospectClientBankDetailObject.getIs_bank_account()}")
+                        div(data-role='fieldcontain',align='left')
+                            input(type='checkbox', name='Savings', id='savings', data-inline="true")
+                            label(for='savings') Savings
+                            input(type='hidden', name='SavingsHidden', id='savingsHidden', data-inline="true")
+                            input(type='hidden', name='SavingsHiddenFetch', id='savingsHiddenFetch', data-inline="true",value="#{prospectClientBankDetailObject.getIs_Savings()}")
+                    div(data-role="collapsible", data-collapsed="true", data-theme="b", data-content-theme="b",id="OtherMFIdetails")
+                        h3 Other MFI Loan details
+                        div(data-role='fieldcontain',align='left')
+                            input(type='checkbox', name='LoanSecuredOtherMFI', id='loanSecuredOtherMFI', data-inline="true")
+                            label(for='loanSecuredOtherMFI') Loan secured in Other MFI
+                            input(type='hidden', name='OtherMfiLoanHidden', id='otherMfiLoanHidden', data-inline="true")
+                            input(type='hidden', name='OtherMfiLoanHiddenFetch', id='otherMfiLoanHiddenFetch', data-inline="true",value="#{prospectClient.getIs_loan_secured()}")
+                        div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-a")
+                            div(class='ui-block-a')
+                                a(href='#addOtherMfiLoans', data-icon='plus', data-role='button', title=' addOtherMfiLoans ' ,id="addOtherMfiLoansButtonId" , data-rel='popup', data-position-to='window', data-transition='pop', data-inline='true', data-mini='true') Add Other Mfi Loans
+                                div(data-role="popup", data-theme="b", data-overlay-theme="b", id="addOtherMfiLoans")
+                                    h3(align="center" ,class="ui-bar ui-bar-c ui-corner-all") Other MFI Loans
+                                        p(id='otherMfiErrorLabelPopupId',align="center",class='error-message global-font-details')
+                                        div(data-role="fieldcontain")
+                                            label(for='mfiName') MFIName*
+                                            input(type='text', name='MfiName',autocomplete="off", id='mfiName',maxlength="50",onkeyup='forNamesValidation(this)',data-inline="true",value="")
+                                        div(data-role="fieldcontain")
+                                            label(for='mfiAmountSecured') MFIAmountSecured*
+                                            input(type='text', name='MfiAmountSecured',autocomplete="off", id='mfiAmountSecured',maxlength="50",data-inline="true",value="",onkeyup='forNumbers(this)')
+                                        div(data-role="fieldcontain")
+                                            label(for='mfiLoanOutstanding') MFILoanOutstanding*
+                                            input(type='text', name='MfiLoanOutstanding',autocomplete="off", id='mfiLoanOutstanding',maxlength="50",data-inline="true",value="",onkeyup='forNumbers(this)')
+                                        a(href='#addOtherMfiLoans',id='addOtherMfiLoanSaveId', rel="external",data-icon='check', data-role='button',data-mini="true", title=' Save ', data-theme="b", data-inline="true") Save
+                                        a(href='#addOtherMfiLoans', id='addOtherMfiLoanCancelId', rel="external",data-icon='back', data-role='button',data-mini="true", title=' Back', data-inline="true") Back
+
+
+                        input(type='hidden', name='OtherMfiNameHidden', id='OtherMfiNameHiddenId', data-inline="true")
+                        input(type='hidden', name='OtherMfiAmountHidden', id='OtherMfiAmountHiddenId', data-inline="true")
+                        input(type='hidden', name='OtherMfiOutstandingHidden', id='OtherMfiOutstandingHiddenId', data-inline="true")
+                        //popup dynamic div
+                        div(data-role="fieldcontain",id="popupShowDivId")
+                            div(data-role='content')
+                                div(class='content-primary')
+                                    - for( var i = 0; i < prospectClientOtherMfiDetailObject.getOtherMfiNameArrayDto().length; i++ ) {
+                                        ul(data-role="listview", data-split-theme="b",data-inset="true" )
+                                            li(data-theme="b",id ='mfiClientLiId'+i)
+                                                a(href="#", data-rel='popup', data-position-to='window', data-transition='pop', data-inline='true', data-mini='true')
+                                                    label( ) #{prospectClientOtherMfiDetailObject.getOtherMfiNameArrayDto()[i]}
+                                                a(href="JavaScript:MfiClientRemove(this,'"+i+"','#{prospectClientOtherMfiDetailObject.getOtherMfiNameArrayDto()[i]}','#{prospectClientOtherMfiDetailObject.getOtherMfiAmountArrayDto()[i]}','#{prospectClientOtherMfiDetailObject.getOtherMfiOutstandingArrayDto()[i]}')" ,data-role="delete" ,data-icon="delete")
+                                    - }
+                                    div(id="otherMfiLoanDivId")
+                        input(type='hidden', name='OtherMfiClientNameOnDeleteShowLabelHidden', id='OtherMfiClientNameOnDeleteShowLabel', value="#{prospectClientOtherMfiDetailObject.getOtherMfiNameArrayDto()}")
+                        input(type='hidden', name='OtherMfiClientNameCountHidden', id='OtherMfiClientNameCountHiddenId', value="#{prospectClientOtherMfiDetailObject.getOtherMfiNameArrayDto().length}")
+                        input(type='hidden', name='OtherMfiClientNameFetchHidden', id='OtherMfiClientNameFetchHiddenId', value="#{prospectClientOtherMfiDetailObject.getOtherMfiNameArrayDto()}")
+                        input(type='hidden', name='OtherMfiClientAmtFetchHidden', id='OtherMfiClientAmtFetchHiddenId', value="#{prospectClientOtherMfiDetailObject.getOtherMfiAmountArrayDto()}")
+                        input(type='hidden', name='OtherMfiClientOutFetchHidden', id='OtherMfiClientOutFetchHiddenId', value="#{prospectClientOtherMfiDetailObject.getOtherMfiOutstandingArrayDto()}")
+                        input(type='hidden', name='deleteOtherMfiClienthidden', id='deleteOtherMfiClientId', value="")
+                        input(type='hidden', name='deleteOtherMfiAmtSecuredHidden', id='deleteOtherMfiAmtSecuredId', value="")
+                        input(type='hidden', name='deleteOtherMfiOutHidden', id='deleteOtherMfiOutId', value="")
+                    div(data-role="collapsible", data-collapsed="true", data-theme="b", data-content-theme="b",class='collapsible_content')
+                        h3 Other Details
+                        div(data-role='fieldcontain',align='left')
+                            input(type='checkbox', name='declarationAcknowledgedSigned', id='declarationAcknowledgedSigned', data-inline="true",checked=true)
+                            label(for='declarationAcknowledgedSigned') Declaration Acknowledged and Signed
+                            input(type='hidden', name='DeclarationAcknowledgedSignedHidden', id='declarationAcknowledgedSignedHidden', data-inline="true")
+                            input(type='hidden', name='DeclarationAcknowledgedSignedHiddenFetch', id='declarationAcknowledgedSignedHiddenFetch', data-inline="true",value="#{prospectClientOtherDetailObject.getIsDeclarationAcksign()}")
+                        div(data-role='fieldcontain',align='left')
+                            input(type='checkbox', name='PledgeAcknowledgedSigned', id='pledgeAcknowledgedSigned', data-inline="true",checked=true)
+                            label(for='pledgeAcknowledgedSigned') Pledge Acknowledged and Signed
+                            input(type='hidden', name='PledgeAcknowledgedSignedHidden', id='pledgeAcknowledgedSignedHidden', data-inline="true")
+                            input(type='hidden', name='PledgeAcknowledgedSignedHiddenFetch', id='pledgeAcknowledgedSignedHiddenFetch', data-inline="true",value="#{prospectClientOtherDetailObject.getIsPledgeAcksign()}")
+                        div(data-role='fieldcontain',align='left')
+                            input(type='checkbox', name='GuarantorAcknowledgedSigned', id='guarantorAcknowledgedSigned', data-inline="true",checked=true)
+                            label(for='guarantorAcknowledgedSigned') Guarantor Acknowledged and Signed
+                            input(type='hidden', name='GuarantorAcknowledgedSignedHidden', id='guarantorAcknowledgedSignedHidden', data-inline="true")
+                            input(type='hidden', name='GuarantorAcknowledgedSignedHiddenFetch', id='guarantorAcknowledgedSignedHiddenFetch', data-inline="true",value="#{prospectClientOtherDetailObject.getIsGuarantorAcksign()}")
+                        div(data-role='fieldcontain',align='left')
+                            input(type='checkbox', name='MemberPhotocopyAttached', id='memberPhotocopyAttached', data-inline="true",checked=true)
+                            label(for='memberPhotocopyAttached') Member Photocopy Attached
+                            input(type='hidden', name='MemberPhotocopyAttachedHidden', id='memberPhotocopyAttachedHidden', data-inline="true")
+                            input(type='hidden', name='MemberPhotocopyAttachedHiddenFetch', id='memberPhotocopyAttachedHiddenFetch', data-inline="true",value="#{prospectClientOtherDetailObject.getIsMemberPhotocopyAttached()}")
+                        div(data-role='fieldcontain',align='left')
+                            input(type='checkbox', name='GuarantorPhotocopyAttached', id='guarantorPhotocopyAttached', data-inline="true",checked=true)
+                            label(for='guarantorPhotocopyAttached') Guarantor Photocopy Attached
+                            input(type='hidden', name='GuarantorPhotocopyAttachedHidden', id='guarantorPhotocopyAttachedHidden', data-inline="true")
+                            input(type='hidden', name='GuarantorPhotocopyAttachedHiddenFetch', id='guarantorPhotocopyAttachedHiddenFetch', data-inline="true",value="#{prospectClientOtherDetailObject.getIsGuarantorPhotocopyAttached()}")
+            div(data-role="fieldcontain")
+                a(href='JavaScript:kycFormSubmissionForNMIClients()',  rel="external",data-theme="b",data-icon='check', data-role='button', title=' Submit ', data-inline="true") Submit
+                a(href='JavaScript:cancelNMIUpdate()', rel="external",data-icon='back', data-role='button', title=' Back', data-inline="true") Back
+                input(type="hidden",id="reqOfficeHidden",name="reqOfficeHidden",value="#{officeValue}")
+            input(type="hidden", name="menuName", id="menuName", value='#{menu}')
+            div(class="ui-loader-background")

@@ -1,0 +1,46 @@
+//params: navTitle - which tab must be shown as active
+mixin loanRecovery(navTitle)
+    div(data-role="navbar",class="ui-bar no-padding ui-navbar ui-mini",role="navigation")
+        ul(id="custom-nav-list")
+            -if(roleId == constantsObj.getFOroleId()){
+                li
+                    -if(navTitle == 'dueLoans'){
+                        a(href=contextPath + '/client/ci/loanrecoveryLoans', rel="external", data-role="tab",class="ui-btn-active") Due Loans
+                    -} else {
+                        a(href=contextPath + '/client/ci/loanrecoveryLoans', rel="external", data-role="tab") Due Loans
+                    -}
+                li
+                    -if(navTitle == 'overdueLoans'){
+                        a(href=contextPath + '/client/ci/pastDueLoans', rel="external", data-role="tab",class="ui-btn-active") Overdue Loans
+                    -} else {
+                        a(href=contextPath + '/client/ci/pastDueLoans', rel="external", data-role="tab") Overdue Loans
+                    -}
+                li
+                    -if(navTitle == 'futuredueLoans'){
+                        a(href=contextPath + '/client/ci/futureDueLoans', rel="external", data-role="tab",class="ui-btn-active") Future Due Loans(Next 7 days)
+                    -} else {
+                        a(href=contextPath + '/client/ci/futureDueLoans', rel="external", data-role="tab") Future Due Loans(Next 7 days)
+                    -}
+                li
+                    -if(navTitle == 'revertPayment'){
+                        a(href=contextPath + '/client/ci/revertPaymentList', rel="external", data-role="tab",class="ui-btn-active") Revert Payment
+                    -} else {
+                        a(href=contextPath + '/client/ci/revertPaymentList', rel="external", data-role="tab" ) Revert Payment
+                    -}
+            -}
+            -else if(roleId == constantsObj.getBMroleId() || roleId == constantsObj.getSMHroleId() || roleId == constantsObj.getNaiveroleId() || roleId == constantsObj.getCCEroleId() || roleId == constantsObj.getGuestUserRoleId() ) {
+                li
+                    -if(navTitle == 'pastFutureDueLoans'){
+                        a(href=contextPath + '/client/ci/dueloansformanager', rel="external", data-role="tab",class="ui-btn-active") Past & future Due Loans
+                    -} else {
+                        a(href=contextPath + '/client/ci/dueloansformanager', rel="external", data-role="tab") Past & future Due Loans
+                    -}
+            -}
+            - if(roleId != constantsObj.getFOroleId()) {
+                li
+                    -if(navTitle == 'searchGroups'){
+                        a(href=contextPath + '/client/ci/searchpage', rel="external", data-role="tab",class="ui-btn-active") Search Groups For Loan Recovery
+                    -} else {
+                        a(href=contextPath + '/client/ci/searchpage', rel="external", data-role="tab") Search Groups For Loan Recovery
+                    -}
+            - }

@@ -1,0 +1,118 @@
+//Created by Ezra Johnson on 8/8/14.
+extends ../layout
+include ../header
+
+block title
+    title= 'KYC uploading status'
+
+block scripts
+    include ../headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/validation.js')
+    script(type='text/javascript', src='/javascripts/kycUploadingStatus.js')
+
+block content
+    form(id='BMFormId')
+        div(data-role='page', data-theme='b')
+            +header("KYC status details",["backJavascript","menu","logout"],"backInKYCdetailsPage",[])
+
+            -if(kycUploadStatus.length != 0) {
+
+            div(data-role='content')
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                            h3(for="value") Center Name :
+                            label(for="avarage Rating") #{centerName} (#{groupName})
+                                h3(for="value") &nbsp;| Field Officer :
+                                label(for="avarage Rating") #{fieldOfficer}
+                    div(class='ui-block-b',align="right")
+                        h3(align="right")
+                        -if(kycUploadStatus.length > 5) {
+                            -if(roleId != constantsObj.getGuestUserRoleId()){
+                                a(href='#moveToDEprocess', data-icon='check', data-role='button', data-rel="popup", data-position-to='window', data-inline='true', data-mini='true') Move to Data entry
+                            -}
+                        -}
+                        a(href="JavaScript:openKYCUploadStatus('#{groupId}', '#{groupName}', '#{centerName}', '#{fieldOfficer}')", data-mini="true", rel="external",data-icon="refresh", data-role="button", data-inline="true", title="Refresh")  Refresh
+                table(data-role="table", id="kycTable", data-mode="reflow")
+                    thead
+                        tr
+                            th(id = 'cName', style ="text-align:center") Client Name
+                            th(id = 'appForm', style ="text-align:center") Application Form
+                            th(id = 'photo', style ="text-align:center") Photo
+                            th(id = 'memId', style ="text-align:center") Member ID Proof
+                            th(id = 'memAddress', style ="text-align:center") Member Address Proof
+                            th(id = 'guarantorId', style ="text-align:center") Guarantor ID Proof
+                            th(id = 'guarantorAddress', style ="text-align:center") Guarantor Address Proof
+                            th(id = 'houseReceipt', style ="text-align:center") Own House Receipt
+                    tbody
+                    -for(var i=0;i<kycUploadStatus.length;i++) {
+                        tr
+                            td(id = 'cName', style ="text-align:center", align="center") mfn #{i+1}
+                            td(id = 'appForm', align="center")
+                                -if(kycUploadStatus[i].applicationForm > 0) {
+                                    a(data-role="button", data-icon="check", data-iconpos="notext")
+                                -}
+                                -else {
+                                    a(data-role="button", data-icon="delete", data-iconpos="notext", class="redBackGround")
+                                -}
+                            td(id = 'photo', align="center")
+                                -if(kycUploadStatus[i].photo != 0) {
+                                    a(data-role="button", data-icon="check", data-iconpos="notext")
+                                -}
+                                -else {
+                                    a(data-role="button", data-icon="delete", data-iconpos="notext", class="redBackGround")
+                                -}
+                            td(id = 'memId', align="center")
+                                -if(kycUploadStatus[i].memId != 0) {
+                                    a(data-role="button", data-icon="check", data-iconpos="notext")
+                                -}
+                                -else {
+                                    a(data-role="button", data-icon="delete", data-iconpos="notext", class="redBackGround")
+                                -}
+                            td(id = 'memAddress', align="center")
+                                -if(kycUploadStatus[i].memAddress != 0) {
+                                    a(data-role="button", data-icon="check", data-iconpos="notext")
+                                -}
+                                -else {
+                                    a(data-role="button", data-icon="delete", data-iconpos="notext", class="redBackGround")
+                                -}
+                            td(id = 'guarantorId', align="center")
+                                -if(kycUploadStatus[i].guarantorId != 0) {
+                                    a(data-role="button", data-icon="check", data-iconpos="notext")
+                                -}
+                                -else {
+                                    a(data-role="button", data-icon="delete", data-iconpos="notext", class="redBackGround")
+                                -}
+                            td(id = 'guarantorAddress', align="center")
+                                -if(kycUploadStatus[i].guarantorAddress != 0) {
+                                    a(data-role="button", data-icon="check", data-iconpos="notext")
+                                -}
+                                -else {
+                                    a(data-role="button", data-icon="delete", data-iconpos="notext", class="redBackGround")
+                                -}
+                            td(id = 'houseReceipt', align="center")
+                                -if(kycUploadStatus[i].ownHouseReceipt != 0) {
+                                    a(data-role="button", data-icon="check", data-iconpos="notext")
+                                -}
+                                -else {
+                                    a(data-role="button", data-icon="delete", data-iconpos="notext", class="redBackGround")
+                                -}
+                    -}
+                -}
+                -else {
+                    div(data-role="horizontal", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-a", align="center")
+                        p(id="alertMessage") KYC documents not yet uploaded
+                -}
+                input(type="hidden", name="groupId", id="groupId")
+                input(type="hidden", name="groupName", id="groupName")
+                input(type="hidden", name="centerName", id="centerName")
+                input(type="hidden", name="fieldOfficer", id="fieldOfficer")
+            div(data-role="popup", id="moveToDEprocess",data-theme="b")
+                div(data-role='content')
+                    p(class="popUpContent")   Are you sure?
+                    p(class="popUpContent")   You want to move for Data Entry Processing.
+                    div(align="center")
+                        a(href="JavaScript:moveToDataEntry('#{groupId}');",data-icon='check',data-role='button',id='yesId',data-inline='true', data-mini='true') Yes
+                        a(href='#kycTable', data-icon='delete', data-role='button',id='noId',data-inline='true', data-mini='true') No
+            div(class="ui-loader-background")

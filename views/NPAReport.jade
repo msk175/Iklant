@@ -1,0 +1,414 @@
+doctype
+html(lang = "en")
+    head
+        title= 'IKLANT-NPAReport'
+        meta(charset='utf-8')
+        meta(name='viewport',content='width=device-width, initial-scale=1')
+        meta(http-equiv='Cache-Control', content='no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0')
+        meta(http-equiv='Pragma', content='no-cache')
+        meta(http-equiv='Expires', content='-1')
+        link(rel="stylesheet",href="/stylesheets/jquery.mobile-1.3.0-beta.1.min.css")
+        link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+        link(rel='stylesheet', href='/stylesheets/dialogStyle.css')
+        link(rel='stylesheet', href='/stylesheets/tablereport.css')
+        link(rel='stylesheet', href='/stylesheets/loanSanctionCustom.css')
+        script(type='text/javascript', src='/javascripts/jquery-1.8.3.min.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile-1.3.0-beta.1.min.js')
+        script(type='text/javascript', src='/javascripts/jquery-ui.js')
+        script(type="text/javascript",src="/javascripts/jsapi.txt")
+        script(type='text/javascript', src='/javascripts/NPAReport.js')
+        script(type='text/javascript', src='/javascripts/common.js')
+    body(style="overflow-x:hidden")
+        form(id='NPAReportForm')
+            div(data-role='page', data-theme='b', id="loginDetailsDiv")
+                div(data-role="header", data-theme="a", class="ui-bar ui-grid-a", data-overlay-theme="c")
+                    div(class="ui-block-a")
+                        img(id='groupIcon', style="margin:5px 10px 0 0; text-align:right;",src='/images/iklant.png')
+                    div(class="ui-block-b",align="right")
+                        h3(align="right",style="margin:20px 10px 0 0")
+                        a(href=contextPath + '/client/ci/showNPAMenuPage', rel="external",data-icon='arrow-l', data-role='button', title='Back', data-inline='true') Back
+                        a(href=contextPath + '/client/ci/logout',  rel="external",data-icon='back', data-role='button', title=' Logout ', data-inline="true") Logout
+
+                div(data-role="content")
+                    input(type="hidden",name="officeIdArrayHidden",id="officeIdArrayHidden",value="#{NPALoadHolder.getOfficeIdArray()}")
+                    input(type="hidden",name="personnelIdArrayHidden",id="personnelIdArrayHidden",value="#{NPALoadHolder.getPersonnelIdArray()}")
+                    input(type="hidden",name="personnelNameArrayHidden",id="personnelNameArrayHidden",value="#{NPALoadHolder.getPersonnelNameArray()}")
+                    input(type="hidden",name="officePersonnelIdArrayHidden",id="officePersonnelIdArrayHidden",value="#{NPALoadHolder.getOfficePersonnelIdArray()}")
+                    p(align='center', id="processNotificationId", style='font-weight:bold;color:red;display:none') Please wait.! Page is loading.....
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-e")
+                        - if(roleId == constantObj.getSMHroleId()) {
+                            div(class='ui-block-a')
+                                div(data-role='fieldcontain')
+                                label(for="officeId",id='labelid') Office
+                            div(class='ui-block-b')
+                                div(data-role='fieldcontain')
+                                    select(name='office', id='officeId', data-theme='b',data-mini='true',data-inline='true',data-native-menu='true')
+                                        - for(i=0;i< NPALoadHolder.getOfficeIdArray().length;i++){
+                                            - if(NPALoadHolder.getOfficeIdArray()[i] == officeId)
+                                                option(value= "#{NPALoadHolder.getOfficeIdArray()[i]}",selected="selected") #{NPALoadHolder.getOfficeNameArray()[i]}
+                                            - else
+                                                option(value= "#{NPALoadHolder.getOfficeIdArray()[i]}") #{NPALoadHolder.getOfficeNameArray()[i]}
+                                        - }
+                        - }
+                        - if(roleId == constantObj.getSMHroleId()) {
+                            div(class='ui-block-c')
+                                div(data-role='fieldcontain')
+                                label(for="productCategoryId",id='labelid') Product Category
+                            div(class='ui-block-d')
+                                div(data-role='fieldcontain')
+                                    select(name='productCategory', id='productCategoryId',data-inline='true', data-theme='b',data-mini='true',data-native-menu='true')
+                                        - for(i=0;i< NPALoadHolder.getProductCategoryIdArray().length;i++){
+                                            - if(NPALoadHolder.getProductCategoryIdArray()[i] == productCategoryId)
+                                                option(value= "#{NPALoadHolder.getProductCategoryIdArray()[i]}",selected="selected") #{NPALoadHolder.getProductNameArray()[i]}
+                                            - else
+                                                option(value= "#{NPALoadHolder.getProductCategoryIdArray()[i]}") #{NPALoadHolder.getProductNameArray()[i]}
+                                        - }
+                            div(class='ui-block-e')
+                                div(data-role='fieldcontain')
+                                label(for="loanOfficerId",id='labelid') Loan Officer
+                            div(class='ui-block-f')
+                                div(data-role='fieldcontain')
+                                    select(name='loanOfficer', id='loanOfficerId',data-inline='true', data-theme='b',data-mini='true', data-native-menu='true')
+                                        - for(i=0;i< NPALoadHolder.getPersonnelIdArray().length;i++){
+                                            - if(NPALoadHolder.getPersonnelIdArray()[i] == loanOfficer)
+                                                option(value= "#{NPALoadHolder.getPersonnelIdArray()[i]}",selected="selected") #{NPALoadHolder.getPersonnelNameArray()[i]}
+                                            - else if(officeId == -1 || NPALoadHolder.getOfficePersonnelIdArray()[i] == officeId )
+                                                option(value= "#{NPALoadHolder.getPersonnelIdArray()[i]}") #{NPALoadHolder.getPersonnelNameArray()[i]}
+                                        - }
+                        - }
+                - if(dateArray.length == 1) {
+                    p(id="errorField",align="center") Chart view is not available for single record.
+                - }
+                div(data-role="navbar",id="navid")
+                    ul(id="custom-nav-list")
+                        li
+                            a(rel="external", data-role="tab" , id="custom-li-1",class="ui-btn-active") Table View
+                        - if(dateArray.length > 1) {
+                            li
+                                a(rel="external", data-role="tab" , id="custom-li-2") Chart View
+                        - }
+                div(data-role="navbar",id="navid")
+                    ul(id="custom-nav-list")
+                        li
+                            a(rel="external", data-role="tab" , id="table-li-1",class="ui-btn-active") PAR
+                        li
+                            a(rel="external", data-role="tab" , id="table-li-2") NPA Overdue
+                        li
+                            a(rel="external", data-role="tab" , id="table-li-3") NPA Loans
+
+
+                div(id="tableview",style = "overflow: auto;")
+                    table
+                        tr
+                            th S.No
+                            th #{headerLabel}
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                th #{dateArray[i].getDate()}
+                            - }
+                        tr
+                            td 1
+                            td Total NP Principal OS for Open Loans
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td #{dateArray[i].getNpaPrincipalOutstandingOpenLoans()}
+                            - }
+                        tr
+                            td 2
+                            td Total Principal OS for Open Loans
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td #{dateArray[i].getTotalPrincipalOutstandingOpenLoans()}
+                            - }
+                        tr
+                            td 3
+                            td Average NP Principal OS For Open Loans
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td #{dateArray[i].getAvgNpaPrincipalOutstandingOpenLoans()}
+                            - }
+                        tr
+                            td 4
+                            td % of NP Principal OS for Open Loans
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td #{dateArray[i].getNpaPrincipalOutstandingOpenLoansRatio().toFixed(2)}%
+                            - }
+                        tr(id="blank")
+                            td
+                            td
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td
+                            - }
+                        tr
+                            td 5
+                            td Total NP Principal OS for Closed Loans
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td #{dateArray[i].getNpaPrincipalOutstandingClosedLoans()}
+                            - }
+                        tr
+                            td 6
+                            td Total Principal OS for Closed Loans
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td #{dateArray[i].getTotalPrincipalOutstandingClosedLoans()}
+                            - }
+                        tr
+                            td 7
+                            td Average NP Principal OS  For Closed Loans
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td #{dateArray[i].getAvgNpaPrincipalOutstandingClosedLoans()}
+                            - }
+                        tr
+                            td 8
+                            td % of NP Principal OS for Closed Loans
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td #{dateArray[i].getNpaPrincipalOutstandingClosedLoansRatio().toFixed(2)}%
+                            - }
+                        tr(id="blank")
+                            td
+                            td
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td
+                            - }
+                        tr
+                            td 9
+                            td Total NP Principal OS for All Loans
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td #{dateArray[i].getNpaPrincipalOutstandingAllLoans()}
+                            - }
+                        tr
+                            td 10
+                            td Total Principal OS for All Loans
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td #{dateArray[i].getTotalPrincipalOutstandingAllLoans()}
+                            - }
+                        tr
+                            td 11
+                            td Average NP Principal OS  For  All Loans
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td #{dateArray[i].getAvgNpaPrincipalOutstandingAllLoans()}
+                            - }
+                        tr
+                            td 12
+                            td % of NP Principal OS for All Loans
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td #{dateArray[i].getNpaPrincipalOutstandingAllLoansRatio().toFixed(2)}%
+                            - }
+                        tr(id="blank")
+                            td
+                            td
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td
+                            - }
+                        tr
+                            td 13
+                            td Total NP Principal OS (As per RBI)
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td #{dateArray[i].getNpaPrincipalOutstandingAllLoansRbi()}
+                            - }
+                        tr
+                            td 14
+                            td Total Principal OS for All Loans
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td #{dateArray[i].getTotalPrincipalOutstandingAllLoans()}
+                            - }
+                        tr
+                            td 15
+                            td % of NPA (As per RBI)
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td #{dateArray[i].getNpaPrincipalOutstandingAllLoansRatioRbi()}%
+                            - }
+                div(id="tableParview",style = "overflow: auto;")
+                    table
+                        tr
+
+                            th S.No
+                            th Overall
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                th #{dateArray[i].getDate()}
+                            - }
+                        tr
+                            td 1
+                            td Total Principal Overdue for Open Loans
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td #{dateArray[i].getPrincipalOverdueOpenLoans()}
+                            - }
+                        tr
+                            td 2
+                            td Total Principal OS for Open Loans
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td #{dateArray[i].getTotalPrincipalOutstandingOpenLoans()}
+                            - }
+                        tr
+                            td 3
+                            td % of PAR Open Loans
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td #{dateArray[i].getParOpenLoansRatio().toFixed(2)}%
+                            - }
+                        tr(id="blank")
+                            td
+                            td
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td
+                            - }
+                        tr
+                            td 4
+                            td Total Principal Overdue for Closed Loans
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td #{dateArray[i].getPrincipalOverdueClosedLoans()}
+                            - }
+                        tr
+                            td 5
+                            td Total Principal OS for Closed Loans
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td #{dateArray[i].getTotalPrincipalOutstandingClosedLoans()}
+                            - }
+                        tr
+                            td 6
+                            td % of PAR Closed Loans
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td #{dateArray[i].getParClosedLoansRatio().toFixed(2)}%
+                            - }
+                        tr(id="blank")
+                            td
+                            td
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td
+                            - }
+                        tr
+                            td 7
+                            td Total Principal Overdue for All Loans
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td #{dateArray[i].getPrincipalOverdueAllLoans()}
+                            - }
+                        tr
+                            td 8
+                            td Total Principal OS for All Loans
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td #{dateArray[i].getTotalPrincipalOutstandingAllLoans()}
+                            - }
+                        tr
+                            td 9
+                            td % of PAR All Loans
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td #{dateArray[i].getParAllLoansRatio().toFixed(2)}%
+                            - }
+                div(id="tableLoansview",style = "overflow: auto;")
+                    table
+                        tr
+
+                            th S.No
+                            th Overall
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                th #{dateArray[i].getDate()}
+                            - }
+                        tr
+                            td 1
+                            td Total No of NP Open Loans
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td #{dateArray[i].getNoOfNpaOpenLoans()}
+                            - }
+                        tr
+                            td 2
+                            td Total No of Open Loans
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td #{dateArray[i].getTotalNoOfOpenLoans()}
+                            - }
+                        tr
+                            td 3
+                            td % of NP Open Loans
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td #{dateArray[i].getNpaOpenLoansRatio().toFixed(2)}%
+                            - }
+                        tr(id="blank")
+                            td
+                            td
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td
+                            - }
+                        tr
+                            td 4
+                            td Total No of NP Closed Loans
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td #{dateArray[i].getNoOfNpaClosedLoans()}
+                            - }
+                        tr
+                            td 5
+                            td Total No of Closed Loans
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td #{dateArray[i].getTotalNoOfClosedLoans()}
+                            - }
+                        tr
+                            td 6
+                            td % of NP Closed Loans
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td #{dateArray[i].getNpaClosedLoansRatio().toFixed(2)}%
+                            - }
+                        tr(id="blank")
+                            td
+                            td
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td
+                            - }
+                        tr
+                            td 7
+                            td Total No of NP All Loans
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td #{dateArray[i].getNoOfNpaAllLoans()}
+                            - }
+                        tr
+                            td 8
+                            td Total No of All Loans
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td #{dateArray[i].getTotalNoOfAllLoans()}
+                            - }
+                        tr
+                            td 9
+                            td % of NP All Loans
+                            - for(var i=dateArray.length-1;i>=0;i--) {
+                                td #{dateArray[i].getNpaAllLoansRatio().toFixed(2)}%
+                            - }
+
+                    - for(var i=dateArray.length-1;i>=0;i--) {
+                        input(type="hidden",id="arrayid"+i,name="arrayname"+i,value="#{dateArray[i].getChartNPAPOS()}")
+                    - }
+                    - for(var i=dateArray.length-1;i>=0;i--) {
+                        input(type="hidden",id="loansarrayid"+i,name="loansarrayname"+i,value="#{dateArray[i].getChartNoOfLoans()}")
+                    - }
+                    - for(var i=dateArray.length-1;i>=0;i--) {
+                        input(type="hidden",id="npaposperc"+i,name="npaposperc"+i,value="#{dateArray[i].getChartNPAPOSPerc()}")
+                    - }
+                    - for(var i=dateArray.length-1;i>=0;i--) {
+                        input(type="hidden",id="overdueArray"+i,name="overdueArray"+i,value="#{dateArray[i].getChartOverdue()}")
+                    - }
+                    - for(var i=dateArray.length-1;i>=0;i--) {
+                        input(type="hidden",id="loansarrayPercentage"+i,name="loansarrayPercentage"+i,value="#{dateArray[i].getChartNoOfLoansPercentage()}")
+                    - }
+                    input(type="hidden",id="arraylengthid",name="arraylengthname",value="#{dateArray.length}")
+                div(data-role="navbar",id="chartid")
+                    ul(id="custom-nav-list")
+                        li
+                            a(rel="external", data-role="tab" , id="custom-li-chart",class="ui-btn-active") PAR
+                        li
+                            a(rel="external", data-role="tab" , id="custom-li-chart1") PAR (%)
+                        li
+                            a(rel="external", data-role="tab" , id="custom-li-chart2") NPA Overdue
+                        li
+                            a(rel="external", data-role="tab" , id="custom-li-chart4") NPA Overdue %
+                        li
+                            a(rel="external", data-role="tab" , id="custom-li-chart3") NPA Loans
+
+                div(id="chart_div")
+                div(id="chart_div1")
+                div(id="chart_div2")
+                div(id="chart_div3")
+                div(id="chart_div4")
+                div(id="chart_div5")
+                div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-b",data-theme="b",id="show")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain",align="left")
+                            //a(href='JavaScript:showNPAReport()',  rel="external",data-theme="b",data-role='button',data-mini='true', data-inline="true") Submit
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain",align="center")
+                            a(href=contextPath + '/client/ci/menu', rel="external",data-icon='home', data-role='button', title=' Home', data-inline='true', data-mini="true") Home
+                    div(class='ui-block-c',align="right")
+                        div(data-role="fieldcontain", data-inline="true")
+                            a(href=contextPath + '/client/ci/showNPAMenuPage',  rel="external",data-theme="c",data-icon='back',id = "back", data-role='button',data-mini='true', data-inline="true",align="right") Back
+                div(class="ui-loader-background")

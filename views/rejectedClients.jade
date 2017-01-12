@@ -1,0 +1,58 @@
+extends ./layout
+include ./header
+
+block title
+    title= 'Rejected Clients'
+
+block scripts
+    include ./headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/group-mgt.css')
+    script(type='text/javascript', src='/javascripts/rejectedClient.js')
+    script(type='text/javascript', src='/javascripts/reintiateClient.js')
+    script(type='text/javascript', src='/javascripts/validation.js')
+
+block content
+    form(id='BMFormId')
+        input(type='hidden', name='statusIdName', id='initialStatusId', value="#{}")
+        div(data-role='page', data-theme='b')
+            +header("Rejected Clients",["welcomeNote","menu","logout"])
+            input(type='hidden', name='alertMessageHidden', id='alertMessageHidden', value="#{}")
+            include ./GroupManagementLayout
+            div(data-role='content')
+                div(class='content-primary')
+                    ul(data-role='listview', data-split-icon='gear', data-split-theme='c', data-filter="true", data-filter-theme='c',  data-filter-placeholder='Search for a group')
+                        -if(roleId == constantsObj.getSMHroleId()) {
+                            div(data-role='horizontal', id="branchName", class="ui-bar ui-grid-c")
+                                div(class="ui-block-a",align="center")
+                                div(class="ui-block-b",align="center")
+                                    label(for="listoffice",style="font-weight:bold") Branch Name
+                                div(class="ui-block-c",align="center")
+                                    select(name='listoffice', id='listoffice', data-theme='b', data-icon='grid', data-inline='true', data-mini='true',onchange='retrieveRejectedClientList()')
+                                        option(value='0') Select
+                                        -for(i=0;i<officeIdArray.length;i++){
+                                            -if(officeId == officeIdArray[i] && officeId != constantsObj.getApexHeadOffice()){
+                                                option(value=officeIdArray[i],selected="selected") #{officeNameArray[i]}
+                                            -}
+                                            -else if(officeIdArray[i] != constantsObj.getApexHeadOffice()){
+                                                option(value=officeIdArray[i]) #{officeNameArray[i]}
+                                            -}
+                                        - }
+                        -}
+                        -if(reinitiatedStatusDisplay == "")
+                            p(id='alertMessage',align='center',class='error-message global-font-details')    #{errorMessage}
+                        -else
+                            p(id='successMessage',align='center',class='success-message global-font-details') #{reinitiatedStatusDisplay}
+                        - for( var i = 0; i < groupsName.length; i++ ) {
+                            li
+                                a(href="JavaScript:getClientListForRejectedGroups(#{groupsId[i]});", rel="external")
+                                    img(id=groupNameArray[i]+'_'+groupsName[i],src='/images/member.png', width='60', height='60', style='margin:8px 10px 10px 20px;')
+                                    h3 #{groupsName[i]}
+                                    label(for='groupsId' , id='labelGroupsnameId'+i) #{groupNameArray[i]}
+                                    label(for='groupsId' , id='labelGroupsId'+i) #{listGroupsGlobalNumberArray[i]}
+                                    -if (lastCreditCheckDate[i] != null && lastCreditCheckDate[i].toString().indexOf('Rejected') > -1)
+                                        label(for='groupsId' , id='lastCreditCheckDate'+i,style='color:#CFFFE0') &nbsp;&nbsp;#{lastCreditCheckDate[i]}
+                                    -else
+                                        label(for='groupsId' , id='lastCreditCheckDate'+i,style='color:#CFFFE0') &nbsp;&nbsp;Last Credit Check Date: #{lastCreditCheckDate[i]}
+                        -}
+                    input(type="hidden", name="groupId", id="groupId")
+            div(class="ui-loader-background")

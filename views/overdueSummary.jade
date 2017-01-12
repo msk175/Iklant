@@ -1,0 +1,253 @@
+extends ./layout
+include ./header
+
+block title
+    title= 'IKLANT-Overdue'
+
+block scripts
+    link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+    include ./headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/jquery-ui.js')
+    script(type='text/javascript', src='/javascripts/trailBalance.js')
+    script(type="text/javascript", src="/javascripts/reportmgmt.js")
+    script(type="text/javascript", src="/javascripts/jquery.dataTables.js")
+
+block content
+    form(id='overdueSummary')
+        input(type='hidden', name='reportPageName', id='reportPageName', value="overdueSummary")
+        input(type='hidden', name='report_download_flag', id='report_download_flag', value="#{download_report}")
+        input(type='hidden', name='selectedDocName', id='selectedDocName', value="#{fileLocation}")
+        input(type='hidden', name='reportType', id='reportType')
+        div(data-role='page', data-theme='b')
+            -var groupsReport = constantsObj.getGroupsReports()
+            +header("",["backHref","menu","logout"],contextPath + '/client/ci/reportsMenuByCategory/'+groupsReport)
+            div(data-role="navbar",id="navid")
+                ul(id="custom-nav-list")
+                    li
+                        a(rel="external", data-role="tab" , id="table-li-1",class="ui-btn-active") Overdue Summary
+            div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b")
+                h3 Select Dates to view Overdue
+                p(id="errorField",align="center",class='error-message global-font-details')
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a")
+                    div(class='ui-block-a',style="width:10%")
+                        div(data-role="fieldcontain")
+                        label(id="report_label_top") To Date
+                    div(class='ui-block-b',style="width:24%")
+                        div(data-role="fieldcontain")
+                            input(type="text", name="todate", id="todate", value=endDate,readonly = "readonly", required='true',class='toDate')
+                    - if(roleId == constantsObj.getSMHroleId()|| roleId == constantsObj.getAMHroleId()) {
+                        div(class='ui-block-c',style="width:10%")
+                            div(data-role="fieldcontain")
+                            label(id="report_label_top") Office
+                        div(class='ui-block-d',style="width:22%")
+                            div(data-role='fieldcontain')
+                                select(name='listoffice', id='listoffice', data-theme='b', data-icon='grid', data-inline='true', data-mini='true',onchange='loadFO()')
+                                    option(value='-1') All
+                                    -for(i=0;i<officeIdArray.length;i++){
+                                        -if(officeValue == officeIdArray[i]){
+                                            option(value=officeIdArray[i],selected="selected") #{officeNameArray[i]}
+                                        -}
+                                        -else{
+                                            option(value=officeIdArray[i]) #{officeNameArray[i]}
+                                        -}
+                                    - }
+                    -}
+                    div(class='ui-block-e',style="width:14%")
+                        div(data-role="fieldcontain")
+                        label(id="report_label_top") Product Category
+                    div(class='ui-block-e',style="width:10%")
+                        div(data-role="fieldcontain")
+                        select(name='category', id='category', data-theme='b', data-icon='grid', data-inline='true', data-mini='true')
+                            option(value='-1') All
+                            -for(i=0;i<prdCategoryNameArray.length;i++){
+                                -if(prd_category_value == prdCategoryIdArray[i]){
+                                    option(value=prdCategoryIdArray[i],selected="") #{prdCategoryNameArray[i]}
+                                -}else{
+                                    option(value=prdCategoryIdArray[i]) #{prdCategoryNameArray[i]}
+                                -}
+                            -}
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a")
+                    div(class='ui-block-a',style="width:10%")
+                        div(data-role="fieldcontain")
+                        label(id="report_label_top") Loan Product
+                    div(class='ui-block-b',style="width:24%")
+                        div(data-role="fieldcontain")
+                            select(name='loan_product', id='loan_product', data-theme='b', data-icon='grid', data-inline='true', data-mini='true')
+                                option(value='-1') All
+                                -for(i=0;i<prdOfferingNameArray.length;i++){
+                                    -if(loan_product_value == prdOfferingIdArray[i]){
+                                        option(value=prdOfferingIdArray[i],selected="") #{prdOfferingNameArray[i]}
+                                    -}else{
+                                        option(value=prdOfferingIdArray[i]) #{prdOfferingNameArray[i]}
+                                    -}
+                                -}
+
+                    div(class='ui-block-c',style="width:10%")
+                        div(data-role="fieldcontain")
+                        label(id="report_label_top") Field Officer
+                    div(class='ui-block-d',style="width:22%")
+                        div(data-role="fieldcontain")
+                        select(name='loanOfficer', id='loanOfficerId', data-theme='b', data-icon='grid', data-inline='true', data-mini='true')
+                            option(value='-1') All
+                            -for(i=0;i<personnelNameArray.length;i++){
+                                -if(personnel_value == personnelIdArray[i]){
+                                    option(value=personnelIdArray[i],selected="") #{personnelNameArray[i]}
+                                -}else{
+                                    option(value=personnelIdArray[i]) #{personnelNameArray[i]}
+                                -}
+                            -}
+                    div(class='ui-block-e',style='width:14%;')
+                        div(data-role='fieldcontain')
+                        label(id="report_label_top") Loan Status
+                    div(class='ui-block-e',style='width:16%;')
+                        div(data-role='fieldcontain')
+                            select(name='loanStatus', id='loanStatus', data-theme='b', data-icon='grid', data-inline='true', data-mini='true')
+                                option(value='All',selected=(loanStatus==="All" ? "selected" : undefined)) All
+                                option(value='Open',selected=(loanStatus==="Open" ? "selected" : undefined)) Open
+                                option(value='Closed',selected=(loanStatus==="Closed" ? "selected" : undefined)) Closed
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a",style='width:100%;')
+                    div(class='ui-block-a',style='width:10%;')
+                        div(data-role='fieldcontain')
+                        label(for='customer',id="report_label_top") Customer
+                    div(class='ui-block-b',style='width:24%;')
+                        div(data-role='fieldcontain')
+                            input(type="text", name="customer", id="customer", required='true', value=customerVal,onkeyup='forNamesValidation(this)')
+                    div(class='ui-block-c',style='width:6%;')
+                        div(data-role='fieldcontain')
+                        label(for="account",id="report_label_top") Account
+                    div(class='ui-block-d',style='width:27%;')
+                        div(data-role='fieldcontain')
+                            input(type="text", name="account", id="account", required='true', value=accountNo,onkeyup='forNumbers(this)')
+                    div(class='ui-block-e',style='width:13%;')
+                        div(data-role='fieldcontain')
+                        label(id="report_label_align") NPA Indicator <
+                    div(class='ui-block-e',style='width:20%;')
+                        div(data-role='fieldcontain')
+                            input(type="text", name="npaIndicator", id="npaIndicator", required='true', value=npaIndicator,style='text-align:right',onkeyup='forNumbers(this)')
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a",style='width:100%;')
+                    div(class='ui-block-a',style='width:17%;')
+                        div(data-role='fieldcontain')
+                        label(id="report_label_align") Days in Arrears Above
+                    div(class='ui-block-b',style='width:27%;')
+                        div(data-role='fieldcontain')
+                            input(type="text", name="days_in_arrears_above", id="days_in_arrears_above", required='true', value=daysInArrearsAbove,style='text-align:right',onkeyup='forNumbers(this)')
+                    div(class='ui-block-c',style='width:17%;')
+                        div(data-role='fieldcontain')
+                        label(id="report_label_align") Total Overdue Above
+                    div(class='ui-block-d',style='width:27%;')
+                        div(data-role='fieldcontain')
+                            input(type="text", name="total_overdue_above", id="total_overdue_above", required='true', value=totalOverdueAbove,style='text-align:right',onkeyup='forNumbers(this)')
+                div(data-role="horizontal", data-inline="true",data-theme="b",id="show",class="ui-grid-a",style='width:100%;')
+                    div(class='ui-block-a',style='width:33%;')
+                        div(data-role="fieldcontain",align="right")
+                            a(href='JavaScript:generateODReport("Summary")', data-role='button', data-inline='true', data-mini='true') View Summary
+                    div(class='ui-block-b',style='width:34%;')
+                        div(data-role="fieldcontain",align="center")
+                            a(href='JavaScript:generateODReport("Detailed")',  rel="external",data-theme="b",data-role='button',data-mini='true', data-inline="true") View Detailed Report
+                    div(class='ui-block-c',style='width:33%;')
+                        div(data-role="fieldcontain")
+                            a(href='JavaScript:generateODReport("Download")', data-role='button',id='downloadExcel', data-inline='true', data-mini='true') Export To Excel
+            -if(result){
+                -if(result.length>0){
+                    div(style = "overflow: auto;",class=detailed)
+                        div(data-role="navbar",id="navid")
+                            ul(id="custom-nav-list")
+                                li
+                                    a(rel="external", data-role="tab" , id="table-li-1",class="ui-btn-active") OverDue Summary Report
+                        table(id="fixedHeader_detailedsummary", CLASS="DISPLAY", cellspacing="0", width="100%")
+                            thead
+                                tr
+                                    th S.No
+                                    th Office
+                                    th Personnel
+                                    th Product Category
+                                    th Customer
+                                    th Global Ac.No.
+                                    th No.Of Members
+                                    th No.Of NPA Members
+                                    th No.Of Inst.Not Paid
+                                    th Loan Status
+                                    th Days in Arrears
+                                    th Address
+                                    th Phone Num
+                                    th Principal Paid
+                                    th Principal Outstanding
+                                    th Total Overdue
+                                    th Principal Overdue
+                            -count = 1;
+                            - for(var i=0;i<result.length;i++) {
+                                -if(result[i].personnel_id && result[i].account_id){
+                                tbody
+                                    tr
+                                        td(class='center-text') #{count}
+                                        td #{result[i].office}
+                                        td #{result[i].personnel}
+                                        td #{result[i].prd_category}
+                                        td #{result[i].customer}
+                                        td #{result[i].global_account_num}
+                                        td(class='center-text') #{result[i].no_of_members}
+                                        td #{result[i].no_of_npa_members}
+                                        td #{result[i].no_of_installments_not_paid}
+                                        td #{result[i].loan_status}
+                                        td(class='center-text') #{result[i].days_in_arrears}
+                                        td #{result[i].address}
+                                        td(class='center-text') #{result[i].phone_number}
+                                        td(class='text-right-align') #{result[i].principal_paid}
+                                        td(class='text-right-align') #{result[i].principal_outstanding}
+                                        td(class='text-right-align') #{result[i].total_overdue}
+                                        td(class='text-right-align') #{result[i].principal_overdue}
+                                    -count++;
+                                -}
+                            - }
+                    div(data-role="collapsible", data-collapsed="false", data-theme="c", data-content-theme="d",class=summary)
+                        div(data-role="navbar",id="navid")
+                            ul(id="custom-nav-list")
+                                li
+                                    a(rel="external", data-role="tab" , id="table-li-1",class="ui-btn-active") OverDue Summary Report
+                        table
+                            thead
+                                tr
+                                    th S.No
+                                    th Office
+                                    th No.Of Customers
+                                    th Tot.Loan.Amt
+                                    th Tot.Prin.Paid
+                                    th Tot.Prin.Outstanding
+                                    th Tot.Overdue
+                                    th Tot.Prin.Overdue
+                            - count = 1;
+                            - for(var i=0;i<result.length;i++) {
+                                -if(!result[i].personnel_id && !result[i].account_id && result[i].office_id){
+                                tbody
+                                    tr
+                                        td(class='center-text') #{count}
+                                        td #{result[i].office}
+                                        td(class='text-right-align') #{result[i].noOfCustomers}
+                                        td(class='text-right-align') #{result[i].totalLoanAmount}
+                                        td(class='text-right-align') #{result[i].totalPrincipalPaid}
+                                        td(class='text-right-align') #{result[i].totalPrincipalOutstanding}
+                                        td(class='text-right-align') #{result[i].totalOverdue}
+                                        td(class='text-right-align') #{result[i].totalPrincipalOverdue}
+                                    - count++
+                                -}
+                                -if(!result[i].office_id){
+                                    tr
+                                        td(colspan='2') Total
+                                        td(class='text-right-align') #{result[i].noOfCustomers}
+                                        td(class='text-right-align') #{result[i].totalLoanAmount}
+                                        td(class='text-right-align') #{result[i].totalPrincipalPaid}
+                                        td(class='text-right-align') #{result[i].totalPrincipalOutstanding}
+                                        td(class='text-right-align') #{result[i].totalOverdue}
+                                        td(class='text-right-align') #{result[i].totalPrincipalOverdue}
+                                -}
+                            - }
+
+                -}
+                -else{
+                    div(align='center')
+                        span(style='font-weight:bold') No records to display
+                -}
+            -}
+            div(class="ui-loader-background")

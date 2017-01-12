@@ -1,0 +1,54 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'IKLANT-KYCUploadingMenu'
+
+block scripts
+    include ../headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+    script(type='text/javascript', src='/javascripts/kycUploadMenu.js')
+
+block content
+    form(id='BMFormId',enctype="multipart/form-data",data-ajax="false")
+        div(data-role='page', data-theme='b')
+            +header("KYC Upload",["backJavascript","logout"],'goBack',[])
+            div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b")
+                h3 KYC Upload
+                div(data-role="content", data-theme="b", data-overlay-theme="b", data-inline="true")
+                    p(id='alertMessage',align='center',class='error-message global-font-details')    #{alertMsg}
+                div(data-role="collapsible", data-collapsed="false", data-theme="b", data-overlay-theme="b", data-inline="true")
+                    h3 Upload Image
+                    div(data-role="horizontal", class="ui-bar ui-grid-a")
+                        div(class="ui-block-a")
+                            div(data-role='fieldcontain',align='left')
+                                label(for="clientNameId") Client Name
+                                select(name='clientName',rel = "external",autofocus="autofocus", id='clientNameId', data-theme='b', data-icon='arrow-d',data-inline="true",data-mini="true", data-native-menu="false")
+                                    option(value='0',selected='selected') Select
+                                    -for(var i=0;i< memberIdArray.length;i++) {
+                                        option(value=memberIdArray[i]) #{memberNameArray[i]}
+                                    -}
+
+                        div(class="ui-block-b")
+                            div(data-role='fieldcontain',align='left')
+                                label(for="docTypeId") Document Type
+                                select(name='docType',rel = "external",autofocus="autofocus", id='docTypeId', data-theme='b', data-icon='arrow-d',data-inline="true",data-mini="true", data-native-menu="false")
+                                    option(value='0') Select
+                                    -for(var i=0;i< docTypeIdArray.length;i++) {
+                                        option(value=docTypeIdArray[i]) #{docTypeNameArray[i]}
+                                    -}
+                    div(data-role='fieldcontain',align='left')
+                        input(type='checkbox', name='isMultipleImage', id='isMultipleImageID', data-inline="true")
+                        label(for='isMultipleImageID',id='isMultipleImageID') Multiple Image
+                        input(type="file", name="multipleUploadDocument" , id="multipleUploadDocumentId" , multiple="multiple",style="display:none")
+                        input(type="file", name="singleUploadDocument" , id="singleUploadDocumentId")
+                        input(type="hidden", name="isMultipleDocument" , id="isMultipleDocumentId" , value="false")
+                        br
+                        br
+                        a(href='#',rel="external", data-icon='check', data-role='button', title=' Save ', data-inline='true' , id="uploadImageId") Upload Image
+                        a(href='JavaScript:kycSaveForUploadImage(#{group_id})',  rel="external",data-icon='plus', data-role='button', title=' Add ', data-inline="true", id='kycUploadSaveButton') Submit
+                        //a(href='#',rel="external", data-icon='check', data-role='button', data-theme='b', title=' Save ', data-inline='true' , id="captureImageId") Capture Image
+                        a(href='JavaScript:goBack()', rel="external",data-icon='back', data-role='button', title=' Back', data-inline='true',id='cancelId') Back
+                        a(href='JavaScript:skipKycUpload(#{group_id})', rel="external",data-icon='back', data-role='button', title=' Skip', data-inline='true',id="skipId") Skip
+                        input(type="hidden", name="groupId" , id="groupIdID", value=group_id)
+            div(class="ui-loader-background")

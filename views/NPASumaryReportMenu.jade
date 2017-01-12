@@ -1,0 +1,149 @@
+!!! 5
+html(lang = "en")
+    head
+        title= 'IKLANT-NPASummary Report Menu'
+        meta(charset='utf-8')
+        meta(name="viewport", content="initial-scale=1.0, user-scalable=no")
+        link(rel="stylesheet", href="/stylesheets/jquery.mobile-1.3.0-beta.1.min.css")
+        link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+        //link(rel='stylesheet', href='/stylesheets/loanSanctionCustom.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+        link(rel='stylesheet', href='/stylesheets/iklantStyle.css')
+        script(type='text/javascript', src='/javascripts/jquery.mobile.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile.custom.js')
+        script(type='text/javascript', src='/javascripts/jquery-1.8.3.min.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile-1.3.0-beta.1.min.js')
+        script(type='text/javascript', src='/javascripts/jquery-ui.js')
+        script(type='text/javascript', src='/javascripts/NPAAgingReportMenu.js')
+        script(type='text/javascript', src='/javascripts/common.js')
+    body(id="pageID")
+        form(id='NPASummaryReportMenu')
+            div(data-role='page', data-theme='b', id="loginDetailsDiv")
+                div(data-role="header", data-theme="a", class="ui-bar ui-grid-a", data-overlay-theme="c",data-position="fixed")
+                    div(class="ui-block-a")
+                        img(id='groupIcon',src='/images/iklant.png')
+                    div(class="ui-block-b",align="right",style="padding:25px 50px 0 0;")
+                        h3(align="right",style="margin:20px 10px 0 0")
+                        a(href=contextPath + '/client/ci/menu', rel="external",data-icon='home', data-role='button', title=' Home', data-inline='true') Home
+                        a(href=contextPath + '/client/ci/reportManagement', rel="external",data-icon='arrow-l', data-role='button', title='Back', data-inline='true') Back
+                        a(href=contextPath + '/client/ci/logout',  rel="external",data-icon='back', data-role='button', title=' Logout ', data-inline="true") Logout
+                div(data-role="navbar")
+                    ul(id="custom-nav-list")
+                        li
+                            a(href=contextPath + "/client/ci/showNPAMenuPage",rel="external", data-role="tab" , id="custom-li-tab6") NPA Report
+                        li
+                            a(href=contextPath + "/client/ci/showNPAAgingMenuPage",rel="external", data-role="tab", id="custom-li-tab5") NPA Aging Report
+                        li
+                            a(href=contextPath + "/client/ci/showNPAGroupSummaryPage",rel="external", data-role="tab", id="custom-li-tab4",class="ui-btn-active") NPA Group Detail
+                div(data-role="content")
+                    div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b")
+                        h3 NPA Group Detail
+                        p(id="errorLabel",align ="center") #{errorField}
+                        - if(officeId == 1) {
+                            div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-c")
+                                div(class='ui-block-a')
+                                    div(data-role='fieldcontain')
+                                    label(for="officeId",id='labelid') Office
+                                div(class='ui-block-b')
+                                    div(data-role='fieldcontain')
+                                        select(name='office', id='officeId', data-theme='b',data-mini='true',data-native-menu='true')
+                                            option(value='-1') All
+                                            - for(i=0;i< NPALoadHolder.getOfficeIdArray().length;i++){
+                                                option(value= "#{NPALoadHolder.getOfficeIdArray()[i]}") #{NPALoadHolder.getOfficeNameArray()[i]}
+                                            - }
+                        - }
+                        div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-c")
+                            div(class='ui-block-a')
+                                div(data-role='fieldcontain')
+                                label(for="productCategoryId",id='labelid') Product Category
+                            div(class='ui-block-b')
+                                div(data-role='fieldcontain')
+                                    select(name='productCategory', id='productCategoryId', data-theme='b',data-mini='true',data-native-menu='true')
+                                        option(value='-1') All
+                                        - for(i=0;i< NPALoadHolder.getProductCategoryIdArray().length;i++){
+                                            option(value= "#{NPALoadHolder.getProductCategoryIdArray()[i]}") #{NPALoadHolder.getProductNameArray()[i]}
+                                        - }
+                        div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-c")
+                            div(class='ui-block-a')
+                                div(data-role='fieldcontain')
+                                label(for="loanOfficerId",id='labelid') Loan Officer
+                            div(class='ui-block-b')
+                                div(data-role='fieldcontain')
+                                    select(name='loanOfficer', id='loanOfficerId', data-theme='b',data-mini='true', data-native-menu='true')
+                                        option(value='-1') All
+                                        - for(i=0;i< NPALoadHolder.getPersonnelIdArray().length;i++){
+                                            - if(officeId == 1 || NPALoadHolder.getOfficePersonnelIdArray()[i] == officeId ) {
+                                                option(value= "#{NPALoadHolder.getPersonnelIdArray()[i]}") #{NPALoadHolder.getPersonnelNameArray()[i]}
+                                            - }
+                                        - }
+                        //div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-c")
+                            div(class='ui-block-a')
+                                div(data-role='fieldcontain')
+                                label(for="recurrenceTypeId",id='labelid') Recurrence Type
+                            div(class='ui-block-b')
+                                div(data-role='fieldcontain')
+                                    select(name='recurrenceTypeId', id='recurrenceTypeId', data-theme='b',data-mini='true', data-native-menu='true')
+                                        option(value='Weekly',selected="selected") Weekly
+                                        option(value='Daily') Daily
+                                        option(value='Monthly') Monthly
+                                        option(value='Yearly') Yearly
+                        div(data-role="horizontal", data-theme="b", data-overlay-theme="a",class="ui-grid-c")
+                            div(class='ui-block-a')
+                                div(class="ui-block-a",style="width:50%")
+                                    div(data-role="fieldcontain")
+                                    label(for="ActOD",id='labelid') Principal Overdue
+                                div(class="ui-block-b",align="right")
+                                    div(data-role="fieldcontain")
+                                    label(for="ActOD",id='labelid') >=
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain")
+                                    input(type="text", name="ActOD", id="ActOD", value="1500", required='true',autocomplete="off", onkeyup='numeric(this)')
+
+                        div(data-role="horizontal", data-theme="b", data-overlay-theme="a",class="ui-grid-c")
+                            div(class="ui-block-a")
+                                div(class="ui-block-a",style="width:50%")
+                                    div(data-role="fieldcontain")
+                                    label(for="daysArrearsId",id='labelid') Days In Arrears
+                                div(class="ui-block-b",align="right")
+                                    div(data-role="fieldcontain")
+                                    label(for="daysArrearsId",id='labelid') >=
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain")
+                                    input(type="text", name="daysArrearsId", id="daysArrearsId", value="0", required='true',autocomplete="off", onkeyup='numeric(this)')
+                        div(data-role="horizontal", data-theme="b", data-overlay-theme="a",class="ui-grid-c")
+                            div(class='ui-block-a')
+                                div(class="ui-block-a",style="width:50%")
+                                    div(data-role="fieldcontain")
+                                    label(for="ActPOS",id='labelid') Principal Outstanding
+                                div(class="ui-block-b",align="right")
+                                    div(data-role="fieldcontain")
+                                    label(for="ActPOS",id='labelid') >=
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain")
+                                    input(type="text", name="ActPOS", id="ActPOS", value="0", required='true',autocomplete="off", onkeyup='numeric(this)')
+
+                        div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-c")
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain")
+                                label(for="npaReportDateId",id='labelid') Report Date
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain")
+                                    input(type="text", name="npaReportDate", id="npaReportDateId", value="#{NPALoadHolder.getLastReportGeneratedDate()}", required='true',readonly="readonly",autocomplete="off")
+                    div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-b",data-theme="b",id="show")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain",align="left")
+                                a(href='JavaScript:showNPAGroupSummaryReport()',  rel="external",data-theme="b",data-role='button',data-mini='true', data-inline="true",align="left") Submit
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain",align="center")
+                                a(href=contextPath + '/client/ci/menu', rel="external",data-icon='home', data-role='button', title=' Home', data-inline='true', data-mini="true") Home
+                        div(class='ui-block-c',align="right")
+                            div(data-role="fieldcontain", data-inline="true")
+                                a(href=contextPath + '/client/ci/reportManagement',  rel="external",data-theme="c",data-icon='back',id = "back", data-role='button',data-mini='true', data-inline="true",align="right") Back
+
+                        input(type="hidden",name="officeIdArrayHidden",id="officeIdArrayHidden",value="#{NPALoadHolder.getOfficeIdArray()}")
+                        input(type="hidden",name="personnelIdArrayHidden",id="personnelIdArrayHidden",value="#{NPALoadHolder.getPersonnelIdArray()}")
+                        input(type="hidden",name="personnelNameArrayHidden",id="personnelNameArrayHidden",value="#{NPALoadHolder.getPersonnelNameArray()}")
+                        input(type="hidden",name="officePersonnelIdArrayHidden",id="officePersonnelIdArrayHidden",value="#{NPALoadHolder.getOfficePersonnelIdArray()}")
+                div(class="ui-loader-background")

@@ -1,0 +1,53 @@
+extends ../layout
+include ../header
+block title
+   title= 'IKLANT-GroupCountDashboard'
+block scripts
+   link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+   include ../headerJqueryMobile-1
+   link(rel='stylesheet', href='/stylesheets/jqx.base.css')
+   link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+   link(rel='stylesheet', href='/stylesheets/popup.css')
+   link(rel="stylesheet", href="/stylesheets/jquery.iviewer.css")
+   link(rel="stylesheet", href="/stylesheets/iklant-table-layout.css")
+   script(type='text/javascript', src='/javascripts/jquery-ui.js')
+   script(type="text/javascript", src="/javascripts/jquery.mousewheel.min.js")
+   script(type="text/javascript", src="/javascripts/jquery.iviewer.js")
+   script(type='text/javascript', src='/javascripts/jqxcore.js')
+   script(type='text/javascript', src="/javascripts/jqxsplitter.js")
+   script(type="text/javascript",src="/javascripts/jsapi.txt")
+   script(type='text/javascript', src="/javascripts/bo_dashboard/branchWiseGroupCountDashBoard.js")
+   script(type='text/javascript', src='/javascripts/commonCustom.js')
+block content
+   form(id='BMFormId')
+      div(data-role='page', data-theme='b')
+         +header("KYC Process Dashboard",["menu", "logout"],"",[])
+         input(type='hidden', name='alertMessageHidden', id='alertMessageHidden', value="#{}")
+         div(data-role="fieldcontain")
+            span
+               a(href="JavaScript:regionalWiseGroupCountDashBoard()",id="clientCurrentStatus" , data-inline='true', data-mini='true')  RegionalWise
+               b  / #{regionalOfficeName} - #{toDate}
+         div
+            table
+               tr
+                  th S.No
+                  th Branch office Name
+                  th Fresh Groups
+                  th In Progress Groups
+                  th Hold Groups
+                  th Completed Groups
+               -for(var i=0;i< groupCountDashboardJsonObj.length; i++) {
+                  tr
+                     td(style="text-align:center") #{i + 1}
+                     td(style="text-align:center")
+                        a(href="JavaScript:statusWiseGroupCountDashBoard(#{groupCountDashboardJsonObj[i].regionalOfficeId},'#{groupCountDashboardJsonObj[i].regionalOfficeName}','#{regionalOfficeName}')" ,id="regionalOfficeId"+i , data-inline='true', data-mini='true')  #{groupCountDashboardJsonObj[i].regionalOfficeName}
+                     td(style="display:none") #{groupCountDashboardJsonObj[i].regionalOfficeName}
+                     td(style="text-align:center") #{groupCountDashboardJsonObj[i].freshGroupCount}
+                     td(style="text-align:center") #{groupCountDashboardJsonObj[i].inProgressGroupCount}
+                     td(style="text-align:center") #{groupCountDashboardJsonObj[i].holdGroupCount}
+                     td(style="text-align:center") #{groupCountDashboardJsonObj[i].completedGroupCount}
+               - }
+         br
+         br
+         div(id="chart_div",align="center")
+

@@ -1,0 +1,91 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'Iklant-ChequeDeposit'
+
+block scripts
+    link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+    include ../headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/jquery-ui.js')
+    script(type='text/javascript', src='/javascripts/loan_recovery/chequedeposit.js')
+
+block content
+    form(id="chequeDepositFormId")
+        div(data-role='page', data-theme='b', id="loginDetailsDiv")
+            +header("",["menu","backHref","logout"],contextPath + '/client/ci/chequeDepositList',[])
+            div(data-role="collapsible", id="minutes", data-overlay-theme="a", data-inline="true" , data-collapsed="false", data-content-theme="b")
+                h3 Cheque Deposit
+                p(id="errorLabel",align="center",class='error-message global-font-details')
+                div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-c")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                            label(for="amounttoAdjustedId",class="label") Group Name
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain")
+                            label(for="adjustedAmountId") #{groupName}
+                div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-c")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                            label(for="amounttoAdjustedId",class="label") Loan Number
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain")
+                            label(for="adjustedAmountId") #{globalAccountNumber}
+                div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-c")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                            label(for="amounttoAdjustedId",class="label") Amount Paid
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain")
+                            label(for="adjustedAmountId") #{amount}
+                div(data-role="horizontal",class="ui-bar ui-grid-c")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                        label(for="sourceOfPayId",class="label") Bank to deposit
+                    div(class='ui-block-b',id="sopiddd")
+                        div(data-role="fieldcontain",data-mini="true")
+                            select(name='sourceOfPay', id='sourceOfPayId',data-icon='grid',data-theme="d", data-overlay-theme="a",  data-mini="true",data-inline="true",data-native-menu="true")
+                                option(value='0',selected='selected') Select bank to deposit
+                                - for(var i=0;i<glcodeId.length;i++) {
+                                    option(value='#{glcodeId[i]}') #{glcodeName[i]}
+                                - }
+                div(data-role="horizontal",class="ui-bar ui-grid-c",id="ChequeNo")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                        label(for="chequeNoId",class="label") Cheque No
+                    div(class='ui-block-c')
+                        div(data-role="fieldcontain",data-mini="true")
+                            input(type="text", name="chequeNumber", id="chequeNoId", data-mini="true",data-inline="true", value="", required='true',autocomplete="off",onkeyup='forNumbers(this)')
+                div(data-role="horizontal",class="ui-bar ui-grid-c",id="ChequeDate")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                        label(for="chequeDateId",class="label") Cheque Date
+                    div(class='ui-block-c')
+                        div(data-role="fieldcontain",data-mini="true")
+                            input(type="text", name="chequeDateName", id="chequeDateId", data-mini="true",data-inline="true", value="", required='true', readonly="readonly",autocomplete="off")
+
+                div(data-role="fieldcontain", data-inline="true")
+                    a(href='JavaScript:chequeDeposit()',data-rel="popup", data-position-to='window',data-role='button', title=' Deposit Cheque ', data-inline="true",data-mini="true", id='Deposit') Deposit
+                    a(href='#', data-role='button',title='ChequeEntriesDone', data-theme="e",data-inline="true", id='received',data-mini="true") Cheque Deposited
+                    a(href='#',  rel="external",data-theme="d",data-role='button', title=' Print Slip ', data-inline="true",data-mini="true", id='depositSlip',class='ui-disabled ui-btn-hidden') Print Deposit Slip
+            div(data-role="popup", id="paymentVerifiedId",data-theme="c", style="width:300px;")
+                br
+                div(align="center")
+                    label(class="label") Are you sure to deposit cheque?
+                br
+                div(align="center",id="ynButtonDivId")
+                    a(href='#menu',data-icon='check',data-role='button',id='yesId',data-inline='true', data-mini='true') Yes
+                    a(href='#menu',data-icon='delete',data-role='button',id='noId',data-inline='true', data-mini='true') No
+                br
+            div(data-role="horizontal",class="ui-bar ui-grid-b",id="menu")
+                div(class='ui-block-a')
+
+                div(class='ui-block-b')
+                    div(data-role="fieldcontain",align="center")
+                        a(href=contextPath + '/client/ci/menu', rel="external",data-icon='home', data-role='button', title=' Home', data-inline='true', data-mini="true") Home
+                div(class='ui-block-b')
+                    div(data-role="fieldcontain", data-inline="true",align="right")
+                        a(href=contextPath + '/client/ci/chequeDepositList',  rel="external",data-icon='back', data-role='button',data-mini="true", title=' Back ', data-inline="true", id='cancel') Back
+            input(type="hidden",name="paymentCollection",id="paymentCollectionId",value="#{paymentCollectionId}")
+            div(class="ui-loader-background")

@@ -1,0 +1,256 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'IKLANT-CreditBureau'
+
+block scripts
+    include ../headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+    script(type='text/javascript', src='/javascripts/Creditreport.js')
+    script(type='text/javascript', src='/javascripts/validation.js')
+
+block content
+    form(id='BMFormId',enctype='multipart/form-data')
+        div(data-role='page', data-theme='b')
+            div(data-role="header", data-theme="a", class="ui-bar ui-grid-a")
+                div(class="ui-block-a")
+                    img(id='groupIcon', src='/images/iklant.png')
+                    h3(for="value", style="margin:20px 10px 0 0; text-align:right;") Credit Bureau Analysis
+                div(class="ui-block-b", align="right")
+                    a(href='JavaScript:cancelCreditCheck()', rel="external",data-icon='arrow-l', data-role='button', title=' Back', data-inline='true', data-mini='true') Back
+                    a(href=contextPath + '/client/ci/logout',  rel="external",data-icon='back', data-role='button', title=' Logout ', data-inline="true", data-mini='true') Logout
+            div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b")
+                h3 Group Details
+                p(id ='successMessage',data-theme="e",align='center',class='success-message global-font-details') #{successMsg}
+                p(id ='errorField',data-theme="e",align='center',class='error-message global-font-details')
+                div(data-role="content", id="groupdetails", data-theme="c", data-overlay-theme="c", data-inline="true")
+                    div(data-role="fieldcontain", data-mini="true")
+                        label(for="groupName", data-inline="true") Group Name
+                        input(type="text", name="groupName", id="groupName", value=groupName , readonly='readonly')
+                    div(data-role="fieldcontain", data-mini="true")
+                        input(type='hidden', name='groupIdName', id='groupIdID', value=groupId , readonly='readonly')
+                    div(data-role='fieldcontain',align='left')
+                        label(for="clientName") Member Name
+                        select(name='clientName',rel = "external",onchange="JavaScript:memberNameOnchangeInCreditBureau(this)", data-mini="true" ,id="clientName",data-inline="true",autofocus="autofocus", data-theme='b', data-icon='arrow-d', data-native-menu="true")
+                            option(value="0") Select
+                            -for(i=0;i<clientIdsArray.length;i++){
+                                -if(clientIdsArray[i]==clientId) {
+                                    option(value=clientIdsArray[i],selected='selected') #{clientNamesArray[i]}
+                                -}
+                                -else {
+                                    option(value=clientIdsArray[i]) #{clientNamesArray[i]}
+                                -}
+                            -}
+                    div(data-role='fieldcontain',class='updatedDetails')
+                        -if(prospectClientObj.getKYC_Updated_By() != ""){
+                            label(for="kycUpdatedBy",id="kycUpdatedBy") KYC Done By  :   #{prospectClientObj.getKYC_Updated_By()}       ,
+                        -}
+                        -if(prospectClientObj.getDataVerified_By() != ""){
+                            label(for="kycDataVerifiedBy",id="kycDataVerifiedBy")   Data Verified By  :   #{prospectClientObj.getDataVerified_By()}
+                        -}
+                div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-solo",id='collapseButtonDiv')
+                    div(data-role="fieldcontain",data-mini='true',class='oldDE')
+                        a(href='#', rel="external",data-icon='plus', data-role='button', title='Expand', data-inline="true", data-mini="true",id='expand',data-iconpos="notext")
+                        a(href='#', rel="external",data-icon='minus', data-role='button', title='Collapse', data-inline="true", data-mini="true",id='collapse',data-iconpos="notext")
+                div(data-role="collapsible", id="reportInformationDiv", data-theme="b", data-overlay-theme="a", data-inline="true",class='collapsible_content')
+                    h3 Report Information
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain", data-mini="true")
+                                label(for='loanPurpose') Loan Purpose
+                                input(type='text', name='loanPurpose', id='loanPurpose',value=prospectClientPersonalObj.getLoan_purpose(), data-inline="true", readonly="readonly")
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain", data-mini="true")
+                                label(for='memberId') Member ID
+                                input(type='text', name='memberId', id='memberId',value=prospectClientObj.getClient_global_number(), data-inline="true", readonly="readonly")
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain", data-mini="true")
+                                label(for='branchId') Branch ID
+                                input(type='text', name='branchId', id='branchId',value=branchId, data-inline="true", readonly="readonly")
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain", data-mini="true")
+                                label(for='kendraId') Kendra ID
+                                input(type='text', name='kendraId', id='kendraId',value=groupCentreName, data-inline="true", readonly="readonly")
+                div(data-role="collapsible", id="creditBureauAnalysis", data-theme="b", data-overlay-theme="a", data-inline="true",class='collapsible_content')
+                    h3 Consumer Name & Address
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain", data-mini="true")
+                                label(for="clientFirstName", data-inline="true") FirstName
+                                input(type="text", name="clientFirstName", id="clientFirstName", value=prospectClientObj.getClient_name(), readonly="readonly")
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain", data-mini="true")
+                                label(for="clientLastName", data-inline="true") LastName
+                                input(type="text", name="clientLastName", id="clientLastName", value=prospectClientObj.getClient_last_name(), readonly="readonly")
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain", data-mini="true")
+                                label(for="guardianName", data-inline="true") #{prospectClientPersonalObj.getGuardian_relationship()}
+                                input(type="text", name="guardianName", id="guardianName", value=prospectClientPersonalObj.getGuardian_name(), readonly="readonly")
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain", data-mini="true")
+                                label(for="guardianLastName", data-inline="true") LastName
+                                input(type="text", name="guardianLastName", id="guardianLastName", value=prospectClientPersonalObj.getGuardian_lastname(), readonly="readonly")
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain", data-mini="true")
+                                label(for='address') Address
+                                textarea(name='address', id='address', data-inline="true", style="height:6em", readonly="readonly",onkeyup='forAddress(this)') #{prospectClientPersonalObj.getAddress()}
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain", data-mini="true")
+                                label(for='pincode') Pincode
+                                input(type='text', name='pincode', id='pincode',value=prospectClientPersonalObj.getPincode(), data-inline="true", readonly="readonly")
+                div(data-role="collapsible", id="personalInformationDiv", data-theme="b", data-overlay-theme="a", data-inline="true",class='collapsible_content')
+                    h3 Consumer ID & Personal Information
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain", data-mini="true")
+                                label(for='rationId') Ration Card ID
+                                input(type='text', name='rationId', id='rationId',value=prospectClientPersonalObj.getRation_card_number(), data-inline="true", readonly="readonly")
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain", data-mini="true")
+                                label(for='voterId') Voter ID
+                                input(type='text', name='voterId', id='voterId',value=prospectClientPersonalObj.getVoter_id(), data-inline="true", readonly="readonly")
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain", data-mini="true")
+                                label(for='gasId') Gas Number
+                                input(type='text', name='gasId', id='gasId',value=prospectClientPersonalObj.getGas_number(), data-inline="true", readonly="readonly")
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain", data-mini="true")
+                                label(for='aadharId') Aadhar Number
+                                input(type='text', name='aadharId', id='aadharId',value=prospectClientPersonalObj.getAadhaar_number(), data-inline="true", readonly="readonly")
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain", data-mini="true")
+                                label(for='otherId1') Other-ID Name1
+                                input(type='text', name='otherId1', id='otherId1',value=prospectClientPersonalObj.getOther_id_name(), data-inline="true", readonly="readonly")
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain", data-mini="true")
+                                label(for='otherId2') Other-Id Number 1
+                                input(type='text', name='otherId2', id='otherId2',value=prospectClientPersonalObj.getOther_id(), data-inline="true", readonly="readonly")
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain", data-mini="true")
+                                label(for='otherId3') Other-ID Name2
+                                input(type='text', name='otherId3', id='otherId3',value=prospectClientPersonalObj.getOther_id_name2(), data-inline="true", readonly="readonly")
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain", data-mini="true")
+                                label(for='otherId4') Other-Id Number 2
+                                input(type='text', name='otherId4', id='otherId4',value=prospectClientPersonalObj.getOther_id2(), data-inline="true", readonly="readonly")
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain", data-mini="true")
+                                label(for='gender') Gender
+                                input(type='text', name='gender', id='gender',value=prospectClientPersonalObj.getGender(), data-inline="true", readonly="readonly")
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain", data-mini="true")
+                                label(for='dateOfBirth') Member DOB
+                                input(type='text', name='dateOfBirth', id='dateOfBirth',value=prospectClientPersonalObj.getDate_of_birth(), data-inline="true", readonly="readonly")
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                                label(for='landlineNumber')   Landline Number
+                                input(type='text', name='landlineNumber',autocomplete="off", id='landlineNumber', maxlength="12", data-inline="true",value="#{prospectClientPersonalObj.getLandline_number()}",readonly='readonly')
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain")
+                                label(for='contactNumber')   Mobile Number*
+                                input(type='text', name='ContactNumber',autocomplete="off", id='contactNumber', maxlength="12", data-inline="true",value="#{prospectClientPersonalObj.getMobile_number()}",readonly='readonly')
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                        -if(prospectClientPersonalObj.getOther_id_name() != "") {
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain", data-mini="true")
+                                    label(for='otherId') #{prospectClientPersonalObj.getOther_id_name()}
+                                    input(type='text', name='otherId', id='otherId',value=prospectClientPersonalObj.getOther_id(), data-inline="true", readonly="readonly")
+                        -}
+                        -if(prospectClientPersonalObj.getOther_id_name2()) {
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain", data-mini="true")
+                                    label(for='otherId2') #{prospectClientPersonalObj.getOther_id_name2()}
+                                    input(type='text', name='otherId2', id='otherId2',value=prospectClientPersonalObj.getOther_id2(), data-inline="true", readonly="readonly")
+                        -}
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain", data-mini="true")
+                                label(for='guarantorId') Guarantor ID
+                                input(type='text', name='guarantorId', id='guarantorId',value=prospectClientGuarantorObj.getGuarantorId(), data-inline="true", readonly="readonly")
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain")
+                                label(for='guarantorDob')   Guarantor DOB
+                                input(type='text', name='guarantorDob',autocomplete="off", id='guarantorDob', maxlength="12", data-inline="true",value="#{prospectClientGuarantorObj.getGuarantorDob()}",readonly='readonly')
+                div(data-role="collapsible", id="otherMFILoanDetails", data-collapsed="true", data-theme="b", data-content-theme="b",class='collapsible_content')
+                    h3 Other MFI Loan details & Repayment Track Record
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a",style='width:100%')
+                        div(class='ui-block-a',style='width:40%')
+                            div(data-role="fieldcontain")
+                                a(href='#addOtherMfiLoans', data-icon='plus', data-role='button', title=' addOtherMfiLoans ' ,id="addOtherMfiLoansButtonId" , data-rel='popup', data-position-to='window', data-transition='pop', data-inline='true', data-mini='true') Add Other Mfi Names
+                            div(data-role="fieldcontain")
+                                label(for='otherMfiBalanceAmount') other Mfi Balance Amount
+                                input(type='text', name='otherMfiBalanceAmount',autocomplete="off", id='otherMfiBalanceAmount',maxlength="10",data-inline="true",value="",onkeyup='numeric(this)')
+                            div(data-role="fieldcontain")
+                                label(for='otherMfiWrittenOffAmount') other Mfi WrittenOff Amount
+                                input(type='text', name='otherMfiWrittenOffAmount',autocomplete="off", id='otherMfiWrittenOffAmount',maxlength="10",data-inline="true",value="",onkeyup='numeric(this)')
+                                input(type='hidden', name='OtherMfiNameHidden', id='OtherMfiNameHiddenId', data-inline="true")
+                                div(data-role="popup", data-theme="c", data-overlay-theme="c", id="addOtherMfiLoans")
+                                    h3(align="center" ,class="ui-bar ui-bar-c ui-corner-all") Other MFI Name
+                                        p(id='otherMfiErrorLabelPopupId',align="center",class='error-message global-font-details')
+                                        div(data-role="fieldcontain")
+                                            label(for='mfiName') MFIName*
+                                            input(type='text', name='MfiName',autocomplete="off", id='mfiName',maxlength="35",onkeyup='forNamesValidation(this)',data-inline="true",value="")
+                                            input(type='hidden', name='MfiAmountSecured',autocomplete="off", id='mfiAmountSecured',maxlength="8",data-inline="true",value="")
+                                            input(type='hidden', name='MfiLoanOutstanding',autocomplete="off", id='mfiLoanOutstanding',maxlength="8",data-inline="true",value="")
+                                        a(href='#addOtherMfiLoans',id='addOtherMfiLoanSaveId', rel="external",data-icon='check', data-role='button',data-mini="true", title=' Save ', data-theme="b", data-inline="true") Save
+                                        a(href='#addOtherMfiLoans', id='addOtherMfiLoanCancelId', rel="external",data-icon='back', data-role='button',data-mini="true", title=' Back', data-inline="true") Back
+                                div(id="otherMfiLoanDivId")
+                        div(class='ui-block-b',style='width:0.25em;;background-color:#000;position:absolute;top:0;bottom:0;left:40%;') &nbsp;
+                        div(class='ui-block-c',style='width:58%')
+                            div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a",style='width:100%')
+                                div(data-role="fieldcontain")
+                                h2 Select the repayment track record
+                            div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a",style='width:100%')
+                                div(class='ui-block-a',style='width:40%')
+                                    div(data-role="fieldcontain", data-mini="true")
+                                        input(type='checkbox', name='isMultipleDocCheck', id='isMultipleDocCheckID', data-inline="true",data-mini='true')
+                                        label(for='isMultipleDocCheckID',id='isMultipleDocCheckID') Multiple Files
+                                        input(type="hidden", name="isMultipleDocument" , id="isMultipleDocumentId" , value="false")
+                                div(class='ui-block-b',style='width:50%',align='center')
+                                    div(data-role="fieldcontain", data-mini="true",style='width:60%;vertical-align:middle')
+                                        div(class="ui-block-a",id="multipleDocDivId")
+                                            input(type="file", name="multipleUploadDocument" , id="multipleUploadDocumentId" , multiple="multiple")
+                                        div(class="ui-block-b",id="singleDocDivId")
+                                            input(type="file", name="singleUploadDocument" , id="singleUploadDocumentId")
+                            div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a",style='width:100%')
+                                div(class='ui-block-a',style='width:50%')
+                                    div(data-role='fieldcontain',align='left')
+                                    label(for="repaymentTrackRecord") Repayment Track Record*
+                                div(class='ui-block-b',style='width:50%')
+                                    div(data-role='fieldcontain',align='left')
+                                        select(name='repaymentTrackRecord', data-mini="true" ,id="repaymentTrackRecord",data-inline="true", data-theme='b', data-icon='arrow-d', data-native-menu="true",data-rel="popup",data-position-to='window')
+                                            option(value="0") Select
+                                                -for(var i=0;i<lookupEntityObj.getRepaymentTrackRecord().length;i++) {
+                                                    option(value=lookupEntityObj.getRepaymentTrackRecord()[i]) #{lookupEntityObj.getRepaymentTrackRecordName()[i]}
+                                                -}
+                div(data-role="fieldcontain", data-mini="true",id="submitDivId")
+                    a(href="JavaScript:saveCreditBureauAnalysis()", rel="external", data-role='button', data-theme='b', title=' Save ', data-inline='true' , data-mini='true', id="saveGroupId") Save Credit Report
+                    a(href='JavaScript:cancelCreditCheck()', rel="external",data-icon='back', data-role='button', title=' Back', data-mini='true', data-inline='true') Back
+                    input(type="hidden",id="reqOfficeHidden",name="reqOfficeHidden",value="#{officeValue}")
+                input(type="hidden", name="menuName", id="menuName", value='#{menu}')
+                input(type="hidden", name="groupPreviousStatus", id="groupPreviousStatus", value='#{groupPreviousStatus}')
+                div(data-role="popup", id="rejectConfirmationId", data-inline='true',data-theme="a",align='center',style='width:650px',data-transition="fade") Confirmation!
+                    div(data-role="collapsible", data-collapsed="false",data-theme="b", data-content-theme="b",style='width:100%')
+                        div
+                            p(align='left',style='padding-left:3em') #{prospectClientObj.getClient_name()} #{prospectClientObj.getClient_last_name()} will be rejected. Do you really want to continue?
+                        div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                            p(id='popupError',class='error-message global-font-details')
+                            div(class='ui-block-a',style='width:30%')
+                                div(data-role='fieldcontain',align='center')
+                                label(for="reasonForRejection") Reason(If yes)*
+                            div(class='ui-block-b',style='width:60%')
+                                div(data-role='fieldcontain')
+                                    input(type='text', id='reasonForRejection', name='reasonForRejection',autocomplete="off")
+                        div(align="center",id="ynButtonDivId")
+                            a(href='#',data-icon='check',data-role='button',id='yesRejectId',data-inline='true', data-mini='true',data-theme="b") Yes
+                            a(href='#', data-icon='delete', data-role='button',id='noRejectId',data-inline='true', data-mini='true',data-theme="b") No
+            div(class="ui-loader-background")

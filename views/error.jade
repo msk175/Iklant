@@ -1,0 +1,16 @@
+extends ./layout
+include ./header
+block title
+    title= 'IKLANT-Error Page'
+block scripts
+    include ./headerJqueryMobile-1
+block content
+    form(id='preclosureForm')
+        div(data-role='page', data-theme='b', id="loginDetailsDiv")
+            +header("",["menu","logout"])
+            div(data-role="content")
+                div(data-role="fieldcontain")
+                    p(id="errorLabel",align ="center",class='error-message global-font-details')  #{error}
+                p
+                    pre #{error.stack}
+            div(class="ui-loader-background")

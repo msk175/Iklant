@@ -1,0 +1,106 @@
+doctype
+html(lang = "en")
+    head
+        title= 'IKLANT-Dashboard'
+        meta(charset='utf-8')
+        meta(name="viewport", content="initial-scale=1.0, user-scalable=no")
+        link(rel="stylesheet", href="/stylesheets/jquery.mobile-1.3.0-beta.1.min.css")
+        link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+        link(rel='stylesheet', href='/stylesheets/iklantStyle.css')
+        script(type='text/javascript', src='/javascripts/jquery-1.8.3.min.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile-1.3.0-beta.1.min.js')
+        script(type='text/javascript', src='/javascripts/jquery-ui.js')
+        script(type='text/javascript', src='/javascripts/loan_recovery/editStatus.js')
+        script(type='text/javascript', src='/javascripts/common.js')
+    body(style="overflow-x:hidden")
+        form(id="editStatusFormId")
+            div(data-role='page', data-theme='b', id="loginDetailsDiv")
+                div(data-role="header", data-theme="a", class="ui-bar ui-grid-a", data-overlay-theme="c",data-position="fixed")
+                    div(class="ui-block-a")
+                        img(id='groupIcon', style="margin:5px 10px 0 0; text-align:right;",src='/images/iklant.png')
+                    div(class="ui-block-b",align="right",style="padding:25px 50px 0 0;")
+                        a(href=contextPath + '/client/ci/menu', rel="external",data-icon='home', data-role='button', title=' home', data-inline='true') Home
+                        a(href='JavaScript:backFormSubmission("#{loanStatusHolder.getGlobalAccountNum()}")',  rel="external",data-icon='arrow-l', data-role='button', title=' Back ', data-inline="true", id='back') Back
+                        a(href=contextPath + '/client/ci/logout',  rel="external",data-icon='back', data-role='button', title=' Logout ', data-inline="true") Logout
+                div(data-role="navbar")
+                    ul(id="custom-nav-list")
+                        li
+                            a(rel="external", data-role="tab" , id="custom-li-1") Reschedule/WriteOff
+                div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b")
+                    h3 Change Status
+                    p(align="left",style="color:red;font-weigth:bold",id="errorMsgForFinancialYearId")
+                    p(align="left",style="color:red;font-weigth:bold",id="errorMsgForCurrentStatusId")
+                    p(align="left",style="color:red;font-weigth:bold",id="errorMsgForNotesId")
+                    div(data-role="horizontal",class="ui-bar ui-grid-d")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                                label(for='groupname',id='labelid') Current Status
+                        div(class='ui-block-b',align='left')
+                            div(data-role="fieldcontain")
+                                -if(accountStateName == "Active In Good Standing"){
+                                    img(src='/images/green.jpg',style='width:20px;height:20px;vertical-align:bottom')
+                                    span(style="")  #{accountStateName}
+                                -}
+                                -else {
+                                    img(src='/images/red.jpg',style='width:20px;height:20px;vertical-align:bottom')
+                                    span(style="")  #{accountStateName}
+                                -}
+
+                    div(data-role="horizontal",class="ui-bar ui-grid-d")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                                label(for='status',id='labelid') Status
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain")
+                                label(for='rescheduleId') Closed - Resheduled
+                                input(type='radio', name='currentStatus', id='rescheduleId', data-inline="true",data-mini="true",value="8")
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain")
+                    div(data-role="horizontal",class="ui-bar ui-grid-d")
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain")
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain")
+                                label(for='writtenOffId') Closed - Written Off
+                                input(type='radio', name='currentStatus', id='writtenOffId', data-inline="true",data-mini="true",value="7")
+                    div(data-role="horizontal",class="ui-bar ui-grid-d")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                                label(for="doTransactionId",id="labelid") Date Of Transaction
+                        div(class='ui-block-c')
+                            div(data-role="fieldcontain",style="align:left")
+                                input(type="text", name="dateofTransaction", id="dateofTransactionId", data-mini="true",data-inline="true", value="#{loanStatusHolder.getTransactionDate()}", required='true', readonly="readonly")
+                    div(data-role="horizontal",class="ui-bar ui-grid-d")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                                label(for="notesLabelId",id="labelid") Notes
+                        div(class='ui-block-c')
+                            div(data-role="fieldcontain",style="align:left")
+                                textarea(name="notes", id="notesId",style="width:500px; height:20px;",maxlength="200",onkeyup='forRemoveSpecialCharcters(this)')
+                div(data-role="horizontal",class="ui-bar ui-grid-b")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain", data-inline="true")
+                            a(href='JavaScript:editAccountStatusFormSubmission()',  rel="external", data-role='button', title='Submit', data-inline="true",data-mini="true", id='submit') Reschedule/WriteOff
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain", data-inline="true",align="center")
+                            a(href=contextPath + '/client/ci/menu', rel="external",data-icon='home',data-theme="b", data-role='button', title=' Home', data-mini="true",data-inline='true') Home
+                    div(class='ui-block-c')
+                        div(data-role="fieldcontain", data-inline="true",align="right")
+                            a(href='JavaScript:backFormSubmission("#{loanStatusHolder.getGlobalAccountNum()}")', rel="external",data-icon='back', data-role='button', title=' Back', data-inline="true", data-mini="true") Back
+                input(type='hidden', name='initialDateOfTransactionDate', id='initialDateOfTransactionDateId', value="#{loanStatusHolder.getTransactionDate()}")
+                input(type='hidden', name='lastPayment', id='lastPaymentId', value="#{loanStatusHolder.getLastPaymentDate()}")
+                input(type='hidden', name='financialYearEndDate', id='financialYearEndDateId', value="#{loanStatusHolder.getFinancialYearEndDate()}")
+                input(type="hidden", name="globalAccountNum", id="globalAccNumber",value="#{loanStatusHolder.getGlobalAccountNum()}", data-mini="true",data-inline="true")
+                input(type='hidden', name='accountId', id='accountIdHiddenId', value="#{accountId}")
+                input(type='hidden', name='accountTypeId', id='accountTypeIdHiddenId', value="#{accountTypeId}")
+                div(data-role="popup", id="editStatusConfirmationId",data-theme="a",align='center') Confirmation!
+                    div(data-role="collapsible", data-collapsed="false",data-theme="b", data-content-theme="b")
+                        div
+                            label(id="labelid") Are you sure to edit Acc No: #{loanStatusHolder.getGlobalAccountNum()} status?
+                        div(align="center",id="ynButtonDivId")
+                            a(href='#showId',data-icon='check',data-role='button',id='yesEditStatusId',data-inline='true', data-mini='true') Yes
+                            a(href='#showId', data-icon='delete', data-role='button',id='noEditStatusId',data-inline='true', data-mini='true') No
+                div(class="ui-loader-background")

@@ -1,0 +1,209 @@
+extends ../layout
+include ../header
+block title
+   title= 'IKLANT-BC Statistics'
+block scripts
+   link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+   include ../headerJqueryMobile-1
+   link(rel='stylesheet', href='/stylesheets/jqx.base.css')
+   link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+   link(rel='stylesheet', href='/stylesheets/popup.css')
+   link(rel="stylesheet", href="/stylesheets/jquery.iviewer.css")
+   link(rel="stylesheet", href="/stylesheets/iklant-table-layout.css")
+   script(type='text/javascript', src='/javascripts/jquery-ui.js')
+   script(type="text/javascript", src="/javascripts/jquery.mousewheel.min.js")
+   script(type="text/javascript",src="/javascripts/jsapi.txt")
+   script(type='text/javascript', src="/javascripts/bc_dashboard/bcsummary.js")
+   script(type='text/javascript', src='/javascripts/commonCustom.js')
+block content
+   form(id='BMFormId')
+      div(data-role='page', data-theme='b')
+         +header("BC Dashboard",["menu", "logout"],"",[])
+         div(data-role="content")
+            h3 Overall Summary
+            div(data-role="horizontal",class="ui-bar ui-grid-c")
+               div(class='ui-block-a',style="width:25%")
+                  div(data-role="fieldcontain")
+                  label(for='disbAmount',class='label') Disbursed Amount :
+               div(class='ui-block-b',style="width:25%")
+                  div(data-role="fieldcontain")
+                  label(id='disbAmount') &#8377;  #{bcSummaryJsonArray[0].totalDisbursedLabel}
+               div(class='ui-block-c',style="width:25%")
+                  div(data-role="fieldcontain")
+                  label(for='collectedAmount',class='label') Principal Collected :
+               div(class='ui-block-d',style="width:25%")
+                  div(data-role="fieldcontain")
+                  label(id='collectedAmount') &#8377; #{bcSummaryJsonArray[0].totalCollectedLabel}
+            div(data-role="horizontal",class="ui-bar ui-grid-c")
+               //div(class='ui-block-a',style="width:25%")
+                  div(data-role="fieldcontain")
+                  label(for='demdAmount',class='label') Principal Demanded :
+               //div(class='ui-block-b',style="width:25%")
+                  div(data-role="fieldcontain")
+                  label(id='demdAmount') &#8377;  #{bcSummaryJsonArray[0].totalPrincipalDemandedLabel} (#{bcSummaryJsonArray[0].todaysPrincipalDemanded})
+               div(class='ui-block-c',style="width:25%")
+                  div(data-role="fieldcontain")
+                  label(for='osAmount',class='label') Principal Outstanding :
+               div(class='ui-block-d',style="width:25%")
+                  div(data-role="fieldcontain")
+                  label(id='osAmount') &#8377; #{bcSummaryJsonArray[0].totalPrincipalOutstandingLabel}
+            br
+            br
+            div(data-role="content",id="chart_div",align="center")
+               input(type='hidden', name='osAmountId', id='osAmountId', value="#{bcSummaryJsonArray[0].totalPrincipalOutstanding}")
+               input(type='hidden', name='collectedAmountId', id='collectedAmountId', value="#{bcSummaryJsonArray[0].totalCollected}")
+
+         div(data-role="content",id="branchWiseSummary",style="display:none")
+            h3 Branchwise Summary
+            br
+            br
+            div(data-role="content",id="branch_summary_chart_div",align="center")
+         div(data-role="content",id="dvsc")
+            h3 Demand Vs Collection for Selected Dates
+            br
+            div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-d")
+               div(class='ui-block-a',style="width:10%")
+                  div(data-role="fieldcontain")
+                  label(for="fromDateId") From Date *
+               div(class='ui-block-b',style="width:20%")
+                  div(data-role="fieldcontain",id="fromOfficeHierarchyDivId")
+                     input(type="text", name="fromDateId", id="fromDateId", value="#{fromDate}", readonly='readonly', required='true')
+               div(class='ui-block-c',style="width:10%")
+                  div(data-role="fieldcontain", data-mini="true")
+                  label(for="toDateId") To Date *
+               div(class='ui-block-d',style="width:20%")
+                  div(data-role="fieldcontain",id="officeDivId")
+                     input(type="text", name="toDateId", id="toDateId", value="#{toDate}", readonly='readonly', required='true')
+               div(class='ui-block-e',style="width:15%")
+                  div(data-role="fieldcontain", data-mini="true")
+                     a(href='JavaScript:retrieveDemandvsCollectionForSelectedDates(0)', rel="external",data-theme="b",data-role="button",id="Submit", data-inline="true",data-mini="true") GO
+               div(class='ui-block-e',style="width:15%")
+                  div(data-role="fieldcontain",id="exportDivId")
+                     select(name='exportType',rel = "external", data-mini="true" ,data-inline="true",autofocus="autofocus", id='exportType', data-theme='b', data-icon='arrow-d', data-native-menu="false")
+                        option(value='0',selected='selected') Excel
+                        //option(value='1') PDF
+                     a(href='JavaScript:GenerateReportBCDashBoard()', rel="external",data-theme="b",data-role="button",id="Generate", data-inline="true",data-mini="true") Generate Report
+                  div(data-role="fieldcontain",id="exportImageDivId",style="display:none")
+                     img(src='/images/progressrotator.gif',align="middle")
+                  div(id='downloadDiv',class='ui-block-b',style='width:100%;padding-top:1em;display:none')
+                     a(href="Javascript:downloadReport()", target="_blank",rel="external", data-role="default") Download report
+                     input(type="hidden", name="selectedDocName", id="selectedDocName")
+                  div(data-role="fieldcontain",id="noRecords",style="display:none")
+                     label(for='noRecords',class='label') No Records to Export !
+            br
+            label(id='rupeesybmol',style="display:none") &#8377;
+            div(data-role="horizontal",class="ui-bar ui-grid-e")
+               div(class='ui-block-a',style="width:15%")
+                  div(data-role="fieldcontain")
+                  label(for='demandeAmount',class='label') Demanded :
+               div(class='ui-block-b',style="width:15%")
+                  div(data-role="fieldcontain")
+                  label(id='demandeAmount')
+               div(class='ui-block-c',style="width:15%")
+                  div(data-role="fieldcontain")
+                  label(for='paidAmount',class='label') Collected :
+               div(class='ui-block-d',style="width:15%")
+                  div(data-role="fieldcontain")
+                  label(id='paidAmount')
+               div(class='ui-block-e',style="width:15%")
+                  div(data-role="fieldcontain")
+                  label(for='notyetpaid',class='label') Deficit / (Excess) :
+               div(class='ui-block-e',style="width:25%")
+                  div(data-role="fieldcontain")
+                  label(id='notyetpaid')
+            br
+            br
+            div(data-role="content",id="dvsc_chart_div",align="center")
+            br
+            br
+          div(data-role="content",id="branch_demand_collection_chart_div",align="center")
+            div(data-role="content")
+                h3 Sales Pipeline Summary
+                div(data-role="horizontal",class="ui-bar ui-grid-c",style="display:none")
+                    div(class='ui-block-a',style="width:20%")
+                        div(data-role="fieldcontain")
+                        label(for='kycProcess',class='label') KYC Processing :
+                        label(id='kycProcess')
+                    div(class='ui-block-c',style="width:20%")
+                        div(data-role="fieldcontain")
+                        label(for='fieldVerification',class='label') Field Verification :
+                        label(id='fieldVerification')
+                    div(class='ui-block-e',style="width:20%")
+                        div(data-role="fieldcontain")
+                        label(for='bmApproval',class='label') BM Approval :
+                        label(id='bmApproval')
+                    div(class='ui-block-a',style="width:20%")
+                        div(data-role="fieldcontain")
+                        label(for='rmApproval',class='label') RM Approval :
+                        label(id='rmApproval')
+                    div(class='ui-block-c',style="width:20%")
+                        div(data-role="fieldcontain")
+                        label(for='readytoDisburse',class='label') Ready To Disburse :
+                        label(id='readytoDisburse')
+         div(data-role="content")
+            h3 Sales Pipeline Summary
+            div(data-role="horizontal",class="ui-bar ui-grid-c")
+               div(class='ui-block-a',style="width:25%")
+                  div(data-role="fieldcontain")
+                  label(for='totalClients',class='label') Total Clients in Queue :
+               div(class='ui-block-b',style="width:25%")
+                  div(data-role="fieldcontain")
+                  label(id='totalClients')
+            br
+            br
+            div(data-role="content",id="sales_chart_div",align="center")
+         div(data-role="content",id="branchWiseSalesPipeline",style="display:none")
+            //h3 Sales Pipeline Dashboard
+            br
+            br
+            div(data-role="content",id="branch_sales_chart_div",align="center")
+         div(data-role="content",id="portfolio_wise_content_div")
+            div(data-role="horizontal",class="ui-bar ui-grid-c")
+               div(class='ui-block-a',style="width:25%")
+                  div(data-role="fieldcontain")
+                  label(for='portfoioOsLabel',class='label') Total Portfolio Outstanding:
+               div(class='ui-block-b',style="width:25%")
+                  div(data-role="fieldcontain")
+                  label(id='portfoioOsLabel') &#8377;  #{bcSummaryJsonArray[0].totalDisbursedLabel}
+            div(data-role="horizontal",class="ui-bar ui-grid-a")
+               div(class='ui-block-a',style="width:50%")
+                  div(data-role="content")
+                     h3(id="portfolioWiseHeader") Branch-wise Portfolio
+                  br
+                  br
+                  div(data-role="content",id="portfolio_wise_div",align="center")
+               div(class='ui-block-b',style="width:50%")
+                  div(data-role="content")
+                     h3  State-wise Portfolio
+                  br
+                  br
+                  div(data-role="content",id="state_wise_div",align="center")
+         div(data-role="content",id="portfolio_wise_content_div")
+            div(data-role="horizontal",class="ui-bar ui-grid-a")
+               div(class='ui-block-a',style="width:50%")
+                  div(data-role="content")
+                     h3 Purpose-wise Portfolio
+                  br
+                  br
+                  div(data-role="content",id="purpose_wise_div",align="center")
+               div(class='ui-block-b',style="width:50%")
+                  div(data-role="content")
+                     h3  Size-wise Portfolio
+                  br
+                  br
+                  div(data-role="content",id="size_wise_div",align="center")
+         div(data-role="content",id="portfolio_wise_content_div")
+            div(data-role="horizontal",class="ui-bar ui-grid-a")
+               div(class='ui-block-a',style="width:50%")
+                  div(data-role="content")
+                     h3 Loan Cycle-wise Portfolio
+                  br
+                  br
+                  div(data-role="content",id="cycle_wise_div",align="center")
+         div(data-role="content",id="monthwise_portfolio_content_div")
+            div(data-role="content")
+               h3 Monthwise Portfolio
+            br
+            br
+            div(data-role="content",id="monthwise_portfolio_div",align="center")
+

@@ -1,0 +1,230 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'IKLANT-Manage Users'
+
+block scripts
+    link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+    include ../headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/jquery-ui.js')
+    script(type='text/javascript', src='/javascripts/user_management/manageusers.js')
+    script(type='text/javascript', src='/javascripts/validation.js')
+
+block content
+    form(id='BMFormId')
+        div(data-role='page', data-theme='b')
+            +header("User Management",["welcomeNote","menu","logout"])
+            include ../GroupManagementLayout
+            div(data-role='content', data-theme="b", data-overlay-theme="b", data-inline="true")
+                div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-a")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                            a(href='',  rel="external",data-theme="b",data-icon='plus', data-role='button', title='Add Users', data-inline="true" ,id ="addUId", data-mini='true') Add Users
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain")
+                            //label(for='editUId') Edit User
+                            //input(type='radio', name='QName', id='editUId', data-inline="true",value="2")
+                -if (error_msg.indexOf('failed') > -1 || error_msg.indexOf('not') > -1 || error_msg.indexOf('already') > -1){
+                    p(id='errorMessageId',align="center",class='error-message global-font-details') #{error_msg}
+                -}
+                -else{
+                    p(id='successMessage',align="center",class='success-message global-font-details') #{error_msg}
+                -}
+                p(id='errorMessageId',align="center",class='error-message global-font-details')
+                div(data-role="collapsible", data-collapsed="false", data-content-theme="b", id="addUDiv")
+                    h3 Add
+                    div(id="questionarieid", data-theme="b", data-overlay-theme="b", data-inline="true")
+                        div(data-role='fieldcontain',align='left')
+                            label(for="officeId",class='label') Office
+                            select(name='office',rel = "external", data-mini="true" ,data-inline="true", id='officeId', data-icon='arrow-d', data-native-menu="false")
+                                option(value='0') Select
+                                -for(i=0;i<officeNameArray.length;i++){
+                                    option(value=officeIdArray[i]) #{officeNameArray[i]}
+                                - }
+                        div(data-role="fieldcontain")
+                            //-a(href="JavaScript:validateUser();",rel="external",data-theme="b",data-icon='gear', data-role='button',data-mini="true", title='Check Availability', data-inline="true") Check User Availability
+                            //-p(id='errorId',name='errorId',align="center",class='error-message global-font-details')
+                            label(for='userNameId',class='label')    User Name
+                            input(type='text', name='userName',autocomplete="off",maxlength="50", id='userNameId', data-inline="true",value="",onkeyup='forUserName(this)',focusout='validateUser();')
+                        div(data-role="fieldcontain")
+                            label(for='firstNameId',class='label') First Name
+                            input(type='text', name='firstName',autocomplete="off",maxlength="30", id='firstNameId', data-inline="true",value="",onkeyup='forNamesValidation(this)')
+                        div(data-role="fieldcontain")
+                            label(for='lastNameId',class='label')    Last Name
+                            input(type='text', name='lastName',autocomplete="off",maxlength="30", id='lastNameId', data-inline="true",value="",onkeyup='forNamesValidation(this)')
+                        div(data-role="fieldcontain",align='left')
+                            label(for='dobId',class='label')    DOB
+                            input(type='text', name='dob',autocomplete="off", id='dobId', data-inline="true",readonly = 'readonly', value="")
+                        div(data-role='fieldcontain',align='left')
+                            label(for="genderId",class='label') Gender
+                            select(name='gender',rel = "external", data-mini="true" ,data-inline="true", id='genderId', data-icon='arrow-d', data-native-menu="false")
+                                option(value='0') Select
+                                option(value='Male') Male
+                                option(value='Female') Female
+                        div(data-role="fieldcontain")
+                            label(for='addressId',class='label')    Address
+                            input(type='text', name='address',autocomplete="off",maxlength="50", id='addressId', data-inline="true",value="",onkeyup='forAddress(this)')
+
+                        div(data-role='fieldcontain',align='left')
+                            label(for="userHierarchyId",class='label') User Hierarchy
+                            select(name='userHierarchy',rel = "external", data-mini="true" ,data-inline="true", id='userHierarchyId', data-icon='arrow-d', data-native-menu="false")
+                                option(value='0') Select
+                                option(value='Loan Officer') Loan Officer
+                                option(value='Non Loan Officer') Non Loan Officer
+                        //-div(data-role='fieldcontain',align='left')
+                            label(for="roleId",class='label') Role
+                            select(name='role',rel = "external", data-mini="true" ,data-inline="true", id='roleId', data-icon='arrow-d', data-native-menu="false")
+                                option(value='0') Select
+                                -for(i=0;i<roleIdArray.length;i++){
+                                    option(value=roleIdArray[i]) #{roleNameArray[i]}
+                                - }
+                        //-div(data-role="fieldcontain")
+                            label(for='passwordId',class='label')    Password
+                            input(type='password', name='password',autocomplete="off", id='passwordId',maxlength="20", data-inline="true",value="",onkeyup='forUserName(this)')
+                        //-div(data-role="fieldcontain")
+                            label(for='confirmPasswordId',class='label')    Confirm Password
+                            input(type='password', name='confirmPassword',autocomplete="off", id='confirmPasswordId',maxlength="20", data-inline="true",value="",onkeyup='forUserName(this)')
+                        div(data-role="fieldcontain")
+                            label(for='contactNumberId',class='label')    Contact Number
+                            input(type='text', name='contactNumber',autocomplete="off", id='contactNumberId',,maxlength="20", data-inline="true",value="",onkeyup='forNumbers(this)')
+                        div(data-role="fieldcontain")
+                            label(for='emailIdID',class='label')    Email Id
+                            input(type='text', name='emailId',autocomplete="off",maxlength="100", id='emailIdID', data-inline="true",value="",onkeyup='forEmailId(this)')
+                        div(data-role="fieldcontain", id="imeiDivId")
+                            label(for='imeiNumberIdID',class='label')    IMEI Number
+                            input(type='text', name='imeiNumberId',autocomplete="off",maxlength="20", id='imeiNumberIdID', data-inline="true",value="", onkeyup='forNumbersWithSlash(this)')
+                        -for(i=0;i<roleIdArray.length;i++){
+                            div(data-role="fieldcontain",id ='multiRoleId',class='label')
+                                fieldset(data-role='controlgroup')
+                                    -if(i==0){
+                                        legend Role
+                                    -}
+                                    -else{
+                                        legend
+                                    -}
+                                    input(type='checkbox', name=roleIdArray[i], id ='roleId'+roleIdArray[i])
+                                    label(for='roleId'+roleIdArray[i]) #{roleNameArray[i]}
+                        -}
+                    div(data-role="fieldcontain")
+                        a(href='JavaScript:manageUsersSubmitForm()',  rel="external",data-theme="b",data-icon='check', data-role='button', title=' Save ', data-inline="true", data-mini='true') Save
+                        a(href='JavaScript:resetFields()',  rel="external",data-theme="b",data-icon='refresh', data-role='button', title=' Reset ', data-inline="true", data-mini='true') Reset
+                        a(href="",id="backUId", rel="external",data-theme="b",data-icon='back', data-role='button', title='Back', data-inline="true", data-mini='true') Back
+                div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b", id="editUDiv")
+                    h3 Edit
+                    div(id="questionarieid", data-theme="b", data-overlay-theme="b", data-inline="true")
+                        div(data-role='fieldcontain',align='left')
+                            label(for="officeIdEdit",class='label') Office
+                            select(name='officeEdited',rel = "external", data-mini="true" ,data-inline="true", id='officeIdEdit', data-icon='arrow-d', data-native-menu="false",disabled='disabled')
+                                option(value='0') Select
+                                -for(i=0;i<officeIdArray.length;i++){
+                                    option(value=officeIdArray[i]) #{officeNameArray[i]}
+                                -}
+                        div(data-role='fieldcontain',align='left')
+                            input(type='hidden', name='userNameSelect',autocomplete="off", id='userIdEdit', data-inline="true",value="")
+                        div(data-role="fieldcontain")
+                            label(for='userNameIdEdit',class='label')    User Name
+                            input(type='text', name='userNameEdit',maxlength="30",autocomplete="off", id='userNameIdEdit', readonly="readonly",data-inline="true",value="")
+                        div(data-role="fieldcontain")
+                            label(for='firstNameIdEdit',class='label') First Name
+                            input(type='text', name='firstNameEdit',autocomplete="off",maxlength="30", id='firstNameIdEdit', data-inline="true",value="",onkeyup='forNamesValidation(this)')
+                        div(data-role="fieldcontain")
+                            label(for='lastNameIdEdit',class='label')    Last Name
+                            input(type='text', name='lastNameEdit',autocomplete="off",maxlength="30", id='lastNameIdEdit', data-inline="true",value="",onkeyup='forNamesValidation(this)')
+                        div(data-role="fieldcontain")
+                            label(for='dobIdEdit',class='label')    DOB
+                            input(type='text', name='dobEdit',autocomplete="off", id='dobIdEdit', data-inline="true",readonly = 'readonly', value="")
+                        div(data-role='fieldcontain',align='left')
+                            label(for="genderIdEdit",class='label') Gender
+                            select(name='genderEdit',rel = "external", data-mini="true" ,data-inline="true", id='genderIdEdit', data-icon='arrow-d', data-native-menu="false")
+                                option(value='0') Select
+                                option(value='49') Male
+                                option(value='50') Female
+                        div(data-role="fieldcontain")
+                            label(for='addressIdEdit',class='label')    Address
+                            input(type='text', name='addressEdit',autocomplete="off",maxlength="50", id='addressIdEdit', data-inline="true",value="",onkeyup='forAddress(this)')
+                        //-div(data-role='fieldcontain',align='left')
+                            label(for="roleIdEdit",class='label') Role
+                            select(name='roleEdit',rel = "external", data-mini="true" ,data-inline="true", id='roleIdEdit', data-icon='arrow-d', data-native-menu="false")
+                                option(value='0') Select
+                                -for(i=0;i<roleIdArray.length;i++){
+                                    option(value=roleIdArray[i]) #{roleNameArray[i]}
+                                -}
+                        div(data-role='fieldcontain',align='left')
+                            label(for="userHierarchyIdEdit",class='label') User Hierarchy
+                            select(name='userHierarchyEdit',rel = "external", data-mini="true" ,data-inline="true", id='userHierarchyIdEdit', data-icon='arrow-d', data-native-menu="false")
+                                option(value='0') Select
+                                option(value='1') Loan Officer
+                                option(value='2') Non Loan Officer
+                        div(data-role="fieldcontain")
+                            label(for='passwordIdEdit',class='label')    Password
+                            input(type='password', name='passwordEdit',autocomplete="off", id='passwordIdEdit',maxlength="20", data-inline="true",value="",onkeyup='forUserName(this)')
+                        div(data-role="fieldcontain")
+                            label(for='confirmPasswordIdEdit',class='label')    Confirm Password
+                            input(type='password', name='confirmPasswordEdit',autocomplete="off", id='confirmPasswordIdEdit',maxlength="20", data-inline="true",value="",onkeyup='forUserName(this)')
+                        div(data-role="fieldcontain")
+                            label(for='contactNumberIdEdit',class='label')    Contact Number
+                            input(type='text', name='contactNumberEdit',autocomplete="off", id='contactNumberIdEdit', data-inline="true",value="",onkeyup='forNumbers(this)',maxlength="20")
+                        div(data-role="fieldcontain")
+                            label(for='emailIdIDEdit',class='label')    Email Id
+                            input(type='text', name='emailIdEdit',autocomplete="off",maxlength="100", id='emailIdIDEdit', data-inline="true",value="",onkeyup='forEmailId(this)')
+                        div(data-role="fieldcontain", id="imeiEditDivId")
+                            label(for='imeiNumberIdIDEdit',class='label')    IMEI Number
+                            input(type='text', name='imeiNumberIdEdit',autocomplete="off",maxlength="20", id='imeiNumberIdIDEdit', data-inline="true",value="", onkeyup='forNumbersWithSlash(this)')
+                            input(type='hidden', name='imeiNumberIdEditHidden',autocomplete="off",maxlength="20", id='imeiNumberIdIDEditHidden', data-inline="true",value="")
+                        -for(i=0;i<roleIdArray.length;i++){
+                            div(data-role="fieldcontain",id ='multiRoleId')
+                                fieldset(data-role='controlgroup')
+                                    -if(i==0){
+                                        legend Role
+                                    -}
+                                    -else{
+                                        legend
+                                    -}
+                                    input(type='checkbox', name='roleIdEdit'+roleIdArray[i],id ='roleIdEdit'+roleIdArray[i])
+                                    label(for='roleIdEdit'+roleIdArray[i]) #{roleNameArray[i]}
+                                    -}
+                    div(data-role="fieldcontain")
+                        a(href='JavaScript:manageUpdateUsers()',  rel="external",data-theme="b",data-icon='check', data-role='button', title=' Save ', data-inline="true", data-mini='true') Save
+                        a(href='', id='backUEId', rel="external",data-theme="b",data-icon='back', data-role='button', title='Back', data-inline="true", data-mini='true') Back
+                div(id="tableviewdiv")
+                    table(data-role="table", id="movie-table", class="ui-responsive", data-mode="columntoggle",border='1')
+                        thead
+                            tr
+                                th(data-priority="5") SNO
+                                th(data-priority="5") Name
+                                th(data-priority="5") Branch-Office Name
+                                th(data-priority="5") Contact Number
+                                th(data-priority="5") Email-Id
+                                th(data-priority="5",style ="text-align:center") Action
+                            -var count = 1;
+                            -for(var i=0;i< userIdArray.length;i++){
+                                -if(userRoleIdArray[i] != constantsObj.getSMHroleId() && userRoleIdArray[i] != constantsObj.getAdminroleId() && userRoleIdArray[i] != constantsObj.getApexPromotors()){
+                                    tr
+                                        td(style ="text-align:center") #{count}
+                                        - count++
+                                        td #{userNameArray[i]}
+                                        td #{office_NameArray[i]}
+                                        td #{contactNumberArray[i]}
+                                        td #{emailIDArray[i]}
+                                        td(style ="text-align:center")
+                                            a(href="JavaScript:populateUserDetails('#{userIdArray[i]}');",rel="external",data-theme="b",data-icon='gear', data-role='button',data-mini="true", title='Edit', data-inline="true", id= "edit_"+userNameArray[i]) Edit
+                                            a(href="JavaScript:deleteUsers('#{userIdArray[i]}','deleteUserId_#{userIdArray[i]}');", id='deleteUserId_#{userIdArray[i]}',data-theme="b",data-icon='delete', data-role='button',data-mini="true", title='Delete', data-inline="true",data-rel="popup",data-position-to='window') Delete
+                                -}
+                            - }
+                div(data-role="popup", id="deleteConfirmationId",data-theme="a",align='center') Confirmation!
+                    div(data-role="collapsible", data-collapsed="false",data-theme="b", data-content-theme="b")
+                        div
+                            label(class='label') Do you really want to delete this user?
+                        div(align="center",id="ynButtonDivId")
+                            a(href='#showId',data-icon='check',data-role='button',id='yesUserDeleteId',data-inline='true', data-mini='true') Yes
+                            a(href='#showId', data-icon='delete', data-role='button',id='noUserDeleteId',data-inline='true', data-mini='true') No
+                input(type="hidden", name="userNameArray", id="userNameArrayId",value=userNameAllArray)
+                input(type="hidden", name="roleIdArray", id="roleIdArray",value=roleIdArray)
+                input(type="hidden", name="role", id="roleId",value=CheckedValuesArray)
+                input(type="hidden", name="deleteUserId", id="deleteUserId",value='')
+                input(type="hidden", name="imeiNumberArray", id="imeiNumberArrayId", value=imeiNumberArray)
+                input(type="hidden", name="officeEdit", id="officeEditHidden", value="")
+            div(class="ui-loader-background")

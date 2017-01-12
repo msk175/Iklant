@@ -1,0 +1,71 @@
+extends ./layout
+include ./header
+
+block title
+    title= 'IKLANT-DocumentVerification'
+
+block scripts
+    link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+    include ./headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/jquery-ui.js')
+    script(type='text/javascript', src='/javascripts/loan_disbursement/loanSanctionForm.js')
+    script(type='text/javascript', src='/javascripts/forLoanSanction.js')
+    script(type='text/javascript', src='/javascripts/validation.js')
+    script(type='text/javascript', src='/javascripts/docVerification.js')
+
+block content
+    form(id="BMFormId")
+        div(data-role='page', data-theme='b', id="loginDetailsDiv")
+            +header("",["backJavascript","logout"],'back',[])
+            div(data-role="navbar")
+                ul(id="custom-nav-list")
+                    li
+                        a(rel="external", data-role="tab" , id="custom-li-1") Documents Verification
+            div(data-role='content')
+                div(data-role="fieldcontain")
+                    p(id ='errorField',data-theme="e",align='center',class='error-message global-font-details')
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                            h3(for="value") Group Name : #{centerName}
+                            label(for="groupName val")
+                div(style = "overflow: auto;")
+                    table
+                        tr
+                            th(style ="text-align:center") SNO
+                            th(style ="text-align:center") Client Name
+                            th(style ="text-align:center") Document Type
+                            th(style ="text-align:center") Download Docs
+                        -for(i=0;i< clientIdArray.length;i++){
+                            tr
+                                td(style ="text-align:center")    #{i+1}
+                                td(style ="text-align:center")    #{clientNameArray[i]}
+                                input(type='hidden', name='clientLoanCount_#{clientIdArray[i]}', id='clientLoanCount_#{clientIdArray[i]}', value='#{clientLoanCountArray[i]}')
+                                td(style ="text-align:center")
+                                    select(name='members', onchange = 'JavaScript:downloadClientDocuments(this.value,#{clientIdArray[i]})',data-theme="b", id='members',data-inline='true', data-icon='grid', data-mini='true', data-native-menu="true")
+                                        option(value='0') Select Doc Type
+                                        -for(var j=0;j<docTypeIdArray.length; j++) {
+                                            -if(clientId == clientIdArray[i] && docId == docTypeIdArray[j])
+                                                option(value=docTypeIdArray[j],selected='selected') #{docTypeNameArray[j]}
+                                            -else
+                                                option(value=docTypeIdArray[j]) #{docTypeNameArray[j]}
+                                        - }
+                                td(style ="text-align:center")
+                                    select(name='docDownload', onchange = 'JavaScript:downloadDocs(this.value)',data-theme="b", id='docDownloadId',data-inline='true', data-icon='grid', data-mini='true', data-native-menu="true")
+                                        option(value='0') Select Doc
+                                        -for(var j=0;j<docTypeIdArray.length; j++) {
+                                            -if(clientId == clientIdArray[i] && docId == docTypeIdArray[j]){
+                                                -for(var k=0;k<fileLocation.length; k++) {
+                                                    option(value=fileLocation[k]) #{docTypeNameArray[j]} #{k+1}
+                                                -}
+                                            -}
+                                        -}
+                        -}
+                    a(href='JavaScript:back()', rel="external",data-icon='back', data-role='button', title=' Back', data-inline='true', data-mini='true') Back
+                    input(type="hidden",name="iklantGroupIdHiddenDocVer",id="iklantGroupIdHiddenDocVerId",value="#{iklantGroupId}")
+                    input(type="hidden",name="isSynchronizedHiddenDocVer",id="isSynchronizedHiddenDocVerId",value="#{isSynchronized}")
+                    input(type="hidden",name="mifosCustomerIdHiddenDocVer",id="mifosCustomerIdHiddenDocVerId",value="#{mifosCustomerId}")
+                    input(type='hidden', name='selectedDocName', id='selectedDocId', value="")
+                    input(type="hidden",name="docVerificationFlagHidden",id="docVerificationFlagId",value="#{docVerificationFlag}")
+            div(class="ui-loader-background")

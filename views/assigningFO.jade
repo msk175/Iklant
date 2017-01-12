@@ -1,0 +1,51 @@
+extends ./layout
+include ./header
+
+block title
+    title= 'Assigning FO'
+
+block scripts
+    include ./headerJqueryMobile-1
+    script(type='text/javascript', src='/javascripts/assignFO.js')
+    script(type='text/javascript', src='/javascripts/validation.js')
+
+
+block content
+    form(id='BMFormId')
+        div(data-role='page', data-theme='b')
+            +header("Assigning Field Officer",["welcomeNote","menu","logout"])
+            include ./GroupManagementLayout
+            div(data-role='content')
+                input(type='hidden', name='alertMessageHidden', id='alertMessageHidden', value="#{}")
+                input(type='hidden', name='groupIdHidden', id='groupIdHidden', value=groupsId)
+                p(id='errorMessageIdFirstRow',align="center",class="error-message global-font-details")
+                p(id='errorMessageIdSecondRow',align="center",class="error-message global-font-details")
+                div(class='content-primary')
+                    div(data-role='horizontal', id="fieldOfficer", class="ui-bar ui-grid-c")
+                        div(class="ui-block-a",align="center")
+                        div(class="ui-block-b",align="center")
+                            label(for='fieldOfficer',class='label') Field Officer
+                        div(class="ui-block-c",align="left")
+                            select(name='fieldOfficer', id='foNames', data-theme='b', data-icon='arrow-d', data-inline='true',data-mini='true', data-native-menu="true")
+                                option(value='0') Select
+                                    -for(i=0;i< FOIdsArray.length;i++){
+                                        option(value=FOIdsArray[i]) #{FONamesArray[i]}
+                                    -}
+                    div(data-role="fieldcontain", align='center')
+                        p(id='alertMessage',class="error-message global-font-details") #{errorMessage}
+                        -for(i=0;i< groupsName.length;i++){
+                            input(type='checkbox', name=groupsId[i], id=groupsId[i], onclick = "JavaScript:openPopup('#{groupsName[i]}','#{listGroupsGlobalNumberArray[i]}',this,'#{groupsId[i]}',this.checked)", data-mini="true")
+                            label(for=groupsId[i],id=groupsName[i])
+                                img(id="image"+groupsName[i], src='/images/edit.png', width='60', height='60')
+                                h3 #{groupsName[i]}  | #{listGroupsGlobalNumberArray[i]} | FieldOfficer : #{fieldOfficerName[i]}
+                        -}
+            input(type='hidden', name='assignGroupIdsHidden', id='assignID', value="")
+            input(type='hidden', name='checked', id='checked', value='0')
+            -if(roleId != constantsObj.getGuestUserRoleId()){
+                a(href='JavaScript:assignToFO()',  rel="external",data-icon='plus', data-role='button', title=' Assign ', data-inline="true", id='assignFOSaveButton') Assign
+            -}
+            div(class='content-primary',data-theme="a")
+                div(data-role="popup",id="activeOrRejectedClients")
+                    a(href="#", data-rel="back",data-theme="a", data-role="button",data-icon="delete" ,data-iconpos="notext", class="ui-btn-right",id='popupHeader')
+                    div(class="clientsPopup")
+            div(class="ui-loader-background")

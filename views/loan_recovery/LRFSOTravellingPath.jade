@@ -1,0 +1,34 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'LR FSO Travelling Path'
+
+block scripts
+    include ../headerJqueryMobileBeta-3
+    link(rel='stylesheet', href='/stylesheets/map-styles.css')
+    script(type="text/javascript", src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCVov9kwI19tk2P2uZXlzyJRZ72U9urAnQ&sensor=false")
+    script(type='text/javascript', src='/javascripts/loan_recovery/lrFSOTravellingPath.js')
+
+block content
+    form(id='BMFormId')
+        div(data-role='page', data-theme='b')
+            +header("",["menu","logout"],'',[])
+            div(data-role="collapsible", id="minutes", data-overlay-theme="a", data-inline="true" , data-collapsed="false",data-content-theme="b")
+                h3 FSO Travelling Path for LR
+                div(data-role='horizontal', id="branchName", class="ui-bar ui-grid-a")
+                    div(class="ui-block-a",align="right")
+                        div(data-role="fieldcontain")
+                            label(for="foname",style="font-weight:bold;") Field-Officer
+                    div(class="ui-block-b",align="left")
+                        div(data-role="fieldcontain")
+                            select(name='foname', id='foname', data-theme='b',onchange="onChangeUser()", data-icon='bank', data-inline='true',data-mini='true', data-native-menu="true")
+                                option(value='0') Select FO
+                                - for(i=0;i<personnelNameArray.length;i++) {
+                                    -if(personnelIdArray[i] == personnelId)
+                                        option(value=personnelIdArray[i], selected="selected") #{personnelNameArray[i]}
+                                    -else
+                                        option(value=personnelIdArray[i]) #{personnelNameArray[i]}
+                                -}
+                div(data-role='content')
+                    div(id ="map_canvas_path")

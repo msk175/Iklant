@@ -1,0 +1,63 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'Iklant-ChequeDeposit'
+
+block scripts
+    include ../headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/loan_recovery/chequedepositlist.js')
+
+block content
+    form(id="chequeDepositFormId")
+        div(data-role='page', data-theme='b', id="loginDetailsDiv")
+            +header("",["menu","logout"])
+            div(data-role="navbar")
+                ul(id="custom-nav-list")
+                    li
+                        a(href=contextPath + '/client/ci/retrieveLoanOfficerList', rel="external", data-role="tab" , id="custom-li-1" ) Receive Payment From FO
+                    li
+                        a(href=contextPath + '/client/ci/chequeDepositList', rel="external", data-role="tab" , id="custom-li-2",class="ui-btn-active") Cheque Deposit
+                    li
+                        a(href=contextPath + '/client/ci/loanrecovery/chequeBounceLoad', rel="external", data-role="tab" , id="custom-li-3") Cheque Bounce
+            div(data-role="bar")
+                div(data-role="fieldcontain")
+            - if(chequeDepositListArray.length == 0) {
+                p(id="errorLabel",align="center",class='error-message global-font-details') No cheques to deposit
+            - }
+            - if(chequeDepositListArray.length > 0) {
+                div(data-role="collapsible", id="minutes", data-overlay-theme="a", data-inline="true" , data-collapsed="false", data-content-theme="b")
+                    h3 Cheque Deposit List
+                    table(border='0')
+                        tbody
+                            tr
+                                th S.NO
+                                th Group Name
+                                th Loan Number
+                                th Amount Received
+                                th Deposit
+                            -for(i=0;i<chequeDepositListArray.length;i++){
+                                tr
+                                    td(class='center-text') #{i+1}
+                                    td(class='center-text') #{chequeDepositListArray[i].getGroupName()}
+                                    td(class='center-text') #{chequeDepositListArray[i].getGlobalAccNum()}
+                                    td(class='center-text') #{chequeDepositListArray[i].getAmount()}
+                                    td(class='center-text')
+                                        a(href="JavaScript:showDepositScreen('#{chequeDepositListArray[i].getPaymentCollectionId()}','#{chequeDepositListArray[i].getGroupName()}','#{chequeDepositListArray[i].getGlobalAccNum()}','#{chequeDepositListArray[i].getAmount()}');",id="custom-li-mainTab4",data-theme="b",data-rel="popup",data-transition="slide",data-position-to="window",data-mini="true")
+                                            img(id='groupIcon', style="margin:5px 10px 0 0; text-align:right;",width="40px",height="40px",src='/images/deposit.png')
+                            - }
+            - }
+            div(data-role='horizontal', id="menu", class="ui-bar ui-grid-b")
+                div(class='ui-block-a')
+                div(class='ui-block-b')
+                    div(data-role="fieldcontain",align="center")
+                        a(href=contextPath + '/client/ci/menu', rel="external",data-icon='home', data-role='button', title=' Home', data-inline='true', data-mini="true") Home
+                div(class='ui-block-c')
+                    div(data-role="fieldcontain", data-inline="true",align="right")
+                        a(href=contextPath + '/client/ci/menu',  rel="external",data-icon='back', data-role='button', title=' Back ', data-inline="true", id='cancel', data-mini="true") Back
+            input(type="hidden",name="groupName",id="groupNameId",value="")
+            input(type="hidden",name="globalAccountNum",id="globalAccountNumId",value="")
+            input(type="hidden",name="paymentCollection",id="paymentCollectionId",value="")
+            input(type="hidden",name="amount",id="amountId",value="")
+            div(class="ui-loader-background")

@@ -1,0 +1,703 @@
+extends ./layout
+include ./header
+
+block title
+    title= 'IKLANT-NPA Aging'
+
+block scripts
+    include ./headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    link(rel='stylesheet', href='/stylesheets/loanSanctionCustom.css')
+    script(type='text/javascript', src='/javascripts/NPAAgingReport.js')
+
+block content
+    form(id='NPAReportForm')
+        div(data-role='page', data-theme='b', id="loginDetailsDiv")
+            div(data-role="header", data-theme="a", class="ui-bar ui-grid-a", data-overlay-theme="c")
+                div(class="ui-block-a")
+                    img(id='groupIcon', style="margin:5px 10px 0 0; text-align:right;",src='/images/iklant.png')
+                div(class="ui-block-b",align="right")
+                    h3(align="right",style="margin:20px 10px 0 0")
+                    a(href=contextPath + '/client/ci/showNPAAgingMenuPage', rel="external",data-icon='arrow-l', data-role='button', title='Back', data-inline='true') Back
+                    a(href=contextPath + '/client/ci/logout',  rel="external",data-icon='back', data-role='button', title=' Logout ', data-inline="true") Logout
+            div(data-role="content")
+                input(type="hidden",name="officeIdArrayHidden",id="officeIdArrayHidden",value="#{NPALoadHolder.getOfficeIdArray()}")
+                input(type="hidden",name="personnelIdArrayHidden",id="personnelIdArrayHidden",value="#{NPALoadHolder.getPersonnelIdArray()}")
+                input(type="hidden",name="personnelNameArrayHidden",id="personnelNameArrayHidden",value="#{NPALoadHolder.getPersonnelNameArray()}")
+                input(type="hidden",name="officePersonnelIdArrayHidden",id="officePersonnelIdArrayHidden",value="#{NPALoadHolder.getOfficePersonnelIdArray()}")
+                p(align='center', id="processNotificationId", style='display:none', class='error-message global-font-details') Please wait.! Page is loading.....
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-e")
+                    - if(roleId == constantsObj.getSMHroleId() || roleId == constantsObj.getApexPromotors()) {
+                        div(class='ui-block-a')
+                            div(data-role='fieldcontain')
+                            label(for="officeId",class="label") Office
+                        div(class='ui-block-b')
+                            div(data-role='fieldcontain')
+                                select(name='office', id='officeId', data-theme='b',data-mini='true',data-inline='true',data-native-menu='true')
+                                    - for(i=0;i< NPALoadHolder.getOfficeIdArray().length;i++){
+                                        - if(NPALoadHolder.getOfficeIdArray()[i] == officeId)
+                                            option(value= "#{NPALoadHolder.getOfficeIdArray()[i]}",selected="selected") #{NPALoadHolder.getOfficeNameArray()[i]}
+                                        - else
+                                            option(value= "#{NPALoadHolder.getOfficeIdArray()[i]}") #{NPALoadHolder.getOfficeNameArray()[i]}
+                                    - }
+                    - }
+                    - if(roleId == constantsObj.getSMHroleId() || roleId == constantsObj.getApexPromotors()) {
+                        div(class='ui-block-c')
+                            div(data-role='fieldcontain')
+                            label(for="productCategoryId",class="label") Product Category
+                        div(class='ui-block-d')
+                            div(data-role='fieldcontain')
+                                select(name='productCategory', id='productCategoryId',data-inline='true', data-theme='b',data-mini='true',data-native-menu='true')
+                                    - for(i=0;i< NPALoadHolder.getProductCategoryIdArray().length;i++){
+                                        - if(NPALoadHolder.getProductCategoryIdArray()[i] == productCategoryId)
+                                            option(value= "#{NPALoadHolder.getProductCategoryIdArray()[i]}",selected="selected") #{NPALoadHolder.getProductNameArray()[i]}
+                                        - else
+                                            option(value= "#{NPALoadHolder.getProductCategoryIdArray()[i]}") #{NPALoadHolder.getProductNameArray()[i]}
+                                    - }
+                        div(class='ui-block-e')
+                            div(data-role='fieldcontain')
+                            label(for="loanOfficerId",class="label") Loan Officer
+                        div(class='ui-block-f')
+                            div(data-role='fieldcontain')
+                                select(name='loanOfficer', id='loanOfficerId',data-inline='true', data-theme='b',data-mini='true', data-native-menu='true')
+                                    - for(i=0;i< NPALoadHolder.getPersonnelIdArray().length;i++){
+                                        - if(NPALoadHolder.getPersonnelIdArray()[i] == loanOfficer)
+                                            option(value= "#{NPALoadHolder.getPersonnelIdArray()[i]}",selected="selected") #{NPALoadHolder.getPersonnelNameArray()[i]}
+                                        - else if(officeId == -1 || NPALoadHolder.getOfficePersonnelIdArray()[i] == officeId )
+                                            option(value= "#{NPALoadHolder.getPersonnelIdArray()[i]}") #{NPALoadHolder.getPersonnelNameArray()[i]}
+                                    - }
+                    - }
+            div(data-role="content")
+                div(data-role="navbar",id="navid")
+                    ul(id="custom-nav-list")
+                        - if(roleId == constantsObj.getSMHroleId() || roleId == constantsObj.getApexPromotors()) {
+                            li
+                                a(rel="external", data-role="tab" , id="aging-li-5",class="ui-btn-active") PAR 30
+                        - }
+                        - if(roleId != constantsObj.getApexPromotors()){
+                            li
+                                a(rel="external", data-role="tab" , id="aging-li-1") Aging Principal OS
+                            li
+                                a(rel="external", data-role="tab" , id="aging-li-2")  Aging Principal OS (Clients Rule)
+                            li
+                                a(rel="external", data-role="tab" , id="aging-li-3") Aging Principal OS (RBI Guidelines)
+                            li
+                                a(rel="external", data-role="tab" , id="aging-li-4") Aging Loans
+                        -}
+
+                div(data-role="horizontal",class="ui-bar ui-grid-b",style="width:300%")
+                    - if(roleId != constantsObj.getApexPromotors()){
+                        div(id="agingKumaranDivId",style = "overflow: auto;")
+                            table
+                                tr
+
+                                    th(style="text-align:center") S.No
+                                    th(style="text-align:center") #{headerLabel}
+                                    th(style="text-align:center") Rate
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        th(style="text-align:center") #{agingHolderArray[i].getDate()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 1
+                                    td(style="text-align:center") Default 0 - 7 days
+                                    td(style="text-align:center") 100%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center")
+                                            - if(agingHolderArray[i].getDefaultZeroToSevenDays() != 0) {
+                                                label #{agingHolderArray[i].getDefaultZeroToSevenDays()}
+                                            - }
+                                            - else{
+                                                label 0
+                                            - }
+                                    - }
+                                tr
+                                    td(style="text-align:center") 2
+                                    td(style="text-align:center") Default 8 - 30 days
+                                    td(style="text-align:center") 100%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center")
+                                            - if(agingHolderArray[i].getDefaultEightToThirtydays() != 0) {
+                                                label #{agingHolderArray[i].getDefaultEightToThirtydays()}
+                                            - }
+                                            - else{
+                                                label 0
+                                            - }
+                                    - }
+                                tr
+                                    td(style="text-align:center") 3
+                                    td(style="text-align:center") Default 31 - 60 days
+                                    td(style="text-align:center") 100%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center")
+                                            - if(agingHolderArray[i].getDefaulThirtyOneToSixtydays() != 0) {
+                                                label #{agingHolderArray[i].getDefaulThirtyOneToSixtydays()}
+                                            - }
+                                            - else{
+                                                label 0
+                                            - }
+                                    - }
+                                tr
+                                    td(style="text-align:center") 4
+                                    td(style="text-align:center") Default 61 - 90 days
+                                    td(style="text-align:center") 100%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center")
+                                            - if(agingHolderArray[i].getDefaultSixtyOneTONinetyDays() != 0) {
+                                                label #{agingHolderArray[i].getDefaultSixtyOneTONinetyDays()}
+                                            - }
+                                            - else{
+                                                label 0
+                                            - }
+                                    - }
+                                tr
+                                    td(style="text-align:center") 5
+                                    td(style="text-align:center") Default 91 - 120 days
+                                    td(style="text-align:center") 100%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center")
+                                            - if(agingHolderArray[i].getDefaultNinetyOneTo120days() != 0) {
+                                                label #{agingHolderArray[i].getDefaultNinetyOneTo120days()}
+                                            - }
+                                            - else{
+                                                label 0
+                                            - }
+                                    - }
+                                tr
+                                    td(style="text-align:center") 6
+                                    td(style="text-align:center") Default 121 - 150 days
+                                    td(style="text-align:center") 100%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center")
+                                            - if(agingHolderArray[i].getDefault121TO150Days() != 0) {
+                                                label #{agingHolderArray[i].getDefault121TO150Days()}
+                                            - }
+                                            - else{
+                                                label 0
+                                            - }
+                                    - }
+                                tr
+                                    td(style="text-align:center") 7
+                                    td(style="text-align:center") Default 151 - 180 days
+                                    td(style="text-align:center") 100%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center")
+                                            - if(agingHolderArray[i].getDefault151TO180Days() != 0) {
+                                                label #{agingHolderArray[i].getDefault151TO180Days()}
+                                            - }
+                                            - else{
+                                                label 0
+                                            - }
+                                    - }
+                                tr
+                                    td(style="text-align:center") 8
+                                    td(style="text-align:center") Default 181 - 210 days
+                                    td(style="text-align:center") 100%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center")
+                                            - if(agingHolderArray[i].getDefault181TO210Days() != 0) {
+                                                label #{agingHolderArray[i].getDefault181TO210Days()}
+                                            - }
+                                            - else{
+                                                label 0
+                                            - }
+                                    - }
+                                tr
+                                    td(style="text-align:center") 9
+                                    td(style="text-align:center") Default 211 - 240 days
+                                    td(style="text-align:center") 100%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center")
+                                            - if(agingHolderArray[i].getDefault211TO240Days() != 0) {
+                                                label #{agingHolderArray[i].getDefault211TO240Days()}
+                                            - }
+                                            - else{
+                                                label 0
+                                            - }
+                                    - }
+                                tr
+                                    td(style="text-align:center") 10
+                                    td(style="text-align:center") Default 241 - 270 days
+                                    td(style="text-align:center") 100%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center")
+                                            - if(agingHolderArray[i].getDefault241TO270Days() != 0) {
+                                                label #{agingHolderArray[i].getDefault241TO270Days()}
+                                            - }
+                                            - else{
+                                                label 0
+                                            - }
+                                    - }
+                                tr
+                                    td(style="text-align:center") 11
+                                    td(style="text-align:center") Default 271 - 300 days
+                                    td(style="text-align:center") 100%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center")
+                                            - if(agingHolderArray[i].getDefault271TO300Days() != 0) {
+                                                label #{agingHolderArray[i].getDefault271TO300Days()}
+                                            - }
+                                            - else{
+                                                label 0
+                                            - }
+                                    - }
+                                tr
+                                    td(style="text-align:center") 12
+                                    td(style="text-align:center") Default 301 - 330 days
+                                    td(style="text-align:center") 100%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center")
+                                            - if(agingHolderArray[i].getDefault301TO330Days() != 0) {
+                                                label #{agingHolderArray[i].getDefault301TO330Days()}
+                                            - }
+                                            - else{
+                                                label 0
+                                            - }
+                                    - }
+                                tr
+                                    td(style="text-align:center") 13
+                                    td(style="text-align:center") Default 331 - 360 days
+                                    td(style="text-align:center") 100%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center")
+                                            - if(agingHolderArray[i].getDefault331TO360Days() != 0) {
+                                                label #{agingHolderArray[i].getDefault331TO360Days()}
+                                            - }
+                                            - else{
+                                                label 0
+                                            - }
+                                    - }
+                                tr
+                                    td(style="text-align:center") 14
+                                    td(style="text-align:center") Default Beyond 360 Days
+                                    td(style="text-align:center") 100%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center")
+                                            - if(agingHolderArray[i].getDefaultBeyond360Days() != 0) {
+                                                label #{agingHolderArray[i].getDefaultBeyond360Days()}
+                                            - }
+                                            - else{
+                                                label 0
+                                            - }
+                                    - }
+                                tr
+                                    th(style="text-align:center") Total
+                                    th(style="text-align:center") NP Principal OS
+                                    th
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        th(style="text-align:center") #{agingHolderArray[i].getNpaPrincipalOutstanding()}
+                                    - }
+                        div(id="agingApexDivId",style = "overflow: auto;")
+                            table
+                                tr
+
+                                    th(style="text-align:center") S.No
+                                    th(style="text-align:center") #{headerLabel}
+                                    th(style="text-align:center") Rate
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        th(style="text-align:center") #{agingHolderArray[i].getDate()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 1
+                                    td(style="text-align:center") Default 0 - 7 days
+                                    td(style="text-align:center") 0.25%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefaultZeroToSevenDaysApex()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 2
+                                    td(style="text-align:center") Default 8 - 30 days
+                                    td(style="text-align:center") 5%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefaultEightToThirtydaysApex()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 3
+                                    td(style="text-align:center") Default 31 - 60 days
+                                    td(style="text-align:center") 20%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefaulThirtyOneToSixtydaysApex()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 4
+                                    td(style="text-align:center") Default 61 - 90 days
+                                    td(style="text-align:center") 50%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefaultSixtyOneTONinetyDaysApex()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 5
+                                    td(style="text-align:center") Default 91 - 120 days
+                                    td(style="text-align:center") 80%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefaultNinetyOneTo120daysApex()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 6
+                                    td(style="text-align:center") Default 121 - 150 days
+                                    td(style="text-align:center") 80%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefault121TO150DaysApex()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 7
+                                    td(style="text-align:center") Default 151 - 180 days
+                                    td(style="text-align:center") 80%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefault151TO180DaysApex()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 8
+                                    td(style="text-align:center") Default 181 - 210 days
+                                    td(style="text-align:center") 100%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefault181TO210DaysApex()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 9
+                                    td(style="text-align:center") Default 211 - 240 days
+                                    td(style="text-align:center") 100%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefault211TO240DaysApex()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 10
+                                    td(style="text-align:center") Default 241 - 270 days
+                                    td(style="text-align:center") 100%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefault241TO270DaysApex()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 11
+                                    td(style="text-align:center") Default 271 - 300 days
+                                    td(style="text-align:center") 100%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefault271TO300DaysApex()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 12
+                                    td(style="text-align:center") Default 301 - 330 days
+                                    td(style="text-align:center") 100%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefault301TO330DaysApex()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 13
+                                    td(style="text-align:center") Default 331 - 360 days
+                                    td(style="text-align:center") 100%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefault331TO360DaysApex()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 14
+                                    td(style="text-align:center") Default Beyond 360 Days
+                                    td(style="text-align:center") 100%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefaultBeyond360DaysApex()}
+                                    - }
+                                tr
+                                    th(style="text-align:center") Total
+                                    th(style="text-align:center") NP Principal OS
+                                    th
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        th(style="text-align:center") #{agingHolderArray[i].getNpaPrincipalOutstandingApex()}
+                                    - }
+                        div(id="agingRBIDivId",style = "overflow: auto;")
+                            table
+                                tr
+
+                                    th(style="text-align:center") S.No
+                                    th(style="text-align:center") #{headerLabel}
+                                    th(style="text-align:center") Rate
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        th(style="text-align:center") #{agingHolderArray[i].getDate()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 1
+                                    td(style="text-align:center") Default 0 - 7 days
+                                    td(style="text-align:center") 0%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefaultZeroToSevenDaysRBI()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 2
+                                    td(style="text-align:center") Default 8 - 30 days
+                                    td(style="text-align:center") 0%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefaultEightToThirtydaysRBI()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 3
+                                    td(style="text-align:center") Default 31 - 60 days
+                                    td(style="text-align:center") 0%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefaulThirtyOneToSixtydaysRBI()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 4
+                                    td(style="text-align:center") Default 61 - 90 days
+                                    td(style="text-align:center") 0%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefaultSixtyOneTONinetyDaysRBI()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 5
+                                    td(style="text-align:center") Default 91 - 120 days
+                                    td(style="text-align:center") 50%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefaultNinetyOneTo120daysRBI()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 6
+                                    td(style="text-align:center") Default 121 - 150 days
+                                    td(style="text-align:center") 50%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefault121TO150DaysRBI()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 7
+                                    td(style="text-align:center") Default 151 - 180 days
+                                    td(style="text-align:center") 50%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefault151TO180DaysRBI()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 8
+                                    td(style="text-align:center") Default 181 - 210 days
+                                    td(style="text-align:center") 100%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefault181TO210DaysRBI()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 9
+                                    td(style="text-align:center") Default 211 - 240 days
+                                    td(style="text-align:center") 100%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefault211TO240DaysRBI()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 10
+                                    td(style="text-align:center") Default 241 - 270 days
+                                    td(style="text-align:center") 100%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefault241TO270DaysRBI()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 11
+                                    td(style="text-align:center") Default 271 - 300 days
+                                    td(style="text-align:center") 100%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefault271TO300DaysRBI()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 12
+                                    td(style="text-align:center") Default 301 - 330 days
+                                    td(style="text-align:center") 100%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefault301TO330DaysRBI()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 13
+                                    td(style="text-align:center") Default 331 - 360 days
+                                    td(style="text-align:center") 100%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefault331TO360DaysRBI()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 14
+                                    td(style="text-align:center") Default Beyond 360 Days
+                                    td(style="text-align:center") 100%
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefaultBeyond360DaysRBI()}
+                                    - }
+                                tr
+                                    th(style="text-align:center") Total
+                                    th(style="text-align:center") NP Principal OS
+                                    th
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        th(style="text-align:center") #{agingHolderArray[i].getNpaPrincipalOutstandingRbi()}
+                                    - }
+                        div(id="agingLoansDivId",style = "overflow: auto;")
+                            table
+                                tr
+                                    th(style="text-align:center") S.No
+                                    th(style="text-align:center") #{headerLabel}
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        th(style="text-align:center") #{agingHolderArray[i].getDate()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 1
+                                    td(style="text-align:center") Default 0 - 7 days
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefaultZeroToSevenDaysLoans()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 2
+                                    td(style="text-align:center") Default 8 - 30 days
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefaultEightToThirtydaysLoans()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 3
+                                    td(style="text-align:center") Default 31 - 60 days
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefaulThirtyOneToSixtydaysLoans()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 4
+                                    td(style="text-align:center") Default 61 - 90 days
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefaultSixtyOneTONinetyDaysLoans()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 5
+                                    td(style="text-align:center") Default 91 - 120 days
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefaultNinetyOneTo120daysLoans()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 6
+                                    td(style="text-align:center") Default 121 - 150 days
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefault121TO150DaysLoans()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 7
+                                    td(style="text-align:center") Default 151 - 180 days
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefault151TO180DaysLoans()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 8
+                                    td(style="text-align:center") Default 181 - 210 days
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefault181TO210DaysLoans()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 9
+                                    td(style="text-align:center") Default 211 - 240 days
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefault211TO240DaysLoans()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 10
+                                    td(style="text-align:center") Default 241 - 270 days
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefault241TO270DaysLoans()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 11
+                                    td(style="text-align:center") Default 271 - 300 days
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefault271TO300DaysLoans()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 12
+                                    td(style="text-align:center") Default 301 - 330 days
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefault301TO330DaysLoans()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 13
+                                    td(style="text-align:center") Default 331 - 360 days
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefault331TO360DaysLoans()}
+                                    - }
+                                tr
+                                    td(style="text-align:center") 14
+                                    td(style="text-align:center") Default Beyond 360 Days
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center") #{agingHolderArray[i].getDefaultBeyond360DaysLoans()}
+                                    - }
+                                tr
+                                    th(style="text-align:center") Total
+                                    th(style="text-align:center") NPA Loans
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        th(style="text-align:center") #{agingHolderArray[i].getNpaLoans()}
+                                    - }
+                    -}
+                    - if(roleId == constantsObj.getSMHroleId() || roleId == constantsObj.getApexPromotors()) {
+                        div(id="par30DivId",style = "overflow: auto;")
+                            table
+                                tr
+
+                                    th(style="text-align:center") S.No
+                                    th(style="text-align:center") #{headerLabel}
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        th(style="text-align:center") #{agingHolderArray[i].getDate()}
+                                    - }
+
+                                tr
+                                    td(style="text-align:center") 1
+                                    td(style="text-align:center") PAR 30
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        td(style="text-align:center")
+                                            - if(PAR30POSList[i] != 0) {
+                                                label #{PAR30POSList[i]}
+                                            - }
+                                            - else{
+                                                label 0
+                                            - }
+                                    - }
+                                tr
+                                    td(style="text-align:center") 2
+                                    td(style="text-align:center") GLP/Total Principal OS
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        -if(typeof overallPosList[i]!== 'undefined')
+                                            td(style="text-align:center") #{overallPosList[i]}
+                                        -else
+                                            td(style="text-align:center") 0
+                                    - }
+                                tr
+                                    td(style="text-align:center") 3
+                                    td(style="text-align:center") % of PAR 30
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        -if(typeof PAR30percentage[i]!== 'undefined')
+                                            td(style="text-align:center") #{PAR30percentage[i]}%
+                                        -else
+                                            td(style="text-align:center") 0%
+                                    - }
+                                tr
+                                    td(style="text-align:center") 4
+                                    td(style="text-align:center") Cash Balance
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        -if(typeof cashBalanceArray[i]!== 'undefined')
+                                            td(style="text-align:center") #{cashBalanceArray[i]}
+                                        -else
+                                            td(style="text-align:center") Not Generated
+                                    - }
+                                tr
+                                    td(style="text-align:center") 5
+                                    td(style="text-align:center") Bank Balance
+                                    - for(var i=agingHolderArray.length-1;i>=0;i--) {
+                                        -if(typeof bankBalanceArray[i]!== 'undefined')
+                                            td(style="text-align:center") #{bankBalanceArray[i]}
+                                        -else
+                                            td(style="text-align:center") Not Generated
+                                    - }
+                    - }
+            div(data-role="popup",id="recentActivityPopup",data-corners="true",data-theme="b",data-shadow="true")
+                a(href="#",data-rel="back",data-role="button",data-theme="a",data-icon="delete",data-iconpos="notext",class="ui-btn-right") Close
+                div(data-role="navbar")
+                    ul(id="custom-nav-list")
+                        li
+                            a(href="", rel="external", data-role="tab" , id="labelTextLi")
+                div(data-role="horizontal",class="ui-bar ui-grid-b",style="width:138%")
+                    div(class='ui-block-a',style="width:30%")
+                        a(href='#', data-icon='arrow-l',data-iconpos="left", data-role='button',id='clientListPrevId',data-inline='true', data-mini='true') Prev
+                    div(class='ui-block-b',style="width:35%")
+                        a(href='#', data-role='button',id='clientListPageNoId',data-inline='true', data-mini='true')
+                    div(class='ui-block-c',style="width:5%")
+                        a(href='#', data-icon='arrow-r',data-iconpos="right",data-role='button',id='clientListNextId',data-inline='true', data-mini='true') Next
+                div(data-role="content",id="clientListDivId",style = "overflow: auto;")
+
+            div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-b",data-theme="b",id="show")
+                div(class='ui-block-a')
+                    div(data-role="fieldcontain",align="left")
+                        //a(href='JavaScript:showNPAReport()',  rel="external",data-theme="b",data-role='button',data-mini='true', data-inline="true") Submit
+                div(class='ui-block-b')
+                    div(data-role="fieldcontain",align="center")
+                        a(href=contextPath + '/client/ci/menu', rel="external",data-icon='home', data-role='button', title=' Home', data-inline='true', data-mini="true") Home
+                div(class='ui-block-c',align="right")
+                    div(data-role="fieldcontain", data-inline="true")
+                        a(href=contextPath + '/client/ci/showNPAAgingMenuPage',  rel="external",data-theme="c",data-icon='back',id = "back", data-role='button',data-mini='true', data-inline="true",align="right") Back
+            div(class="ui-loader-background")

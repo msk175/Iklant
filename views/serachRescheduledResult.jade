@@ -1,0 +1,44 @@
+doctype
+html(lang = "en")
+    head
+        title= 'IKLANT-LoanReceoveryLoans'
+        meta(charset='utf-8')
+        meta(name="viewport", content="initial-scale=1.0, user-scalable=no")
+        link(rel="stylesheet", href="/stylesheets/jquery.mobile-1.3.0-beta.1.min.css")
+        link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+        link(rel='stylesheet', href='/stylesheets/iklantStyle.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+        script(type='text/javascript', src='/javascripts/jquery-1.7.1.min.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile.custom.js')
+        script(type='text/javascript', src='/javascripts/searchRescheduledResult.js')
+        script(type='text/javascript', src='/javascripts/common.js')
+    body(id="pageID")
+        div(data-role='page', data-theme='b', id="loginDetailsDiv")
+            div(data-role="header", data-theme="a", class="ui-bar ui-grid-a", data-overlay-theme="c",data-position="fixed")
+                div(class="ui-block-a")
+                    img(id='groupIcon', style="margin:5px 10px 0 0; text-align:right;",src='/images/iklant.png')
+                div(class="ui-block-b",align="right",style="padding:25px 50px 0 0;")
+                    a(href='/mfi/api/1.0/client/ci/menu', rel="external",data-icon='home', data-role='button', title=' Menu', data-inline='true') Home
+                    a(href='/mfi/api/1.0/client/ci/logout',  rel="external",data-icon='back', data-role='button', title=' Logout ', data-inline="true") Logout
+            p(id="errorLabel",align="center") #{errorLabel}
+            form(id='loanListFormID')
+                - if(searchResult.length > 0 ) {
+                    div(data-role="collapsible", id="minutes", data-overlay-theme="a", data-inline="true" , data-collapsed="false", data-content-theme="b")
+                        h3 Search Result
+                        p(align="center",style="color:red;font-weigth:bold")
+                        div(data-role='content')
+                            div(class='content-primary')
+                                ul(data-role='listview', data-split-icon='gear', data-split-theme='c', data-filter="true", data-filter-theme='c',  data-filter-placeholder='Search for a group')
+                                    - for(var j=0;j<searchResult.length;j++) {
+                                    li
+                                        a(href="JavaScript:showLoansList('#{searchResult[j].GROUP_ACC_NUMBER}');")
+                                            img(src='/images/edit.png', width='60', height='60', style='margin:8px 10px 10px 20px;')
+                                            h3 #{searchResult[j].M_GROUP_ID} | Account Num : #{searchResult[j].GROUP_ACC_NUMBER}
+                                            label(for='groupsId' , id='labelGroupsId'+j) Loan Officer : #{searchResult[j].AC_LOAN_OFFICER_ORIG_LOAN} | Office Name : #{searchResult[j].M_BRANCH_IDENTIFIER}
+                                    - }
+                - }
+                input(type="hidden",id="groupAccNum",name="groupAccNum",value="")
+                div(class="ui-loader-background")

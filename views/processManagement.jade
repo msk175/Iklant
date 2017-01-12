@@ -1,0 +1,57 @@
+!!! 5
+html(lang = "en")
+    head
+        title= 'IKLANT-Dashboard'
+        meta(charset='utf-8')
+        meta(name="viewport", content="initial-scale=1.0, user-scalable=no")
+        link(rel="stylesheet", href="/stylesheets/jquery.mobile-1.3.0-beta.1.min.css")
+        link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+        link(rel='stylesheet', href='/stylesheets/iklantStyle.css')
+        link(rel='stylesheet', href='/stylesheets/loan-recovery-style.css')
+        script(type='text/javascript', src='/javascripts/jquery-1.8.3.min.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile-1.3.0-beta.1.min.js')
+        script(type='text/javascript', src='/javascripts/jquery-ui.js')
+        script(type='text/javascript', src='/javascripts/constantjs.js')
+        script(type='text/javascript', src='/javascripts/processnpa.js')
+        script(type='text/javascript', src='/javascripts/common.js')
+    body
+        form(id='processnpa')
+            div(data-role='page', data-theme='b')
+                div(data-role="header", data-theme="a", class="ui-bar ui-grid-a")
+                    div(class="ui-block-a")
+                        div(data-role='controlgroup', data-type='horizontal', data-mini='true')
+                            h3  Report Management
+                    div(class="ui-block-b", align="right")
+                        a(href=contextPath + '/client/ci/menu', rel="external",data-icon='home', data-role='button', title='home', data-inline='true') Home
+                        a(href=contextPath + '/client/ci/logout',  rel="external",data-icon='back', data-role='button', title=' Logout ', data-inline="true") Logout
+                div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b")
+                    h3 Generate NPA
+                    p(id="successfield",align="center",style="color:green;font-weight:bold")
+                    p(id="errorField",align="center")
+                    div(data-role="fieldcontain")
+                        label(id="labelid") ** Last NPA Report is processed on : " #{lastProcessedDate} "
+                    div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-grid-a")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                                label(for="reportDate") Report Date *
+                                input(type="text", name="reportDate", id="reportDate", value="#{todaysdate}", required='true',readonly="readonly",autocomplete="off")
+                                input(type="hidden", name="redoHidden", id="redoHiddenId", value="false", required='true', readonly="readonly")
+                                input(type="hidden", name="thereshold", id="theresholdId", value="1500", readonly="readonly")
+                        div(class='ui-block-b',id="generateDivId")
+                            a(href='JavaScript:generateNPAReport()',rel="external", data-role="button",data-theme='b', title='Generate NPAReport For Given Date', data-inline='true',id="generateId") Generate NPA
+                div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-b",data-theme="b",id="show")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain",align="left")
+                            //a(href='JavaScript:showNPAReport()',  rel="external",data-theme="b",data-role='button',data-mini='true', data-inline="true") Submit
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain",align="center")
+                            a(href=contextPath + '/client/ci/menu', rel="external",data-icon='home', data-role='button', title=' Home', data-inline='true', data-mini="true") Home
+                    div(class='ui-block-c',align="right")
+                        div(data-role="fieldcontain", data-inline="true")
+                            a(href=contextPath + '/client/ci/reportManagement',  rel="external",data-theme="c",data-icon='back',id = "back", data-role='button',data-mini='true', data-inline="true",align="right") Back
+                    div(id="dialog-confirm",title="Regenerate Report??")
+                        p NPA Report already processed for specifed date.Do you want to regenerate it?
+                div(class="ui-loader-background")

@@ -1,0 +1,91 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'Iklant-Adjustment'
+
+block scripts
+    include ../headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/loan_recovery/ApplyAdjustmentList.js')
+
+block content
+    form(id="applyAdjustmentListFormId")
+        div(data-role='page', data-theme='b', id="loginDetailsDiv")
+            +header("",["menu","backJavascript","logout"],'backFormSubmission',[globalAccountNum,flagIdForClosedLoans])
+            div(data-role="navbar")
+                ul(id="custom-nav-list")
+                    li
+                        a(href="JavaScript:operationSubmitFromBM('');", rel="external", data-role="tab" , id="custom-li-1") Payment Lists - Chooose Payment to Adjustment
+            div(data-role="collapsible", id="minutes", data-overlay-theme="a", data-inline="true" , data-collapsed="false",data-content-theme="b")
+                h3 #{groupName} - #{globalAccountNum}
+                div(data-role="content" , style="overflow: auto;" , class="ui-content" , role="main")
+                    - if(individualPreclosed) {
+                        -if(adjustablePaymentList.length > 0){
+                            table(border='0')
+                                tbody
+                                    tr
+                                        th S.No
+                                        th Date of Transaction
+                                        th Amount
+                                        th Mode of Payment
+                                        th Cheque No
+                                        th Cheque Date
+                                        th Apply Adjustment
+                                    - for( var i = 0; i < adjustablePaymentList.length; i++ ) {
+                                        tr
+                                            td #{i+1}
+                                            td #{adjustablePaymentList[i].getpaymentDate()}
+                                            td #{adjustablePaymentList[i].getamount()}
+                                            td #{adjustablePaymentList[i].getpaymentType()}
+                                            td #{adjustablePaymentList[i].getreceiptId()}
+                                            td #{adjustablePaymentList[i].getreceiptDate()}
+                                            td
+                                                - if(i==0){
+                                                    a(href='JavaScript:applyAdjustmentListFormSubmission("#{adjustablePaymentList[i].getpaymentId()}","#{flagIdForClosedLoans}")',  rel="external",data-icon="arrow-r",data-iconpos="right",data-mini="true", data-role='button', title=' Apply Adjustment ', data-inline="true", id='applyAdjustment'+i) Apply Adjustment
+                                                - }
+                                                - else {
+                                                    a(href="#") -
+                                                - }
+                                    - }
+                        -}
+                    - }
+                    - else {
+                        -if(adjustablePaymentList.length > 0){
+                            table(border='0')
+                                tbody
+                                    tr
+                                        th S.No
+                                        th Date of Transaction
+                                        th Amount
+                                        th Mode of Payment
+                                        th Cheque No
+                                        th Cheque Date
+                                        th Apply Adjustment
+                                    - for( var i = 0; i < adjustablePaymentList.length; i++ ) {
+                                        tr
+                                            td #{i+1}
+                                            td #{adjustablePaymentList[i].getpaymentDate()}
+                                            td #{adjustablePaymentList[i].getamount()}
+                                            td #{adjustablePaymentList[i].getpaymentType()}
+                                            td #{adjustablePaymentList[i].getreceiptId()}
+                                            td #{adjustablePaymentList[i].getreceiptDate()}
+                                            td
+                                                a(href='JavaScript:applyAdjustmentListFormSubmission("#{adjustablePaymentList[i].getpaymentId()}","#{flagIdForClosedLoans}")',  rel="external",data-icon="arrow-r",data-iconpos="right",data-mini="true", data-role='button', title=' Apply Adjustment ', data-inline="true", id='applyAdjustment'+i) Apply Adjustment
+                                        - }
+                        -}
+                        -else {
+                            p No adjustments possible for this account.
+                        -}
+                    - }
+            div(data-role="footer",class="ui-bar ui-grid-a",data-theme="d")
+                div(class='ui-block-a',align="right")
+                    a(href=contextPath + '/client/ci/menu', rel="external",data-icon='home',data-theme="b", data-role='button', title=' Home', data-inline='true') Home
+                div(class='ui-block-b',align="right")
+                    a(href='JavaScript:backFormSubmission("#{globalAccountNum}","#{flagIdForClosedLoans}")', rel="external",data-icon='back',data-theme="b",data-role='button', title=' Back', data-inline="true") Back
+            input(type='hidden', name='officeId', id='officeIdId', value="#{officeId}")
+            input(type='hidden', name='globalAccountNum', id='globalAccountNumId', value="#{globalAccountNum}")
+            input(type='hidden', name='paymentId', id='paymentIdId', value="")
+            input(type='hidden', name='accountId', id='accountIdHiddenId', value="#{accountId}")
+            input(type='hidden', name='accountTypeId', id='accountTypeIdHiddenId', value="#{accountTypeId}")
+            div(class="ui-loader-background")

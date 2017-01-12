@@ -1,0 +1,150 @@
+doctype
+html(lang = "en")
+    head
+        title= 'IKLANT-ProfitAndLossReport'
+        meta(charset='utf-8')
+        meta(name='viewport',content='width=device-width, initial-scale=1')
+        meta(http-equiv='Cache-Control', content='no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0')
+        meta(http-equiv='Pragma', content='no-cache')
+        meta(http-equiv='Expires', content='-1')
+        link(rel="stylesheet",href="/stylesheets/jquery.mobile-1.3.0-beta.1.min.css")
+        link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+        link(rel='stylesheet', href='/stylesheets/dialogStyle.css')
+        link(rel='stylesheet', href='/stylesheets/tablereport.css')
+        link(rel='stylesheet', href='/stylesheets/loanSanctionCustom.css')
+        script(type='text/javascript', src='/javascripts/jquery-1.8.3.min.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile-1.3.0-beta.1.min.js')
+        script(type='text/javascript', src='/javascripts/jquery-ui.js')
+        script(type="text/javascript",src="/javascripts/jsapi.txt")
+        script(type='text/javascript', src='/javascripts/trailBalance.js')
+        script(type="text/javascript", src="/javascripts/reportmgmt.js")
+        script(type="text/javascript", src="/javascripts/jquery.dataTables.js")
+        script(type='text/javascript', src='/javascripts/common.js')
+    body(style="overflow-x:hidden")
+        form(id='profitLossReport')
+            input(type='hidden', name='selectedDocName', id='selectedDocName', value="#{fileLocation}")
+            input(type='hidden', name='reportPageName', id='reportPageName', value="profitLossReport")
+            input(type='hidden', name='report_download_flag', id='report_download_flag', value="#{download_report}")
+            input(type='hidden', name='reportType', id='reportType')
+            input(type='hidden', name='reportName', id='reportName', value="financialReports")
+            input(type='hidden', name='finYearIdArray', id='finYearIdArray', value="#{FinancialYearLoadHolder.getFinancialYearIdArray()}")
+            input(type='hidden', name='startDateArray', id='startDateArray', value="#{FinancialYearLoadHolder.getFinancialYearStartDateArray()}")
+            input(type='hidden', name='endDateArray', id='endDateArray', value="#{FinancialYearLoadHolder.getFinancialYearEndDateArray()}")
+            div(data-role='page', data-theme='b', id="loginDetailsDiv")
+                div(data-role="header", data-theme="a", class="ui-bar ui-grid-a", data-overlay-theme="c")
+                    div(class="ui-block-a")
+                        img(id='groupIcon', style="margin:5px 10px 0 0; text-align:right;",src='/images/iklant.png')
+                    div(class="ui-block-b",align="right")
+                        h3(align="right",style="margin:20px 10px 0 0")
+                        a(href=contextPath + '/client/ci/reportsMenuByCategory/#{constantsObj.getFinancialReports()}', rel="external",data-icon='arrow-l', data-role='button', title='Back', data-inline='true') Back
+                        a(href=contextPath + '/client/ci/menu', rel="external",data-icon='home', data-role='button', title='Home', data-inline='true') Home
+                        a(href=contextPath + '/client/ci/logout',  rel="external",data-icon='back', data-role='button', title=' Logout ', data-inline="true") Logout
+                div(data-role="navbar",id="navid")
+                    ul(id="custom-nav-list")
+                        li
+                            a(rel="external", data-role="tab" , id="table-li-1",class="ui-btn-active") Profit and Loss Report
+                div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b",id='profitLossReportDiv')
+                    h3 Select Dates to view Profit and Loss Report
+                    p(id="errorField",class="error_label",align="center")
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a")
+                        div(class='ui-block-a',style='width:13%')
+                            div(data-role="fieldcontain")
+                            label(id="report_label_top") Financial Year
+                        div(class='ui-block-b',style='width:14%')
+                            div(data-role="fieldcontain")
+                                select(name='finYearId', id='finYearId', data-theme='b', data-icon='grid', data-inline='true', data-mini='true')
+                                    -for(i=0;i<finResult.length;i++){
+                                        -if(finResult[i].financialyear_id === finYearId){
+                                            option(value=finResult[i].financialyear_id,selected='selected') #{finResult[i].financialyear_id}
+                                        -}
+                                        -else{
+                                            option(value=finResult[i].financialyear_id) #{finResult[i].financialyear_id}
+                                        -}
+                                    - }
+                        div(class='ui-block-b',style="width:15%")
+                            div(data-role="fieldcontain")
+                            label(id="report_label_top") From Date
+                        div(class='ui-block-c',style="width:20%")
+                            div(data-role="fieldcontain")
+                                input(type="text", class="finFromDate",name="fromdateValue", id="fromdateValue",readonly = "readonly", value="#{startDate}", required='true')
+                        div(class='ui-block-d',style="width:15%")
+                            div(data-role="fieldcontain")
+                            label(id="report_label_top") To Date
+                        div(class='ui-block-e',style="width:20%")
+                            div(data-role="fieldcontain")
+                                input(type="text", class="finToDate",name="todateValue", id="todateValue",readonly = "readonly", value="#{endDate}", required='true')
+                        //- if(roleId == constantsObj.getSMHroleId()) {
+                        //-div(class='ui-block-e',style="width:13%")
+                            div(data-role="fieldcontain")
+                            label(for="listoffice",id="report_label_top") Office
+                        //-div(class='ui-block-e',style="width:20%")
+                            div(data-role="fieldcontain")
+                            select(name='listoffice', id='listoffice', data-theme='b', data-icon='grid', data-inline='true', data-mini='true')
+                                option(value='-1') All
+                                -for(i=0;i<officeIdArray.length;i++){
+                                    -if(officeValue == officeIdArray[i]){
+                                        option(value=officeIdArray[i],selected="") #{officeNameArray[i]}
+                                   -}else{
+                                         option(value=officeIdArray[i]) #{officeNameArray[i]}
+                                    -}
+                                -}
+                        //-}
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-bar ui-grid-c")
+                        div(class='ui-block-a',align="center")
+                            div(data-role="fieldcontain", data-mini="true")
+                                a(href="JavaScript:generateReportPageWithOfficeDate('profitLossReport','Summary')",id="loan_disbursal_report_download",rel="external",data-role='button', title=' Download ', data-inline="true",data-mini="true") View Summary
+                        div(class='ui-block-b',align="center")
+                            div(data-role="fieldcontain", data-mini="true")
+                                a(href="JavaScript:generateReportPageWithOfficeDate('profitLossReport','Detailed')",  rel="external",data-theme="b",data-role='button', title=' Save ', data-inline="true", data-mini='true') View Detailed Report
+                        div(class='ui-block-c',align="center")
+                            div(data-role="fieldcontain", data-mini="true")
+                                a(href='#',id="profit_loss_report_download",rel="external", data-role='button', title=' Download ', data-inline="true",data-mini="true",onclick="generateReportPageWithOfficeDate('profitLossReport','Download')") Export To Excel
+                -if(result != null){
+                div(id="cashBookReportTableId",style = "overflow: auto;",class=(result.length>10)?'container '+detailed:detailed)
+                    div(data-role="navbar",id="navid")
+                        ul(id="custom-nav-list")
+                            li
+                                a(rel="external", data-role="tab" , id="table-li-1",class="ui-btn-active") Profit and Loss Report
+                    table(id="fixedHeader_detailedsummary_full", CLASS="DISPLAY", cellspacing="0", width="100%")
+                        thead
+                            tr
+                                th S.No.
+                                th GL Code
+                                th GL Name
+                                th Income
+                                th Expense
+                        -if(result.length != 0){
+                        - for(var i=0;i<result.length;i++) {
+                        tbody
+                            tr(class="showhide")
+                                td(align='center') #{i+1}
+                                td #{result[i].glcode_value}
+                                td #{result[i].coa_name}
+                                td(align='right') #{result[i].income}
+                                td(align='right') #{result[i].expense}
+                        - }
+                        -}else{
+                            tr
+                                td(align="center",colspan=9) No Records
+                        -}
+                div(style = "overflow: auto;",class=summary)
+                    div(data-role="navbar",id="navid")
+                        ul(id="custom-nav-list")
+                            li
+                                a(rel="external", data-role="tab" , id="table-li-1",class="ui-btn-active") Profit and Loss Report
+                        table
+                            tr
+                                th Total Income
+                                th Total Expense
+                            -if(result.length != 0){
+                            tr
+                                td(align='right') #{result.total_income}
+                                td(align='right') #{result.total_expense}
+                            -}else{
+                            tr
+                                td(align="center",colspan=9) No Records
+                            -}
+                -}
+                div(class="ui-loader-background")

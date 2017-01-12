@@ -1,0 +1,57 @@
+extends ../layout
+include ../header
+include ./verificationNavbar
+block title
+   title= 'IKLANT-FOQueue'
+block scripts
+   include ../headerJqueryMobile-1
+   script(type='text/javascript', src="/javascripts/coordinator_verification/coordValidation.js")
+   script(type='text/javascript', src='/javascripts/validation.js')
+block content
+   form(id='BMFormId')
+      div(data-role='page', data-theme='b')
+         +header("KYC Document Verification",["menu","logout"])
+         +verificationNavbar("Infoqueue")
+         input(type='hidden', name='alertMessageHidden', id='alertMessageHidden', value="#{}")
+         div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a",style='width:100%')
+            -if(officeValue == constantsObj.getApexHeadOffice()){
+            div(class='ui-block-a',style="width:49%",align='right')
+               div(data-role='fieldcontain')
+               label(id="report_label_top",class='label') Select Office
+            div(class='ui-block-b',style="width:2%")
+            div(class='ui-block-b',style="width:49%")
+               div(data-role='fieldcontain')
+                  select(name='listofficeName', id='listofficeId', data-theme='b', data-icon='bank', data-inline='true', data-mini='true')
+                     option(value='0') Select Office
+                     - for(i=0;i<officeIdList.length;i++) {
+                        -if(selectedOfficeId  == officeIdList[i]) {
+                           option(value=officeIdList[i], selected='selected') #{officeNameList[i]}
+                        -}
+                        -else if(officeIdList[i] != 1){
+                           option(value=officeIdList[i]) #{officeNameList[i]}
+                        -}
+                     - }
+            -}
+         - if(groupsForKYCVerification.groupIdList.length > 0) {
+            div(data-role='content')
+               div(class='content-primary')
+                  ul(data-role='listview', data-split-icon='gear', data-split-theme='c', data-filter="true", data-filter-theme='c',  data-filter-placeholder='Search for a group')
+                     - for( var i = 0; i < groupsForKYCVerification.groupIdList.length; i++ ) {
+                        li
+                           a(href="#")
+                              h3(id='#{groupsForKYCVerification.groupNameList[i]}') #{groupsForKYCVerification.groupNameList[i]}
+                              img(src='/images/edit.png', width='60', height='60', style='margin:8px 10px 10px 20px;')
+                              label(for='groupsId' , id='labelGroupsId'+i) #{groupsForKYCVerification.centerNameList[i]}
+                              -if(groupsForKYCVerification.holdClientsList[i] != 0) {
+                                 h3(id='alertMessage',class='message global-font-details')  No of Clients in FO Queue to Recapture : #{groupsForKYCVerification.holdClientsList[i]}
+                              -}
+                              - else{
+                                 h3(id='alertMessage',class='message global-font-details')  Verify this group in Images Rejected By DEO Tab
+                              - }
+                     - }
+         - }
+         - else if(groupsForKYCVerification.groupIdList.length == 0){
+            p(align="center",class='error-message global-font-details') No groups in FO Queue
+         - }
+         input(type='hidden', name='requestedTab', id='requestedTabId', value="3")
+

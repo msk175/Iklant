@@ -1,0 +1,225 @@
+extends ./layout
+include ./header
+
+block title
+    title= 'IKLANT-GroupOutStanding'
+
+block scripts
+    link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+    include ./headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/jquery-ui.js')
+    script(type='text/javascript', src='/javascripts/trailBalance.js')
+    script(type="text/javascript", src="/javascripts/reportmgmt.js")
+    script(type="text/javascript", src="/javascripts/jquery.dataTables.js")
+
+block content
+    form(id='groupOutstandingReport')
+        input(type='hidden', name='selectedDocName', id='selectedDocName', value="#{fileLocation}")
+        input(type='hidden', name='reportPageName', id='reportPageName', value="groupOutstandingReport")
+        input(type='hidden', name='report_download_flag', id='report_download_flag', value="#{download_report}")
+        input(type='hidden', name='reportType', id='reportType')
+        div(data-role='page', data-theme='b', id="loginDetailsDiv")
+            -var portfolioReport = constantsObj.getPortfolioReports()
+            +header("",["backHref","menu","logout"],contextPath + '/client/ci/reportsMenuByCategory/'+portfolioReport)
+            div(data-role="navbar",id="navid")
+                ul(id="custom-nav-list")
+                    li
+                        a(rel="external", data-role="tab" , id="table-li-1",class="ui-btn-active") Group Outstanding
+            div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b",id='groupOutstandingReportDiv')
+                h3 Select Dates to view Group Outstanding
+                p(id="errorField",class='error-message global-font-details',align="center")
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a")
+                    input(type="hidden", class="fromDate",name="fromdateValue", id="fromdateValue",readonly = "readonly", value="1900-01-01", required='true')
+                    div(class='ui-block-a',style="width:8%")
+                        div(data-role="fieldcontain")
+                        label(id="report_label_top") To Date
+                    div(class='ui-block-b',style="width:15%")
+                        div(data-role="fieldcontain")
+                            input(type="text", class="toDate",name="todateValue", id="todateValue",readonly = "readonly", value="#{endDate}", required='true')
+                    - if(roleId == constantsObj.getSMHroleId() || roleId == constantsObj.getNaiveroleId()|| roleId == constantsObj.getAMHroleId()) {
+                    div(class='ui-block-c',style="width:9%")
+                        div(data-role="fieldcontain")
+                        label(id="report_label_top") Office
+                    div(class='ui-block-d',style="width:15%")
+                        div(data-role="fieldcontain")
+                        select(name='listoffice', id='listoffice', data-theme='b', data-icon='grid', data-inline='true', data-mini='true',onchange="loadFO()")
+                            option(value='-1') All
+                            -for(i=0;i<officeIdArray.length;i++){
+                                -if(officeValue == officeIdArray[i]){
+                                    option(value=officeIdArray[i],selected="") #{officeNameArray[i]}
+                                -}else{
+                                    option(value=officeIdArray[i]) #{officeNameArray[i]}
+                                -}
+                            -}
+                    -}
+                    div(class='ui-block-d',style="width:13%")
+                        div(data-role="fieldcontain")
+                        label(id="report_label_top") Product Category
+                    div(class='ui-block-e',style="width:15%")
+                        div(data-role="fieldcontain")
+                        select(name='prdCategoryValue', id='prdCategoryValue', data-theme='b', data-icon='grid', data-inline='true', data-mini='true')
+                            option(value='-1') All
+                            -for(i=0;i<prdCategoryNameArray.length;i++){
+                                -if(prd_category_value == prdCategoryIdArray[i]){
+                                    option(value=prdCategoryIdArray[i],selected="") #{prdCategoryNameArray[i]}
+                                -}else{
+                                    option(value=prdCategoryIdArray[i]) #{prdCategoryNameArray[i]}
+                                -}
+                            -}
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a")
+                    div(class='ui-block-a',style="width:10%")
+                        div(data-role="fieldcontain")
+                        label(id="report_label_top") Loan Product
+                    div(class='ui-block-b',style="width:11%")
+                        div(data-role="fieldcontain")
+                        select(name='loanPrdValue', id='loanPrdValue', data-theme='b', data-icon='grid', data-inline='true', data-mini='true')
+                            option(value='-1') All
+                            -for(i=0;i<prdOfferingNameArray.length;i++){
+                                -if(loan_product_value == prdOfferingIdArray[i]){
+                                    option(value=prdOfferingIdArray[i],selected="") #{prdOfferingNameArray[i]}
+                                -}else{
+                                    option(value=prdOfferingIdArray[i]) #{prdOfferingNameArray[i]}
+                                -}
+                            -}
+                    div(class='ui-block-b',style="width:9%")
+                        div(data-role="fieldcontain")
+                        label(id="report_label_top") Field Officer
+                    div(class='ui-block-c',style="width:11%")
+                        div(data-role="fieldcontain")
+                        select(name='fieldOffValue', id='loanOfficerId', data-theme='b', data-icon='grid', data-inline='true', data-mini='true')
+                            option(value='-1') All
+                            -for(i=0;i<personnelNameArray.length;i++){
+                                -if(personnel_value == personnelIdArray[i]){
+                                    option(value=personnelIdArray[i],selected="") #{personnelNameArray[i]}
+                                -}else{
+                                    option(value=personnelIdArray[i]) #{personnelNameArray[i]}
+                                -}
+                            -}
+                    div(class='ui-block-c',style="width:7%")
+                        div(data-role="fieldcontain")
+                        label(id="report_label_align") Customer
+                    div(class='ui-block-d',style="width:24%")
+                        div(data-role="fieldcontain")
+                            input(type="text", name="customerValue", id="customerValue", value="#{customerVal}", required='true',onkeyup='forNamesValidation(this)')
+                    div(class='ui-block-e',style="width:8%")
+                        div(data-role="fieldcontain")
+                        label(id="report_label_align") Account No
+                    div(class='ui-block-e',style="width:19%")
+                        div(data-role="fieldcontain")
+                            input(type="text", name="accountNoValue", id="accountNoValue", value="#{accountNo}", required='true',onkeyup='forNumbers(this)')
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-bar ui-grid-c")
+                    div(class='ui-block-a',align="center")
+                        div(data-role="fieldcontain", data-mini="true")
+                            a(href="JavaScript:generateReportPageWithOfficeDateCustomerAccount('groupOutstandingReport','Summary')",  id="generate_group_outstanding_report",rel="external",data-theme="b", data-role='button', title=' Save ', data-inline="true", data-mini='true') View Summary
+                    div(class='ui-block-b',align="center")
+                        div(data-role="fieldcontain", data-mini="true")
+                            a(href="JavaScript:generateReportPageWithOfficeDateCustomerAccount('groupOutstandingReport','Detailed')",  id="generate_group_outstanding_report",rel="external",data-theme="b",data-role='button', title=' Save ', data-inline="true", data-mini='true') View Detailed Report
+                    div(class='ui-block-c',align="center")
+                        div(data-role="fieldcontain", data-mini="true")
+                            a(href='#',id="outstanding_report_download",rel="external",data-role='button', title=' Download ', data-inline="true",data-mini="true",onclick="generateReportPageWithOfficeDateCustomerAccount('groupOutstandingReport','Download')") Export To Excel
+            -if(result != null){
+            div(id="groupOutstandingTableId",style = "overflow: auto;",class=(result.length>10)?'container '+detailed:detailed)
+                div(data-role="navbar",id="navid")
+                    ul(id="custom-nav-list")
+                        li
+                            a(rel="external", data-role="tab" , id="table-li-1",class="ui-btn-active") Group Outstanding Report
+                table(id="fixedHeader_detailedsummary", CLASS="DISPLAY", cellspacing="0", width="100%")
+                    thead
+                        tr
+                            th S.No.
+                            th Office
+                            th Customer
+                            th Account No.
+                            th Field Officer
+                            th Loan Product
+                            th Product Category
+                            th Disb.Date
+                            th Loan Amt
+                            th Principal
+                            th Prin Paid
+                            th Prin Outstanding
+                            th Interest
+                            th Int.Paid
+                    -if(result.length != 0){
+                    - for(var i=0;i<result.length;i++) {
+                        -if(result[i].account_id != null){
+                    tbody
+                        tr(class="showhide")
+                            td(class='center-text') #{i+1}
+                            td #{result[i].office}
+                            td #{result[i].customer}
+                            td #{result[i].account_num}
+                            td #{result[i].field_officer}
+                            td #{result[i].loan_product}
+                            td #{result[i].category_name}
+                            td #{result[i].disbursement_date}
+                            td(class='text-right-align') #{result[i].loan_amount}
+                            td(class='text-right-align') #{result[i].principal}
+                            td(class='text-right-align') #{result[i].principal_paid}
+                            td(class='text-right-align') #{result[i].prin_outstanding}
+                            td(class='text-right-align') #{result[i].interest}
+                            td(class='text-right-align') #{result[i].interest_paid}
+                        -}
+                    - }
+                    -}else{
+                    tbody
+                        tr
+                            td(align="center",colspan=9) No Records
+                    -}
+            div(id="groupOutstandingTableId",style = "overflow: auto;",class=(result.length>10)?'container '+summary:summary)
+                div(data-role="navbar",id="navid")
+                    ul(id="custom-nav-list")
+                        li
+                            a(rel="external", data-role="tab" , id="table-li-1",class="ui-btn-active") Group Outstanding Summary Report
+                table(id="fixedHeader_summary_full", CLASS="DISPLAY", cellspacing="0", width="100%")
+                    thead
+                        tr
+                            th S. No
+                            th Office
+                            th Field Officer
+                            th Tot.Customers
+                            th Tot.Loan Amt
+                            th Tot.Principal
+                            th Tot.Prin Paid
+                            th Tot.Prin Outstanding
+                            th Tot.Interest
+                            th Tot.Int.Paid
+                    - count = 1;
+                    -if(result.length != 0){
+                    - for(var i=0;i<result.length;i++) {
+                    -if(!result[i].account_id && !result[i].office_id){
+                    tbody
+                        tr
+                            td(colspan='3',class='text-right-align',style='color:#3c1b39') Total
+                            td(class='text-right-align',style='color:#3c1b39') #{result[i].total_customers}
+                            td(class='text-right-align',style='color:#3c1b39') #{result[i].total_loan_amount}
+                            td(class='text-right-align',style='color:#3c1b39') #{result[i].total_principal}
+                            td(class='text-right-align',style='color:#3c1b39') #{result[i].total_principal_paid}
+                            td(class='text-right-align',style='color:#3c1b39') #{result[i].total_prin_outstanding}
+                            td(class='text-right-align',style='color:#3c1b39') #{result[i].total_interest}
+                            td(class='text-right-align',style='color:#3c1b39') #{result[i].total_interest_paid}
+                    -}else if(!result[i].account_id && result[i].office_id){
+                    tbody
+                        tr
+                            td #{count}
+                            td #{result[i].office}
+                            td #{result[i].field_officer}
+                            td(class='center-text') #{result[i].total_customers}
+                            td(class='text-right-align') #{result[i].total_loan_amount}
+                            td(class='text-right-align') #{result[i].total_principal}
+                            td(class='text-right-align') #{result[i].total_principal_paid}
+                            td(class='text-right-align') #{result[i].total_prin_outstanding}
+                            td(class='text-right-align') #{result[i].total_interest}
+                            td(class='text-right-align') #{result[i].total_interest_paid}
+                            - count++
+                    -}
+                    -}
+                    -}else{
+                    tbody
+                        tr
+                            td(align="center",colspan=9) No Records
+                    -}
+                        -}
+            div(class="ui-loader-background")

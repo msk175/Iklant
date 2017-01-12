@@ -1,0 +1,50 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'IKLANT-LUC'
+
+block scripts
+    include ../headerJqueryMobile-1
+    script(type='text/javascript', src='/javascripts/loan_utilization_check/loanUtilizationCheck.js')
+
+block content
+    form(id='loanUtilizationCheck')
+        div(data-role='page', data-theme='b')
+            +header("",["menu","logout"],contextPath+ '',[])
+            div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a",align='center')
+                - if(roleId == constantsObj.getBMroleId()) {
+                    div(class='ui-block-a',align='right')
+                        div(data-role="fieldcontain")
+                        label(for='fieldOfficer',class='label') Field Officer
+                    div(class='ui-block-b',style="width:15%")
+                        div(data-role="fieldcontain")
+                            select(name='fieldOfficer', id='fieldOfficer', data-theme='b', data-icon='grid', data-inline='true', data-mini='true',onchange='getLUCGroups()')
+                                option(value='-1') Select FO
+                                -for(i=0;i<personnelIdArray.length;i++){
+                                    -if(personnelId == personnelIdArray[i]){
+                                        option(value=personnelIdArray[i],selected="selected") #{personnelNameArray[i]}
+                                    -}else{
+                                        option(value=personnelIdArray[i]) #{personnelNameArray[i]}
+                                    -}
+                                -}
+                -}
+            div(data-role='content')
+                -if(groupIds.length>0){
+                    div(class='content-primary')
+                        ul(data-role='listview', data-split-icon='gear', data-split-theme='c', data-filter="true", data-filter-theme='c',  data-filter-placeholder='Search for a group')
+                            - for(var i=0;i<groupIds.length;i++) {
+                                li
+                                    a(href="JavaScript:getLUCCustomerDetails(#{groupIds[i]},'#{groupNames[i]}');")
+                                        img(src='/images/edit.png', width='60', height='60', style='margin:8px 10px 10px 20px;')
+                                        h3 #{groupCodes[i]} : #{groupNames[i]}
+                                        label(for='groupsId'+i,style='color:#D0A9F5') Disb. Date: #{disbursementDate[i]}
+                            -}
+                -}
+                -else{
+                    div
+                        p(class='error-message global-font-details',align='center') No records found
+                -}
+            input(type='hidden', name='groupId', id='groupId')
+            input(type='hidden', name='groupName', id='groupName')
+            div(class="ui-loader-background")

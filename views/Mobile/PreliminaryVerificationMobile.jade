@@ -1,0 +1,52 @@
+!!! 5
+html(lang = "en")
+  head
+    title= 'IKLANT-PreliminaryVerification'
+    meta(charset='utf-8')
+    meta(name='viewport',content='width=device-width, initial-scale=1')
+    meta(http-equiv='Cache-Control', content='no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0')
+    meta(http-equiv='Pragma', content='no-cache')
+    meta(http-equiv='Expires', content='-1')
+    link(rel='stylesheet', href='/stylesheets/jquery.mobile.css')
+    link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+    link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+    link(rel='stylesheet', href='/stylesheets/dialogStyle.css')
+    script(type='text/javascript', src='/javascripts/jquery-1.7.1.min.js')
+    script(type='text/javascript', src='/javascripts/jquery.mobile.js')
+    script(type='text/javascript', src='/javascripts/validation.js')	
+   body
+   form(id='BMFormId')
+    input(type='hidden', name='statusIdName', id='initialStatusId', value="#{}")
+    div(data-role='page', data-theme='b')
+      div(data-role="header", data-theme="a", class="ui-bar ui-grid-a")
+        div(class="ui-block-a")
+          div(data-role='controlgroup', data-type='horizontal', data-mini='true')
+            img(id='groupIcon', src='/images/iklantMobile.png') 		  
+        div(class="ui-block-b", align="right") 
+          a(href=contextPath+ '/client/ci/menu', rel="external",data-icon='grid', data-role='button', title=' Menu', data-inline='true') Menu		
+          a(href=contextPath+ '/client/ci/logout',  rel="external",data-icon='back', data-role='button', title=' Logout ', data-inline="true") Logout			
+        input(type='hidden', name='alertMessageHidden', id='alertMessageHidden', value="#{}")
+      div(data-role="navbar")	  
+          ul
+            li
+              a(href="JavaScript:operationSubmit('#{operationIdArray[1]}');", rel="external", data-role="tab", class="ui-btn-active") #{operationNameArray[1]}
+      div(data-role='content')
+        div(class='content-primary')
+          ul(data-role='listview', data-split-icon='gear', data-split-theme='c', data-filter="true", data-filter-theme='c',  data-filter-placeholder='Search for a group')
+            p(id='alertMessage',align='center')	#{errorMessage}
+            -if(remarksDisplay.length == 1) {
+             p(id='successMessage',align='center') #{remarksDisplay[0]}
+            -}
+            -else {
+             -for(var k=0;k<remarksDisplay.length;k++) {
+               p(id='groupCreationAlertMessage',align='center') #{remarksDisplay[k]}	 			
+             -}
+            -}
+             - for( var i = 0; i < groupsName.length; i++ ) {
+                li
+                   a(href="JavaScript:showPreliminaryVerificationForm('#{groupsId[i]}');")
+                       img(src='/images/edit.png', width='60', height='60', style='margin:8px 10px 10px 20px;')  
+                       h3 #{groupsName[i]}
+                       label(for='groupsId' , id='labelGroupsId'+i) #{listGroupsGlobalNumberArray[i]}
+             -}
+             input(type="hidden", name="groupId", id="groupId")

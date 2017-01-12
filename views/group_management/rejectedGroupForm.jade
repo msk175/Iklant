@@ -1,0 +1,72 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'IKLANT-RintiateGroup'
+
+block scripts
+    include ../headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/group-mgt.css')
+    script(type='text/javascript', src='/javascripts/reintiateGroup.js')
+    script(type='text/javascript', src='/javascripts/validation.js')
+
+block content
+    form(id='BMFormId')
+        div(data-role='page', data-theme='b')
+            input(type='hidden', name='cl', id='cls', value= thisclientId)
+            -var rgOpId = constantsObj.getRejectedGroupsOperationId()
+            +header("Reintiate Groups",["backJavascript","logout"],"operationSubmitFromBM",[rgOpId])
+            div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b")
+                h3 Reintiate Groups
+                //p(id ='note',data-theme="e") **Note : Group Rejected in Field-Verification is Not able to Reintiate because group rejected due to less than five number of clients.
+                p(id ='errorField',align='center',class='error-message global-font-details')
+                div(data-role="content", id="members123", data-theme="c", data-overlay-theme="c", data-inline="true")
+                    div(data-role="fieldcontain")
+                        label(for="groupname") Group Name
+                        input(type="text", name="groupname", readonly="readonly",id="groupname", value="#{groupNameForRejectedGroups}", required='true')
+                    div(data-role="fieldcontain")
+                        label(for="center") Center Name
+                        input(type="text", name="center", id="center",readonly="readonly", value=centername, required='true')
+                    div(data-role="fieldcontain")
+                        label(for="stage") Rejcted Stage
+                        input(type="text", style='color:red', name="stage", id="stage",readonly="readonly", value=rejectedStage, required='true')
+                    div(data-role="fieldcontain")
+                        label(for="remarks") Remarks To Reintiate Group
+                        input(type="text", name="remarks", id="remarks", value="",maxlength="250",autocomplete="off", required='true',onkeyup='forRemoveSpecialCharcters(this)')
+                    -if(roleId !=constantsObj.getGuestUserRoleId()){
+                        div(data-role="collapsible", id="internalloan3", data-theme="b", data-overlay-theme="b", data-inline="true")
+                            h3 Reject-Clients From Group
+                            div(data-role="fieldcontain")
+                                a(href='#internalloan', data-icon='delete', data-role='button', title=' Reject-Client ', data-rel='popup', data-position-to='window', data-transition='pop', data-inline='true', data-mini='true', id="internalLoanAdd") Reject-Clients
+                    -}
+                    div(data-role='content')
+                        div(class='content-primary')
+                            div(id='addClientDivId')
+                    div(data-role="fieldcontain", data-mini="true" )
+                        -if(roleId !=constantsObj.getGuestUserRoleId()){
+                            a(href='JavaScript:reInitiateGroup(#{groupId},#{active_clients})',rel="external", data-icon='check', onclick = 'JavaScript:submitform();', data-role='button', data-theme='b', title=' Save ', data-inline='true' , id="SaveButtonId",data-mini="true") Reintiate
+                        -}
+                        a(href='JavaScript:operationSubmitFromBM(#{constantsObj.getRejectedGroupsOperationId()})', rel="external",data-icon='back', data-role='button', title='Back', data-inline='true',data-mini="true") Back
+                        input(type='hidden', name='clientNames', id='clientNamesId')
+                        input(type='hidden', name='overdues', id='overduesId')
+                        input(type='hidden', name='clientIdList', id='clientIdList', value = "#{ clientIdArray}")
+                    div(data-role="popup", id="internalloan", data-theme="b", data-overlay-theme="b", class="ui-content")
+                        h1(align="center") Reject-client
+                        p(id="errorLabel",align="center")
+                        div(data-role="fieldcontain", data-mini="true")
+                            label(for="clientName", data-inline="true") Client Name
+                            select(name='clientName', id='clientName', data-theme='b', data-icon='bank', data-inline='true', data-mini="true", data-native-menu="false")
+                                option(value='0') Select Member
+                                -for(i=0;i< clientIdArray.length;i++){
+                                    -if(clientIdArray[i] == thisclientId)
+                                        option(value= clientIdArray[i] , selected="selected") #{clientNameArray[i]}
+                                    -else
+                                        option(value= clientIdArray[i]) #{clientNameArray[i]}
+                                -}
+                        div(data-role="fieldcontain", data-inline="true")
+                            label(for='remarksforreject') Remarks
+                            input(type='text', name='remarksforreject', id='remarksforreject',maxlength="200", autocomplete="off",value="",onkeyup='forRemoveSpecialCharcters(this)')
+                        div(data-role="fieldcontain", data-inline="true")
+                            a(href='#internalloan3',  rel="external",data-role='button', title=' Add ', data-inline="true", id='saveClient', data-mini="true") Save
+                            a(href='#internalloan', rel="external",data-icon='back', data-role='button', title=' Back', data-inline="true", data-mini="true") Back
+            div(class="ui-loader-background")

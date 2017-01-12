@@ -1,0 +1,128 @@
+extends ./layout
+include ./header
+
+block title
+    title= 'IKLANT-PAR Report'
+
+block scripts
+    link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+    include ./headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/jquery-ui.js')
+    script(type='text/javascript', src='/javascripts/trailBalance.js')
+    script(type="text/javascript", src="/javascripts/reportmgmt.js")
+    script(type="text/javascript", src="/javascripts/jquery.dataTables.js")
+
+block content
+    form(id='PARReport')
+        div(data-role='page', data-theme='b')
+            input(type='hidden', name='reportPageName', id='reportPageName', value="PARReport")
+            input(type='hidden', name='report_download_flag', id='report_download_flag', value="#{download_report}")
+            input(type='hidden', name='selectedDocName', id='selectedDocName', value="#{fileLocation}")
+            input(type='hidden', name='reportType', id='reportType')
+            input(type='hidden', name='reportId', id='reportId',value='#{reportId}')
+            -var groupsReport = constantsObj.getGroupsReports()
+            -var backLink = (constantsObj.getPARGroupWiseReport() == reportId)?contextPath + '/client/ci/reportsMenuByCategory/'+constantsObj.getGroupsReports():contextPath + '/client/ci/reportsMenuByCategory/'+constantsObj.getGroupMembersReports()
+            +header("",["backHref","menu","logout"],backLink)
+            div(data-role="navbar",id="navid")
+                ul(id="custom-nav-list")
+                    li
+                        a(rel="external", data-role="tab" , id="table-li-1",class="ui-btn-active") PAR Report
+            div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b",id='demandCollectionDiv')
+                h3 Select Dates to view PAR Report
+                p(id="errorField",align="center",class='error-message global-font-details')
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a",style='width:100%;')
+                    div(class='ui-block-a',style='width:10%;')
+                        div(data-role='fieldcontain')
+                        label(id="report_label_top") To Date
+                    div(class='ui-block-b',style='width:20%;')
+                        div(data-role='fieldcontain')
+                            input(type="text", name="todate", id="todate", value=endDate,readonly = "readonly", required='true',class='toDate')
+                    - if(roleId == constantsObj.getSMHroleId() || roleId == constantsObj.getNaiveroleId()|| roleId == constantsObj.getAMHroleId()) {
+                        div(class='ui-block-c',style='width:10%;')
+                            div(data-role='fieldcontain')
+                            label(id="report_label_top") Office
+                        div(class='ui-block-d',style='width:20%;')
+                            div(data-role='fieldcontain')
+                                select(name='listoffice', id='listoffice', data-theme='b', data-icon='grid', data-inline='true', data-mini='true')
+                                    option(value='-1') All
+                                    -for(i=0;i<officeIdArray.length;i++){
+                                        -if(officeValue == officeIdArray[i]){
+                                            option(value=officeIdArray[i],selected="selected") #{officeNameArray[i]}
+                                        -}
+                                        -else{
+                                            option(value=officeIdArray[i]) #{officeNameArray[i]}
+                                        -}
+                                    - }
+                    - }
+                    div(class='ui-block-e',style='width:10%;')
+                        div(data-role='fieldcontain')
+                        label(id="report_label_top") PAR
+                    div(class='ui-block-e',style='width:20%;')
+                        div(data-role='fieldcontain')
+                            input(type="text", name="days_in_arrears", id="days_in_arrears",maxlength='3' ,value=daysInArrears,style='text-align:right;',onkeyup='forNumbers(this)')
+                div(data-role="horizontal", data-inline="true",data-theme="b",id="show",class="ui-grid-a",style='width:100%;')
+                    div(class='ui-block-a',style='width:50%;')
+                        div(data-role="fieldcontain",align="right")
+                            a(href='JavaScript:generatePARReport("")',  rel="external",data-theme="b",data-role='button',data-mini='true', data-inline="true") Generate Report
+                    div(class='ui-block-c',style='width:50%;')
+                        div(data-role="fieldcontain")
+                            a(href='#', data-role='button',id='downloadExcel', data-inline='true', data-mini='true',onclick='generatePARReport("Download")') Export To Excel
+            - if(result){
+                -if(result.length>0){
+                    div(style = "overflow: auto;",class=(result.length>10)?'container':'')
+                        div(data-role="navbar",id="navid")
+                            ul(id="custom-nav-list")
+                                li
+                                    a(rel="external", data-role="tab" , id="table-li-1",class="ui-btn-active") PAR Report
+                        table(id="fixedHeader_detailedsummary_full", CLASS="DISPLAY", cellspacing="0", width="100%")
+                            thead
+                                tr
+                                    th S.No
+                                    th Month
+                                    th Office
+                                    th Field Officer
+                                    th Group Code
+                                    th Group Name
+                                    th Client Name
+                                    th Due Date
+                                    th Due Amount
+                                    th Paid Amount
+                                    th Overdue Amount
+                                    th Total Principal
+                                    th Total Principal Paid
+                                    th Principal Outstanding
+                                    th Days In Arrears
+                            -var count = 1
+                            - for(var i=0;i<result.length;i++) {
+                                -if(result[i].due_date){
+                                    tbody
+                                        tr
+                                            td(class='center-text') #{count}
+                                            td #{result[i].months}
+                                            td #{result[i].office}
+                                            td #{result[i].field_officer}
+                                            td #{result[i].grp_code}
+                                            td #{result[i].group_name}
+                                            td #{result[i].customer}
+                                            td #{result[i].due_date}
+                                            td(class='text-right-align') #{result[i].due_amount}
+                                            td(class='text-right-align') #{result[i].paid_amount}
+                                            td(class='text-right-align') #{result[i].over_due_amt}
+                                            td(class='text-right-align') #{result[i].total_principal}
+                                            td(class='text-right-align') #{result[i].total_principal_paid}
+                                            td(class='text-right-align') #{result[i].principal_outstanding}
+                                            td(class='center-text') #{result[i].days_in_arrears}
+                                    -count++;
+                                -}
+                            - }
+                    -}
+                -else{
+                    tbody
+                        tr
+                            div(align='center')
+                                span(style='font-weight:bold',id='message') No records to display
+                -}
+            - }
+            div(class="ui-loader-background")

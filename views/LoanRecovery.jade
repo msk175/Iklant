@@ -1,0 +1,73 @@
+!!! 5
+html(lang = "en")
+    head
+        title= 'IKLANT-Dashboard'
+        meta(charset='utf-8')
+        meta(name="viewport", content="initial-scale=1.0, user-scalable=no")
+        link(rel="stylesheet", href='/stylesheets/jquery.mobile-1.3.0-beta.1.min.css')
+        link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+        link(rel='stylesheet', href='/stylesheets/dialogStyle.css')
+        script(type='text/javascript', src='/javascripts/jquery-1.8.3.min.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile-1.3.0-beta.1.min.js')
+        script(type='text/javascript', src='/javascripts/jquery-ui.js')
+        script(type='text/javascript', src='/javascripts/common.js')
+    body
+        div(data-role='page', data-theme='b', id="loginDetailsDiv")
+            div(data-role="header", data-theme="a", class="ui-bar ui-grid-a", data-overlay-theme="c")
+                div(class="ui-block-a")
+                    img(id='groupIcon', style="margin:5px 10px 0 0; text-align:right;",src='/images/iklant.png')
+                div(class="ui-block-b",align="right")
+                    h3(align="right",style="margin:20px 10px 0 0") Welcome
+                    img(id='groupIcon',style="vertical-align:middle", src='/images/logoff.png')
+            div(data-role="navbar")
+                ul(id="custom-nav-list")
+                    li
+                        a(href="JavaScript:operationSubmitFromBM('');", rel="external", data-role="tab") Loan Recovery
+            div(data-role="collapsible", id="minutes", data-overlay-theme="a", data-inline="true" , data-collapsed="false", data-content-theme="b")
+                h3 Apex_JLG_1 # 000100000025391 - Account Information
+                div(data-role="fieldcontain")
+                    label(for="loanOfficerNameId") Loan Officer
+                    input(type="text", name="loanOfficerName", id="loanOfficerNameId", value='Meera Maitheen A' , readonly='readonly', required='true')
+                div(data-role="content" , style="overflow: auto;" , class="ui-content" , role="main")
+                    table(border='0')
+                        tbody
+                            tr
+                                td S.No
+                                td Loan
+                                td Status
+                                td Outstanding Balance
+                                td Amount Due
+                            tr
+                                td 1
+                                td
+                                    a(href='#internalloan3',  rel="external", data-role='button', title=' Add ', data-inline="true", id='saveClient') Apex_JLG_1 # 000100000025391
+                                td
+                                    img(src='/images/green.jpg',style='width:20px;height:20px;vertical-align:top')
+                                    span(style="")  Active In Good Standing
+                                td 23435
+                                td 0
+                            tr
+                                td 2
+                                td
+                                    a(href='#internalloan3',  rel="external", data-role='button', title=' Add ', data-inline="true", id='saveClient') Apex_JLG_1 # 000100000025391
+                                td
+                                    img(src='/images/green.jpg',style='width:20px;height:20px;vertical-align:top')
+                                    span(style="")  Active In Good Standing
+                                td 23435
+                                td 0
+
+                            tr
+                                td 3
+                                td
+                                    a(href='#internalloan3',  rel="external", data-role='button', title=' Add ', data-inline="true", id='saveClient') Apex_JLG_1 # 000100000025391
+                                td
+                                    img(src='/images/green.jpg',style='width:20px;height:20px;vertical-align:top')
+                                    span(style="")  Active In Good Standing
+                                td 23435
+                                td 0
+                    div(data-role="fieldcontain", data-inline="true")
+                        a(href=contextPath + '/client/ci/	menu', rel="external",data-icon='back', data-role='button', title=' Back', data-inline="true") Back
+                div(class="ui-loader-background")

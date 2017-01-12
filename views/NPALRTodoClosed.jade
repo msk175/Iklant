@@ -1,0 +1,58 @@
+doctype
+html(lang = "en")
+    head
+        title= 'IKLANT-TODO'
+        meta(charset='utf-8')
+        meta(name='viewport',content='width=device-width, initial-scale=1')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+        link(rel='stylesheet', href='/stylesheets/dialogStyle.css')
+        link(rel='stylesheet', href='/stylesheets/iklantStyle.css')
+        script(type='text/javascript', src='/javascripts/jquery-1.7.1.min.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile.js')
+        script(type='text/javascript', src='/javascripts/constantjs.js')
+        script(type='text/javascript', src='/javascripts/NPALRTodo.js')
+        script(type='text/javascript', src='/javascripts/common.js')
+    body(style="overflow-x:hidden")
+        form(id="todoFormId")
+            div(data-role='page', data-theme='b', id="gridplus")
+                div(data-role="header", data-theme="a", class="ui-bar ui-grid-a",data-position="fixed")
+                    div(class="ui-block-a")
+                        img(id='groupIcon', src='/images/iklant.png')
+                        h3(for="value", style="margin:20px 10px 0 0; text-align:right;") NPA Loan Recovery-Todo
+                    div(class="ui-block-b",align="right",style="padding:20px 50px 0 0;")
+                        a(href=contextPath + "/client/ci/menu", rel="external",data-icon='arrow-l', data-role='button', title=' Back', data-inline="true") Back
+                        a(href=contextPath + '/client/ci/logout',  rel="external",data-icon='back', data-role='button', title=' Logout ', data-inline="true") Logout
+                div(data-role="navbar")
+                    ul
+                        li
+                            a(href=contextPath + '/client/ci/NPALRGroups/todo/current',rel="external", data-role="tab" , id="currentTaskNavBarId") Current task
+                        li
+                            a(href=contextPath + '/client/ci/NPALRGroups/todo/future',rel="external", data-role="tab" , id="futureTaskNavBarId") Future Task
+                        li
+                            a(href=contextPath + '/client/ci/NPALRGroups/todo/overdue',rel="external", data-role="tab" , id="overdueTaskNavBarId") Overdue Task
+                        li
+                            a(href=contextPath + '/client/ci/NPALRGroups/todo/closed',rel="external", data-role="tab" , id="closedTaskNavBarId",class="ui-btn-active") Closed Task
+                div(data-role="content",style = "overflow: auto;",id="npaTodoCurrentDivId")
+                    p(id ='errorField',data-theme="e",align='center')
+                    table
+                        tr
+                            th(style ="text-align:center") S.NO
+                            th(style ="text-align:center") Activity
+                            th(style ="text-align:center") Expected Due Date
+                            th(style ="text-align:center") Closed Date
+                            th(style ="text-align:center") Remarks
+                            -for(var i=0;i<taskNameArray.length;i++) {
+                                tr()
+                                    td(style ="text-align:center")    #{i+1}
+                                    td(style ="text-align:center")    #{taskNameArray[i]} - #{customerArray[i]}
+                                    td(style ="text-align:center")    #{dueDateArray[i]}
+                                    td(style ="text-align:center")    #{closedDateArray[i]}
+                                    td(style ="text-align:center")
+                                        label(id="remarksLabel",style="font-size: 15px;color:green;font-weight:bold") #{remarksArray[i]}
+                            input(type="hidden", name="taskId", id="taskId"+i, value='#{taskIdArray[i]}')
+                            -}
+                    input(type="hidden", name="date", id="date", value='#{date}')
+                    input(type="hidden", name="taskLength", id="taskLength", value='#{taskNameArray.length}')
+                div(class="ui-loader-background")

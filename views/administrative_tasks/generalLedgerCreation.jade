@@ -1,0 +1,194 @@
+extends ../layout
+include ../header
+block title
+    title= 'Iklant - Menu'
+block scripts
+    include ../headerJqueryMobile-1
+    script(type='text/javascript', src='/javascripts/administrative_tasks/administrativeTasks.js')
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+block content
+    form(id='administrativeFundFormID')
+        div(data-role='page', data-theme='b', id="loginDetailsDiv")
+            +header("",["menu","backHref","logout"],contextPath+ '/client/ci/getAdminstrativeTasksMenu',[])
+            div(data-role="navbar")
+                ul
+                    li
+                        a(rel="external", data-role="tab") Chart Of Accounts - GL Accounts
+            div(data-role="navbar", data-grid="a")
+                ul
+                    li
+                        -if(menuPage == "New GL"){
+                            a(href="JavaScript:defineGL('New');", rel="external", data-role="tab" , id="custom-li-1",class="ui-btn-active") New GL Account
+                        -}
+                        -else{
+                            a(href="JavaScript:defineGL('New');", rel="external", data-role="tab" , id="custom-li-1") New GL Account
+                        -}
+                    li
+                        -if(menuPage == "View GL"){
+                            a(href="JavaScript:viewGL();", rel="external", data-role="tab" , id="custom-li-2",class="ui-btn-active") View and Edit GL Accounts
+                        -}
+                        -else{
+                            a(href="JavaScript:viewGL();", rel="external", data-role="tab" , id="custom-li-2") View and Edit GL Accounts
+                        -}
+            input(type="hidden" ,id="menuPage", name="menuPage",value="#{menuPage}")
+            -if(menuPage == "New GL"){
+            div(data-role="content")
+                div(data-role="collapsible", id="minutes", data-overlay-theme="a", data-inline="true" , data-collapsed="false",data-content-theme="b")
+                    -if(menuPage == "Edit GL"){
+                    h3 Edit GL
+                    -}else{
+                    h3 Define New GL
+                    -}
+                    p(id="errorMsg" ,class="error-message global-font-details",align="center") #{errorMessage}
+                    p(id="successMsg" ,class="success-message global-font-details",align="center") #{statusMessage}
+                    div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-b")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                            label(for="generalLedgerParentId") GeneralLedger Parent
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain")
+                                select(name='generalLedgerParentIdValue', id='generalLedgerParentIdValue',data-inline="true",data-mini="true", data-icon='grid',data-theme="b", data-overlay-theme="b", data-native-menu="true",onchange= "JavaScript:retriveFirstchildGLParent('New')")
+                                    option(value='') Select
+                                    - for(i=0;i< generalLedgerParentIdArray.length;i++){
+                                        - if(selectedGLParentCode == generalLedgerParentIdArray[i]){
+                                            option(value= "#{generalLedgerParentIdArray[i]}",selected='selected') #{generalLedgerParentNameArray[i]}
+                                        - }else{
+                                            option(value= "#{generalLedgerParentIdArray[i]}") #{generalLedgerParentNameArray[i]}
+                                        -}
+                                    - }
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain", data-mini="true")
+                            label(for="generalLedgerFirstChildId") GeneralLedger Parent *
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain",id="officeDivId")
+                                select(name='generalLedgerFirstChildIdValue', id='generalLedgerFirstChildIdValue',data-inline="true",data-mini="true", data-icon='grid',data-theme="b", data-overlay-theme="b", data-native-menu="true",onchange= "JavaScript:retriveSecondchildGLParent('New')")
+                                    option(value='') Select
+                                    - for(i=0;i< generalLedgerFirstChildIdArray.length;i++){
+                                        - if(selectedGLFirtChildCode == generalLedgerFirstChildIdArray[i]){
+                                            option(value= "#{generalLedgerFirstChildIdArray[i]}",selected='selected') #{generalLedgerFirstChildNameArray[i]}
+                                        - }else{
+                                            option(value= "#{generalLedgerFirstChildIdArray[i]}") #{generalLedgerFirstChildNameArray[i]}
+                                        -}
+                                    - }
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain", data-mini="true")
+                            label(for="generalLedgerSecondChildId") GeneralLedger Parent *
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain",id="officeDivId")
+                                select(name='generalLedgerSecondChildIdValue', id='generalLedgerSecondChildIdValue',data-inline="true",data-mini="true", data-icon='grid',data-theme="b", data-overlay-theme="b", data-native-menu="true")
+                                    option(value='') Select
+                                    - for(i=0;i< generalLedgerSecondChildIdArray.length;i++){
+                                        - if(selectedGLSecondChildCode == generalLedgerSecondChildIdArray[i]){
+                                            option(value= "#{generalLedgerSecondChildIdArray[i]}",selected='selected') #{generalLedgerSecondChildNameArray[i]}
+                                        - }else{
+                                            option(value= "#{generalLedgerSecondChildIdArray[i]}") #{generalLedgerSecondChildNameArray[i]}
+                                        -}
+                                    - }
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain", data-mini="true")
+                            label(for="generalLedgerCodeId") GeneralLedger Code *
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain",id="officeDivId")
+                                input(type='text', name='generalLedgerCodeValue',autocomplete="off", id='generalLedgerCodeValue', maxlength="50",data-inline="false",onkeyup="forNamesValidationWithNumbers(this)",value = maxGLCode)
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain", data-mini="true")
+                            label(for="fromOfficeId") GeneralLedger Name *
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain")
+                                input(type='text', name='generalLedgerCodeName',autocomplete="off", id='generalLedgerCodeName', maxlength="50",data-inline="false",onkeyup="forNamesValidationWithNumbers(this)")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain", data-mini="true")
+                            label(for="OfficeName") Office Name *
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain",id="officeDivId")
+                                select(name='officeId', id='officeId',data-inline="true",data-mini="true", data-icon='grid',data-theme="b", data-overlay-theme="b", data-native-menu="true")
+                                    option(value='') Select
+                                    - for(i=0;i< officeIdArray.length;i++){
+                                        - if(selectedOfficeId == officeIdArray[i]){
+                                            option(value= "#{officeIdArray[i]}",selected='selected') #{officeNameArray[i]}
+                                        - }else{
+                                            option(value= "#{officeIdArray[i]}") #{officeNameArray[i]}
+                                        -}
+                                    - }
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain", data-mini="true")
+                            label(for="bankOrCash") Bank or Cash
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain",id="bcDivId")
+                                select(name='bankOrCashId', id='bankOrCashId',data-inline="true",data-mini="true", data-icon='grid',data-theme="b", data-overlay-theme="b", data-native-menu="true")
+                                    option(value='') Select
+                                    - for(i=0;i< bankOrCashIdArray.length;i++){
+                                        - if(selectedBankOrCashId == bankOrCashIdArray[i]){
+                                            option(value= "#{bankOrCashIdArray[i]}",selected='selected') #{bankOrCashNameArray[i]}
+                                        - }else{
+                                            option(value= "#{bankOrCashIdArray[i]}") #{bankOrCashNameArray[i]}
+                                        -}
+                                    - }
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-bar ui-grid-c")
+                        -if(menuPage == "New GL"){
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain", data-mini="true")
+                                    a(href="JavaScript:saveOrUpdateGL('create')",rel="external", data-role='button', title=' Create ', data-inline="true",data-mini="true") Create
+                        -}
+            -}else if(menuPage == "View GL"){
+            div(data-role="content",style = "overflow: auto;",id = "displayGL")
+                p(id="errorMsg" ,class="error-message global-font-details",align="center") #{errorMessage}
+                p(id="successMsg" ,class="success-message global-font-details",align="center") #{statusMessage}
+                table
+                    thead
+                        th(data-priority="5",rowspan="2",style='width:1%') S.No.
+                        th(data-priority="5",rowspan="2",style='width:5%') GL Name
+                        th(data-priority="5",rowspan="2",style='width:3%') GL Code
+                        th(data-priority="5",rowspan="2",style='width:5%') GL Parent Name
+                        th(data-priority="5",rowspan="2",style='width:2%') Action
+                    tbody
+                        - for(var i=0; i<coaIdArray.length;i++){
+                            tr
+                                td(align='center') #{i+1}
+                                td #{coaNameArray[i]}
+                                td #{glCodeValueArray[i]}
+                                td #{parentNameArray[i]}
+                                td(align='center')
+                                    a(href="JavaScript:EditGL("+JSON.stringify(results)+",'#{coaIdArray[i]}')", rel="external",data-theme="b", data-role='button', title='Edit', data-inline="true", data-mini='true') Edit
+                        -}
+            div(data-role="content",style = " display: none",id = "displayEditGL")
+                div(data-role="content")
+                    div(data-role="collapsible", id="minutes", data-overlay-theme="a", data-inline="true" , data-collapsed="false",data-content-theme="b")
+                        h3 Update GL
+                        div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-b")
+                            p(id="errorMsgEdit" ,class="error-message global-font-details",align="center")
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain", data-mini="true")
+                                    label(for="fromOfficeId") GL Code:
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain", data-mini="true")
+                                    input(type='text', name='generalLedgerCode',autocomplete="off", id='generalLedgerCode', data-inline="false",readonly="true")
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain", data-mini="true")
+                                    label(for="fromOfficeId") GL Account Name: *
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain", data-mini="true")
+                                    input(type='text', name='generalLedgerCodeName',autocomplete="off", id='generalLedgerCodeName', maxlength="50",data-inline="false",onkeyup="forNamesValidationWithNumbers(this)")
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain", data-mini="true")
+                                    label(for="fromOfficeId") Office Name:
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain", data-mini="true")
+                                    input(type='text', name='officeId',autocomplete="off", id='officeId', data-inline="false",readonly="true")
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain", data-mini="true")
+                                    label(for="fromOfficeId") Bank or Cash:
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain", data-mini="true")
+                                    input(type='text', name='bankOrCashId',autocomplete="off", id='bankOrCashId', data-inline="false", readonly="true")
+                                    input(type='hidden', name='coaId',autocomplete="off", id='coaId', data-inline="false", readonly="true")
+                        div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-bar ui-grid-c")
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain", data-mini="true")
+                                    a(href="JavaScript:saveOrUpdateGL('cancel')",rel="external", data-role='button',data-icon = 'back', title=' Back ', data-inline="true",data-mini="true") Back
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain", data-mini="true")
+                                    a(href="JavaScript:saveOrUpdateGL('update')",rel="external", data-role='button', title=' Update ', data-inline="true",data-mini="true") Update
+
+            -}
+            div(class="ui-loader-background")

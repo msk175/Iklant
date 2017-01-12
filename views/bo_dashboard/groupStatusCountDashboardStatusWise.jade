@@ -1,0 +1,95 @@
+extends ../layout
+include ../header
+block title
+   title= 'IKLANT-GroupCountDashboard'
+block scripts
+   link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+   include ../headerJqueryMobile-1
+   link(rel='stylesheet', href='/stylesheets/jqx.base.css')
+   link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+   link(rel='stylesheet', href='/stylesheets/popup.css')
+   link(rel="stylesheet", href="/stylesheets/jquery.iviewer.css")
+   link(rel="stylesheet", href="/stylesheets/iklant-table-layout.css")
+   script(type='text/javascript', src='/javascripts/jquery-ui.js')
+   script(type="text/javascript", src="/javascripts/jquery.mousewheel.min.js")
+   script(type="text/javascript", src="/javascripts/jquery.iviewer.js")
+   script(type='text/javascript', src='/javascripts/jqxcore.js')
+   script(type='text/javascript', src="/javascripts/jqxsplitter.js")
+   script(type="text/javascript",src="/javascripts/jsapi.txt")
+   script(type='text/javascript', src="/javascripts/bo_dashboard/groupStatusCountDashBoard.js")
+   script(type='text/javascript', src='/javascripts/commonCustom.js')
+block content
+   form(id='BMFormId')
+      div(data-role='page', data-theme='b')
+         +header("KYC Process Dashboard",["menu", "logout"],"",[])
+         input(type='hidden', name='alertMessageHidden', id='alertMessageHidden', value="#{}")
+         div(data-role="fieldcontain")
+            span
+               a(href="JavaScript:regionalWiseGroupCountDashBoard()",id="clientCurrentStatus" , data-inline='true', data-mini='true')  RegionalWise
+               b  /
+               a(href="JavaScript:branchWiseGroupCountDashBoard()",id="clientCurrentStatus" , data-inline='true', data-mini='true')  #{regionalOfficeName}
+               b  / #{branchOfficeName} - #{toDate}
+         div
+            table
+               tr
+                  th S.No
+                  th Status
+                  th KYC Updaing
+                  th KYC Verification
+                  th LSL Updating
+                  th LSL Verification
+                  th CBA Completed
+                  th CBA Rejected
+               -for(var i=0;i< groupStatusCountJsonArray.length; i++) {
+                  tr
+                     td(style="text-align:center") #{i + 1}
+                     td(style="text-align:center") #{groupStatusCountJsonArray[i].reportStatusName}
+                     td(style="display:none") #{groupStatusCountJsonArray[i].reportStatusName}
+                     - if(groupStatusCountJsonArray[i].kycUpdaingCount == 0) {
+                        td(style ="text-align:center") 0
+                     - }
+                     - else {
+                        td(style="text-align:center")
+                           a(href="JavaScript:getGroupListForSelectedStatus(#{groupStatusCountJsonArray[i].reportStatusId},#{groupStatusCountJsonArray[i].officeId},#{constantsObj.getKYCUploaded()})" ,id="KYCUpdating"+i , data-inline='true', data-mini='true') #{groupStatusCountJsonArray[i].kycUpdaingCount}
+                     - }
+                     - if(groupStatusCountJsonArray[i].kycVerificationCount == 0) {
+                        td(style ="text-align:center") 0
+                     - }
+                     - else {
+                        td(style="text-align:center")
+                           a(href="JavaScript:getGroupListForSelectedStatus(#{groupStatusCountJsonArray[i].reportStatusId},#{groupStatusCountJsonArray[i].officeId},#{constantsObj.getKYCCompleted()})" ,id="KYCVerification"+i , data-inline='true', data-mini='true') #{groupStatusCountJsonArray[i].kycVerificationCount}
+                     - }
+                     - if(groupStatusCountJsonArray[i].leaderSubleaderUpdationCount == 0) {
+                        td(style ="text-align:center") 0
+                     - }
+                     - else {
+                        td(style="text-align:center")
+                           a(href="JavaScript:getGroupListForSelectedStatus(#{groupStatusCountJsonArray[i].reportStatusId},#{groupStatusCountJsonArray[i].officeId},#{constantsObj.getLeaderSubLeaderUpdatedStatus()})" ,id="KYCVerification"+i , data-inline='true', data-mini='true') #{groupStatusCountJsonArray[i].leaderSubleaderUpdationCount}
+                     - }
+                     - if(groupStatusCountJsonArray[i].leaderSubleaderVerificationCount == 0) {
+                        td(style ="text-align:center") 0
+                     - }
+                     - else {
+                        td(style="text-align:center")
+                           a(href="JavaScript:getGroupListForSelectedStatus(#{groupStatusCountJsonArray[i].reportStatusId},#{groupStatusCountJsonArray[i].officeId},#{constantsObj.getLeaderSubLeaderVerifiedStatus()})" ,id="KYCVerification"+i , data-inline='true', data-mini='true') #{groupStatusCountJsonArray[i].leaderSubleaderVerificationCount}
+                     - }
+                     - if(groupStatusCountJsonArray[i].cbaCount == 0) {
+                        td(style ="text-align:center") 0
+                     - }
+                     - else {
+                        td(style="text-align:center")
+                           a(href="JavaScript:getGroupListForSelectedStatus(#{groupStatusCountJsonArray[i].reportStatusId},#{groupStatusCountJsonArray[i].officeId},#{constantsObj.getCreditBureauAnalysedStatus()})" ,id="KYCVerification"+i , data-inline='true', data-mini='true') #{groupStatusCountJsonArray[i].cbaCount}
+                     - }
+                     - if(groupStatusCountJsonArray[i].cbaRejected == 0) {
+                        td(style ="text-align:center") 0
+                     - }
+                     - else {
+                        td(style="text-align:center")
+                           a(href="JavaScript:getGroupListForSelectedStatus(#{groupStatusCountJsonArray[i].reportStatusId},#{groupStatusCountJsonArray[i].officeId},#{constantsObj.getRejectedCreditBureauAnalysisStatusId()})" ,id="KYCVerification"+i , data-inline='true', data-mini='true') #{groupStatusCountJsonArray[i].cbaRejected}
+                     - }
+               - }
+         br
+         br
+         div(id="chart_div",align="center")
+
+

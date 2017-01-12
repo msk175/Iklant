@@ -1,0 +1,58 @@
+extends ../layout
+include ../header
+block title
+    title= 'IKLANT-Manage Office'
+block scripts
+    include ../headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/user_management/manageReport.js')
+block content
+    form(id='ReportFormId')
+        div(data-role='page', data-theme='b')
+            +header("Report Management",["menu","backHref","logout"],contextPath+"/admin/ci/listreports",[])
+            p(id='errorMessageIdManageReport',align="center",class='error-message global-font-details') #{errorMsg}
+            div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b")
+                h3 Add Report
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-b")
+                    div(class='ui-block-a')
+                        label(for="reportNameId") Report Name
+                    div(class='ui-block-b')
+                        input(type="text", name="reportName", id="reportNameId", value ="")
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-b")
+                    div(class='ui-block-a')
+                        label(for="storedProcedureNameId") Stored Procedure Name
+                    div(class='ui-block-b')
+                        input(type="text", name="storedProcedureName", id="storedProcedureNameId", value ="")
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-b")
+                    div(class='ui-block-a')
+                        label(for="reportCategoryId") Report Category
+                    div(class='ui-block-b')
+                        select(name='reportCategory', id='reportCategoryId', data-icon='grid',data-theme="b", data-native-menu="false",data-mini="true")
+                            option(value='0',selected='selected') Select
+                            - for(var i=0;i<reportCategory.length;i++){
+                                option(value='#{reportCategory[i].report_category_id}') #{reportCategory[i].report_category_name}
+                            - }
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-b")
+                    div(class='ui-block-a')
+                        label(for="reportParametersId") Report Parameters
+                    div(class='ui-block-b')
+                        fieldset(data-role='controlgroup',id="reportParametersId")
+                            - for(var i=0; i<ReportParams.length;i++){
+                                input(type='checkbox', name='reportParameter', id='reportParameterId'+i,value='#{ReportParams[i].lookup_id}')
+                                label(for='reportParameterId'+i) #{ReportParams[i].lookup_value}
+                            - }
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-b")
+                    div(class='ui-block-a')
+                        label(for="reportRolesId") Applicable Roles
+                    div(class='ui-block-b')
+                        fieldset(data-role='controlgroup',id="reportRolesId")
+                            - for(var i=0; i<ReportRoles.length;i++){
+                                input(type='checkbox', name='reportRole', id='reportRoleId'+i,value='#{ReportRoles[i].role_id}')
+                                label(for='reportRoleId'+i) #{ReportRoles[i].role_name}
+                            - }
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-e")
+                    div(class='ui-block-a')
+                        a(href="#", rel="external", data-role="button" ,id="createId",data-mini="true") Create Report
+
+
+

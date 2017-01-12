@@ -1,0 +1,116 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'IKLANT-UnfreezeDaybook'
+
+block scripts
+    link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+    include ../headerJqueryMobileBeta-3
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/jquery-ui.js')
+    script(type='text/javascript', src='/javascripts/accountsMenu.js')
+    script(type='text/javascript', src='/javascripts/FreezeUnfreezDay.js')
+
+block content
+    form(id="freezUnfreezDayFormId")
+        div(data-role='page', data-theme='b')
+            +header("",["menu","backHref","logout"],contextPath+ '/client/ci/accounts/accountsMenu',[])
+            div(data-role="navbar")
+                ul(id="custom-nav-list")
+                    li
+                        a(href="#", rel="external", data-role="tab" , id="custom-li-1") Day Book
+            div(data-role="navbar")
+                ul(id="custom-nav-list")
+                    li
+                        a(href=contextPath + "/client/ci/daybook/dayBookLoadInit", rel="external", data-role="tab" , id="custom-li-1") Current Day Book
+                    - if(DayBookDetail.getRoleId() == constantsObj.getAccountsExecutiveRoleId()){
+                        li
+                            a(href=contextPath + "/client/ci/daybook/showUnfreezeDaysList", rel="external", data-role="tab",class="ui-btn-active") Unfreezed Days
+                    - }
+                    - if(DayBookDetail.getRoleId() == constantsObj.getBMroleId())	{
+                        li
+                            a(href=contextPath + "/client/ci/daybook/showUnfreezeDaysList", rel="external", data-role="tab",class="ui-btn-active") Freez Days
+                        li
+                            a(href=contextPath + "/client/ci/daybook/showFreezUnfreezeDay", rel="external", data-role="tab") Unfreez Days
+                    - }
+
+            div(data-role="collapsible", id="minutes", data-overlay-theme="a", data-inline="true" , data-collapsed="false",data-content-theme="b",width="100%")
+                h3 Unfreezed Days List to Freez
+                p(id="successMsg" ,class="error-message global-font-details",align="center")
+                div(data-role="content", class="ui-content" , role="main")
+                    - if(closingDate.length == 0){
+                        p(class="error-message global-font-details") No Days Unfreezed
+                    - }
+                    - else {
+                        table(border='0',id="paymentVerificationTableId")
+                            thead
+                                tr
+                                    th S.No
+                                    th Date
+                                    th Verify Day
+                                    th Status
+                                    th Action
+                                tbody
+
+                                    -for(i=0;i<closingDate.length;i++){
+                                        tr
+                                            td(style="text-align:center") #{i+1}
+                                            td(style="display:none;") #{i}
+                                            td(style="text-align:center") #{closingDate[i]}
+                                            td(style="text-align:center")
+                                                a(href="JavaScript:verifyDay('#{i}','#{closingDate[i]}')",data-rel="popup", data-position-to='window',data-icon='arrow-d',title=' Add ', data-inline="true",data-mini="true", id='imageId'+i)
+                                                    img(src="/images/verify.png",style="margin:5px 10px 0 0;width:40px;height:40px")
+                                            td(style="text-align:center") #{status[i]}
+                                            - if(DayBookDetail.getRoleId() == constantsObj.getBMroleId())	{
+                                                td(style="text-align:center")
+                                                    a(href="JavaScript:freezDay('#{i}','#{closingDate[i]}')",title="FreezeDay",data-role="button",data-rel="popup", data-position-to='window', data-mini="true",data-inline="true", id='actionId'+i) Freez
+                                                    label(id="labelRevertID"+i,class="success-message global-font-details")
+                                            - }
+                                            - if(DayBookDetail.getRoleId() == constantsObj.getAccountsExecutiveRoleId()){
+                                                td(style="text-align:center")
+                                                    a(href="JavaScript:closeDayForAE('#{i}','#{closingDate[i]}')",title="CloseDay",data-role="button",data-rel="popup", data-position-to='window', data-mini="true",data-inline="true", id='closeday'+i) Close Day
+                                                    label(id="labelClosedayID"+i,class="success-message global-font-details")
+                                            - }
+                                    - }
+                    - }
+            input(type="hidden",value="",id="description")
+            input(type="hidden",value="",id="txtnType")
+            input(type="hidden",value="",id="amount")
+            div(data-role="popup",id="recentActivityPopup",data-corners="true",data-theme="b",data-shadow="true")
+                a(href="#",data-rel="back",data-role="button",data-theme="a",data-icon="delete",data-iconpos="notext",class="ui-btn-right") Close
+                div(data-role="navbar")
+                    ul(id="custom-nav-list")
+                        li
+                            a(href="", rel="external", data-role="tab" , id="") Daybook - Inflow and Outflow
+
+                div(data-role="fieldcontain",align="center")
+                    label(for="groupid",class="label",style="font-weight:bold") Closing Balance :
+                    label(id="groupid",style="font-weight:bold")
+                div(data-role="navbar")
+                    ul(id="custom-nav-list")
+                        li
+                            a(href="JavaScript:showInflow()", rel="external", data-role="tab" , id="inflow",class="ui-btn-active") Inflow
+                        li
+                            a(href="JavaScript:showOutflow()", rel="external", data-role="tab" , id="outflow") Outflow
+                div(data-role="horizontal",class="ui-bar ui-grid-c",id="prevNextDiv")
+                    div(class='ui-block-a')
+                        a(href='JavaScript:doPrev()', data-icon='arrow-l',data-iconpos="left", data-role='button',id='clientListPrevId',data-inline='true', data-mini='true') Prev
+                    div(class='ui-block-b')
+                        a(href='#',  data-role='button',id='clientListPageNoId',data-inline='true', data-mini='true')
+                    div(class='ui-block-c',style="float:right")
+                        a(href="JavaScript:doNext()", data-icon='arrow-r',data-iconpos="right",data-role='button',id='clientListNextId',data-inline='true', data-mini='true') Next
+                div(data-role="horizontal",class="ui-bar ui-grid-c",id="prevNextDivForOutflow")
+                    div(class='ui-block-a')
+                        a(href='JavaScript:doPrevForOutflow()', data-icon='arrow-l',data-iconpos="left", data-role='button',id='outListPrevId',data-inline='true', data-mini='true') Prev
+                    div(class='ui-block-b')
+                        a(href='#',  data-role='button',id='outListPageNoId',data-inline='true', data-mini='true')
+                    div(class='ui-block-c',style="float:right")
+                        a(href="JavaScript:doNextForOutflow()", data-icon='arrow-r',data-iconpos="right",data-role='button',id='outListNextId',data-inline='true', data-mini='true') Next
+                p(id="successMsgForTable",class="error-message global-font-details",align="center")
+                p(id="successMsgForOutflow",class="error-message global-font-details",align="center")
+                div(id="abc")
+                    div(data-role="content",id="clientListDivId",style = "overflow: auto;")
+                div(id="def")
+                    div(data-role="content",id="outFlowDivId",style = "overflow: auto;")
+            div(class="ui-loader-background")

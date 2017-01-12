@@ -1,0 +1,756 @@
+!!! 5
+html(lang = "en")
+    head
+        title= 'IKLANT-Dashboard'
+        meta(charset='utf-8')
+        meta(name="viewport", content="initial-scale=1.0, user-scalable=no")
+        link(rel="stylesheet", href="/stylesheets/jquery.mobile-1.3.0-beta.1.min.css")
+        link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+        link(rel='stylesheet', href='/stylesheets/loanAccInfoCustom.css')
+        link(rel='stylesheet', href='/stylesheets/common.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+        link(rel='stylesheet', href='/stylesheets/iklantStyle.css')
+        script(type='text/javascript', src='/javascripts/jquery-1.8.3.min.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile-1.3.0-beta.1.min.js')
+        script(type='text/javascript', src='/javascripts/jquery-ui.js')
+        script(type='text/javascript', src='/javascripts/loanAccInfo.js')
+        script(type='text/javascript', src='/javascripts/common.js')
+    body(style="overflow-x:hidden")
+        form(id='loanAccountInformationFormID')
+            div(data-role='page', data-theme='b', id="loginDetailsDiv")
+                div(data-role="header", data-theme="a", class="ui-bar ui-grid-a", data-overlay-theme="c",data-position="fixed")
+                    div(class="ui-block-a")
+                        img(id='groupIcon',src='/images/iklant.png')
+                    div(class="ui-block-b",align="right",style="padding:25px 50px 0 0;")
+                        a(href=contextPath + '/client/ci/menu', rel="external",data-icon='grid', data-role='button', title=' Menu', data-inline='true') Menu
+                        a(href="JavaScript:back('#{loanAccInformationDto.getGlobalCustNum()}',#{loanStatusId});", data-icon='arrow-l', data-role='button',id='backId', ,data-inline='true', data-mini='true') Back
+                        a(href=contextPath + '/client/ci/logout',  rel="external",data-icon='back', data-role='button', title=' Logout ', data-inline="true") Logout
+                div(data-role="navbar")
+                    ul(id="custom-nav-list")
+                        li
+                            a(rel="external", data-role="tab" , id="custom-li-1") Loan Account Information
+                div(data-role="content")
+                    div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b")
+                        h3 #{loanAccInformationDto.getPrdOfferingName()} ##{loanAccInformationDto.getGlobalAccountNum()}
+                        div(data-role="horizontal",class="ui-bar ui-grid-c")
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain")
+                                    label(for='groupname',id='labelid') Group Name
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain")
+                                    label(for='groupname') #{loanAccInformationDto.getCustomerName()}
+                        div(data-role="horizontal",class="ui-bar ui-grid-c")
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain")
+                                    label(for='disbursalDate',id='labelid') Disbursal Date
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain")
+                                    label(for='disbursalDate') #{loanAccInformationDto.getDisbursementDate()}
+                        div(data-role="horizontal",class="ui-bar ui-grid-c")
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain")
+                                    label(for='individualTracking',id='labelid') Individual Tracking
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain")
+                                    label(for='individualTracking') #{loanAccInformationDto.getIndividualTracked()}
+                        div(data-role="content")
+                            div(data-role="navbar")
+                                ul(id="custom-nav-main")
+                                    li
+                                        a(rel="external", data-role="tab" , id="custom-li-mainTab1",class="ui-btn-active ") Loan Summary
+                                    li
+                                        a(rel="external", data-role="tab" , id="custom-li-mainTab2") Group Repayment Schedule
+                                    li
+                                        a(rel="external", data-role="tab" , id="custom-li-mainTab3") Client Repayment Schedule
+                                    li
+                                        a(rel="external", data-role="tab" , id="custom-li-mainTab4") Recent Activity
+
+                            div(data-role="content",id="loanSummary",style = "overflow: auto;")
+                                div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-c")
+                                    div(class='ui-block-a')
+                                        div(data-role="fieldcontain")
+                                            label(for='totalAmountDue',id="labelid") Total Amount Due	:
+                                            label(for='totalAmountDueValue',id="labelValueId")    #{loanAccInformationDto.getTotalAmountDue()}
+                                    div(class='ui-block-b')
+                                        div(data-role="fieldcontain")
+                                            label(for='amountDueDate',id="labelid") on #{loanAccInformationDto.getNextMeetingDate()}
+                                    div(class='ui-block-c')
+                                        div(data-role="fieldcontain")
+                                            label(for='amountArrears',id="labelid")    Amount in Arrears	:
+                                            label(for='amountArrearsValue',id="labelValueId")    #{loanAccInformationDto.getTotalAmountInArrears()}
+
+                                div(data-role="fieldcontain")
+                                    table
+                                        tr
+                                            th(style ="text-align:center")
+                                            th(style ="text-align:center") Original Loan
+                                            th(style ="text-align:center") Amount Paid
+                                            th(style ="text-align:center") Loan Balance
+                                        tr
+                                            td(align="center")    Principal
+                                            td(align="center")    #{loanSummary.getOriginalPrincipal()}
+                                            td(align="center")    #{loanSummary.getPincipalPaid()}
+                                            td(align="center")    #{loanSummary.getPrincipalDue()}
+                                        tr
+                                            td(align="center")    Interest
+                                            td(align="center")    #{loanSummary.getOriginalInterest()}
+                                            td(align="center")    #{loanSummary.getInterestPaid()}
+                                            td(align="center")    #{loanSummary.getInterestDue()}
+                                        tr
+                                            td(align="center")    Fees
+                                            td(align="center")    #{loanSummary.getOriginalFees()}
+                                            td(align="center")    #{loanSummary.getFeesPaid()}
+                                            td(align="center")    #{loanSummary.getFeesDue()}
+                                        tr
+                                            td(align="center")    Penalty
+                                            td(align="center")    #{loanSummary.getOriginalPenalty()}
+                                            td(align="center")    #{loanSummary.getPenaltyPaid()}
+                                            td(align="center")    #{loanSummary.getPenaltyDue()}
+                            div(data-role="content",id="groupRepaymentSchedule",style = "overflow: auto;")
+                                div(id="groupRepaySchedSubContent")
+                                    div(id="outstandingBalanceGroupId")
+                                        -if(runningBalance.getRunBalPrincipal().length >5){
+                                            div(data-role="horizontal",class="ui-bar ui-grid-b")
+                                                div(class='ui-block-a',align="left")
+                                                    a(href='#', data-icon='check', data-role='button',id='groupOutstandingBalancePrevId', ,data-inline='true', data-mini='true') Prev
+                                                div(class='ui-block-b',align="center")
+                                                    a(href='#', data-icon='check', data-role='button',id='groupOutstandingBalancePageNoId', ,data-inline='true', data-mini='true') Page 1 of 5 of #{runningBalance.getRunBalPrincipal().length}
+                                                div(class='ui-block-c',align="right")
+                                                    a(href='#', data-icon='check', data-role='button',id='groupOutstandingBalanceNextId', ,data-inline='true', data-mini='true') Next
+                                        -}
+                                        div(data-role="fieldcontain")
+                                            table(id="groupOutstandingBalanceTableId")
+                                                tr
+                                                    th(style ="text-align:center") S.No
+                                                    th(style ="text-align:center") Principal
+                                                    th(style ="text-align:center") Interest
+                                                    th(style ="text-align:center") Fees
+                                                    th(style ="text-align:center") Penalty
+                                                    th(style ="text-align:center") Total
+                                                - for( var i = 0; i < runningBalance.getRunBalPrincipal().length; i++ ) {
+                                                    tr(class="showhide")
+                                                        td(align="center")    #{i+1}
+                                                        td(align="center")    #{runningBalance.getRunBalPrincipal()[i]}
+                                                        td(align="center")    #{runningBalance.getRunBalInterest()[i]}
+                                                        td(align="center")    #{runningBalance.getRunBalFees()[i]}
+                                                        td(align="center")    #{runningBalance.getRunBalPenalty()[i]}
+                                                        td(align="center")    #{runningBalance.getTotalRunBal()[i]}
+                                                - }
+                                    div(id="installmentsPaidGroupId")
+                                        -if(paidInstallment.getInstallmentId().length >5){
+                                            div(data-role="horizontal",class="ui-bar ui-grid-b")
+                                                div(class='ui-block-a',align="left")
+                                                    a(href='#', data-icon='check', data-role='button',id='groupInstallmentpaidPrevId', ,data-inline='true', data-mini='true') Prev
+                                                div(class='ui-block-b',align="center")
+                                                    a(href='#', data-icon='check', data-role='button',id='groupInstallmentpaidPageNoId', ,data-inline='true', data-mini='true') Page 1 of 5 of #{paidInstallment.getInstallmentId().length}
+                                                div(class='ui-block-c',align="right")
+                                                    a(href='#', data-icon='check', data-role='button',id='groupInstallmentpaidNextId', ,data-inline='true', data-mini='true') Next
+                                        -}
+                                        div(data-role="fieldcontain")
+                                            table(id="groupInstallmentpaidTableId")
+                                                tr
+                                                    th(style ="text-align:center") S.No
+                                                    th(style ="text-align:center") Due Date
+                                                    th(style ="text-align:center") Date Paid
+                                                    th(style ="text-align:center") Principal
+                                                    th(style ="text-align:center") Interest
+                                                    th(style ="text-align:center") Fees
+                                                    th(style ="text-align:center") Penalty
+                                                    th(style ="text-align:center") Total
+                                                - for( var i = 0; i < paidInstallment.getInstallmentId().length; i++ ) {
+                                                    tr(class="showhide")
+                                                        td(align="center") #{paidInstallment.getInstallmentId()[i]}
+                                                        td(align="center") #{paidInstallment.getActionDate()[i]}
+                                                        td(align="center") #{paidInstallment.getPaymentDate()[i]}
+                                                        td(align="center") #{paidInstallment.getPrincipal()[i]}
+                                                        td(align="center") #{paidInstallment.getInterest()[i]}
+                                                        td(align="center") #{paidInstallment.getFees()[i]}
+                                                        td(align="center") #{paidInstallment.getPenalty()[i]}
+                                                        td(align="center") #{paidInstallment.getTotal()[i]}
+                                                -}
+                                    div(id="installmentsDueGroupId")
+                                        -if(dueInstallment.getInstallmentId().length >5){
+                                            div(data-role="horizontal",class="ui-bar ui-grid-b")
+                                                div(class='ui-block-a',align="left")
+                                                    a(href='#', data-icon='check', data-role='button',id='groupInstallmentDuePrevId', ,data-inline='true', data-mini='true') Prev
+                                                div(class='ui-block-b',align="center")
+                                                    a(href='#', data-icon='check', data-role='button',id='groupInstallmentDuePageNoId', ,data-inline='true', data-mini='true') Page 1 of 5 of #{dueInstallment.getInstallmentId().length}
+                                                div(class='ui-block-c',align="right")
+                                                    a(href='#', data-icon='check', data-role='button',id='groupInstallmentDueNextId', ,data-inline='true', data-mini='true') Next
+                                        -}
+                                        div(data-role="fieldcontain")
+                                            table(id="groupInstallmentDueTableId")
+                                                tr
+                                                    th(style ="text-align:center") S.No
+                                                    th(style ="text-align:center") Due Date
+                                                    th(style ="text-align:center") Date Paid
+                                                    th(style ="text-align:center") Principal
+                                                    th(style ="text-align:center") Interest
+                                                    th(style ="text-align:center") Fees
+                                                    th(style ="text-align:center") Penalty
+                                                    th(style ="text-align:center") Total
+                                                - for( var i = 0; i < dueInstallment.getInstallmentId().length; i++ ) {
+                                                    tr(class="showhide")
+                                                        td(align="center") #{dueInstallment.getInstallmentId()[i]}
+                                                        td(align="center") #{dueInstallment.getActionDate()[i]}
+                                                        td(align="center") #{dueInstallment.getPaymentDate()[i]}
+                                                        td(align="center") #{dueInstallment.getPrincipal()[i]}
+                                                        td(align="center") #{dueInstallment.getInterest()[i]}
+                                                        td(align="center") #{dueInstallment.getFees()[i]}
+                                                        td(align="center") #{dueInstallment.getPenalty()[i]}
+                                                        td(align="center") #{dueInstallment.getTotal()[i]}
+                                                -}
+                                    div(id="futureInstallmentsGroupId")
+                                        -if(futureInstallment.getInstallmentId().length >5){
+                                            div(data-role="horizontal",class="ui-bar ui-grid-b")
+                                                div(class='ui-block-a',align="left")
+                                                    a(href='#', data-icon='check', data-role='button',id='groupFutureInstallmentPrevId', ,data-inline='true', data-mini='true') Prev
+                                                div(class='ui-block-b',align="center")
+                                                    a(href='#', data-icon='check', data-role='button',id='groupFutureInstallmentPageNoId', ,data-inline='true', data-mini='true') Page 1 of 5 of #{futureInstallment.getInstallmentId().length}
+                                                div(class='ui-block-c',align="right")
+                                                    a(href='#', data-icon='check', data-role='button',id='groupFutureInstallmentNextId', ,data-inline='true', data-mini='true') Next
+                                        -}
+                                        div(data-role="fieldcontain")
+                                            table(id="groupFutureInstallmentTableId")
+                                                tr
+                                                    th(style ="text-align:center") S.No
+                                                    th(style ="text-align:center") Due Date
+                                                    th(style ="text-align:center") Date Paid
+                                                    th(style ="text-align:center") Principal
+                                                    th(style ="text-align:center") Interest
+                                                    th(style ="text-align:center") Fees
+                                                    th(style ="text-align:center") Penalty
+                                                    th(style ="text-align:center") Total
+                                                - for( var i = 0; i < futureInstallment.getInstallmentId().length; i++ ) {
+                                                    tr(class="showhide")
+                                                        td(align="center") #{futureInstallment.getInstallmentId()[i]}
+                                                        td(align="center") #{futureInstallment.getActionDate()[i]}
+                                                        td(align="center") #{futureInstallment.getPaymentDate()[i]}
+                                                        td(align="center") #{futureInstallment.getPrincipal()[i]}
+                                                        td(align="center") #{futureInstallment.getInterest()[i]}
+                                                        td(align="center") #{futureInstallment.getFees()[i]}
+                                                        td(align="center") #{futureInstallment.getPenalty()[i]}
+                                                        td(align="center") #{futureInstallment.getTotal()[i]}
+                                                -}
+                                    div(data-role="navbar",id="subGroupNavbarId")
+                                        ul(id="custom-nav-subGroup")
+                                            li
+                                                a(rel="external", data-role="tab" , id="custom-li-subGroupTab1",class="ui-btn-active ") Outstanding Balance
+                                            li
+                                                a(rel="external", data-role="tab" , id="custom-li-subGroupTab2") Installments Paid
+                                            li
+                                                a(rel="external", data-role="tab" , id="custom-li-subGroupTab3") Installments Due
+                                            li
+                                                a(rel="external", data-role="tab" , id="custom-li-subGroupTab4") Future Installments
+
+                            div(data-role="content",id="clientRepaymentSchedule",style = "overflow: auto;")
+                                div(id="clientRepaySchedSubContent")
+                                    div(data-role="fieldcontain",id="paginationDivClientId")
+                                    div(id="clientAccountDetailsId")
+                                        -if(clientLoanAccountDetailsDto.getAccountId().length >5){
+                                            div(data-role="horizontal",class="ui-bar ui-grid-b")
+                                                div(class='ui-block-a',align="left")
+                                                    a(href='#', data-icon='check', data-role='button',id='clientDetailPrevId', ,data-inline='true', data-mini='true') Prev
+                                                div(class='ui-block-b',align="center")
+                                                    a(href='#', data-icon='check', data-role='button',id='clientDetailPageNoId', ,data-inline='true', data-mini='true')
+                                                div(class='ui-block-c',align="right")
+                                                    a(href='#', data-icon='check', data-role='button',id='clientDetailNextId', ,data-inline='true', data-mini='true') Next
+                                        -}
+                                        div(data-role="fieldcontain")
+                                            table(id="clientDetailTableId")
+                                                tr
+                                                    th(style ="text-align:center") Client ID
+                                                    th(style ="text-align:center") Client Name
+                                                    th(style ="text-align:center") Government ID
+                                                    th(style ="text-align:center") Loan Amount
+                                                    th(style ="text-align:center") Loan Purpose
+                                                    th(style ="text-align:center") Insured
+                                                    th(style ="text-align:center") Client Repayment Schedule
+                                                -for(i=0;i<clientLoanAccountDetailsDto.getAccountId().length;i++){
+                                                    tr(class="showhide")
+                                                        td(align="center")    #{clientLoanAccountDetailsDto.getClientId()[i]}
+                                                        td(align="center")    #{clientLoanAccountDetailsDto.getClientName()[i]}
+                                                        td(align="center")    #{clientLoanAccountDetailsDto.getGovermentId()[i]}
+                                                        td(align="center")    #{clientLoanAccountDetailsDto.getLoanAmount()[i]}
+                                                        td(align="center")    #{clientLoanAccountDetailsDto.getBusinessActivityName()[i]}
+                                                        td(align="center")    #{clientLoanAccountDetailsDto.getInsured()[i]}
+                                                        td(align="center")
+                                                            a(href="#", data-icon='check', data-role='button',id='showClientSchedId'+i, ,data-inline='true', data-mini='true') Show
+                                                -}
+                                    div(id="PaidInstallmentClientId")
+                                        - var clientId = new Array();
+                                        - var clientName = new Array();
+                                        - var clientPaidInstallmentIds = new Array();
+                                        - var clientPaidInstallmentDueDate = new Array();
+                                        - var clientPaidInstallmentDatePaid = new Array();
+                                        - var clientPaidInstallmentPrincipal = new Array();
+                                        - var clientPaidInstallmentInterest = new Array();
+                                        - var clientPaidInstallmentFees = new Array();
+                                        - var clientPaidInstallmentPenalty = new Array();
+                                        - var clientPaidInstallmentTotal = new Array();
+                                        -for(i=0;i<clientLoanAccountDetailsDto.getAccountId().length;i++){
+
+                                            - if(clientLoanAccountDetailsDto.getAccountId().length == (i+1)) {
+                                                - clientId.push(clientLoanAccountDetailsDto.getClientId()[i]);
+                                                input(type='hidden', name='clientId', id='clientIdId', value=clientId)
+                                            - }
+                                            - else {
+                                                - clientId.push(clientLoanAccountDetailsDto.getClientId()[i]);
+                                            - }
+
+                                            - if(clientLoanAccountDetailsDto.getAccountId().length == (i+1)) {
+                                                - clientName.push(clientLoanAccountDetailsDto.getClientName()[i]);
+                                                input(type='hidden', name='clientName', id='clientNameId', value=clientName)
+                                            - }
+                                            - else {
+                                                - clientName.push(clientLoanAccountDetailsDto.getClientName()[i]);
+                                            - }
+                                            - var individualClientPaidInstallmentIds = new Array();
+                                            - var individualClientPaidInstallmentDueDate = new Array();
+                                            - var individualClientPaidInstallmentDatePaid = new Array();
+                                            - var individualClientPaidInstallmentPrincipal = new Array();
+                                            - var individualClientPaidInstallmentInterest = new Array();
+                                            - var individualClientPaidInstallmentFees = new Array();
+                                            - var individualClientPaidInstallmentPenalty = new Array();
+                                            - var individualClientPaidInstallmentTotal = new Array();
+                                            -for(j=0;j<clientLoanAccountDetailsDto.getPaidInstallment()[i].getInstallmentId().length;j++){
+                                                - if(clientLoanAccountDetailsDto.getPaidInstallment()[i].getInstallmentId().length == (j+1)) {
+
+                                                    - individualClientPaidInstallmentIds.push(clientLoanAccountDetailsDto.getPaidInstallment()[i].getInstallmentId()[j]);
+                                                    - individualClientPaidInstallmentIds.push("*");
+                                                    - individualClientPaidInstallmentDueDate.push(clientLoanAccountDetailsDto.getPaidInstallment()[i].getActionDate()[j]);
+                                                    - individualClientPaidInstallmentDueDate.push("*");
+                                                    - individualClientPaidInstallmentDatePaid.push(clientLoanAccountDetailsDto.getPaidInstallment()[i].getPaymentDate()[j]);
+                                                    - individualClientPaidInstallmentDatePaid.push("*");
+                                                    - individualClientPaidInstallmentPrincipal.push(clientLoanAccountDetailsDto.getPaidInstallment()[i].getPrincipal()[j]);
+                                                    - individualClientPaidInstallmentPrincipal.push("*");
+                                                    - individualClientPaidInstallmentInterest.push(clientLoanAccountDetailsDto.getPaidInstallment()[i].getInterest()[j]);
+                                                    - individualClientPaidInstallmentInterest.push("*");
+                                                    - individualClientPaidInstallmentFees.push(clientLoanAccountDetailsDto.getPaidInstallment()[i].getFees()[j]);
+                                                    - individualClientPaidInstallmentFees.push("*");
+                                                    - individualClientPaidInstallmentPenalty.push(clientLoanAccountDetailsDto.getPaidInstallment()[i].getPenalty()[j]);
+                                                    - individualClientPaidInstallmentPenalty.push("*");
+                                                    - individualClientPaidInstallmentTotal.push(clientLoanAccountDetailsDto.getPaidInstallment()[i].getTotal()[j]);
+                                                    - individualClientPaidInstallmentTotal.push("*");
+
+
+                                                    - clientPaidInstallmentIds[i] = individualClientPaidInstallmentIds;
+                                                    - clientPaidInstallmentDueDate[i] = individualClientPaidInstallmentDueDate;
+                                                    - clientPaidInstallmentDatePaid[i] = individualClientPaidInstallmentDatePaid;
+                                                    - clientPaidInstallmentPrincipal[i] = individualClientPaidInstallmentPrincipal;
+                                                    - clientPaidInstallmentInterest[i] = individualClientPaidInstallmentInterest;
+                                                    - clientPaidInstallmentFees[i] = individualClientPaidInstallmentFees;
+                                                    - clientPaidInstallmentPenalty[i] = individualClientPaidInstallmentPenalty;
+                                                    - clientPaidInstallmentTotal[i] = individualClientPaidInstallmentTotal;
+
+                                                - }
+                                                - else {
+                                                    - individualClientPaidInstallmentIds.push(clientLoanAccountDetailsDto.getPaidInstallment()[i].getInstallmentId()[j]);
+                                                    - individualClientPaidInstallmentDueDate.push(clientLoanAccountDetailsDto.getPaidInstallment()[i].getActionDate()[j]);
+                                                    - individualClientPaidInstallmentDatePaid.push(clientLoanAccountDetailsDto.getPaidInstallment()[i].getPaymentDate()[j]);
+                                                    - individualClientPaidInstallmentPrincipal.push(clientLoanAccountDetailsDto.getPaidInstallment()[i].getPrincipal()[j]);
+                                                    - individualClientPaidInstallmentInterest.push(clientLoanAccountDetailsDto.getPaidInstallment()[i].getInterest()[j]);
+                                                    - individualClientPaidInstallmentFees.push(clientLoanAccountDetailsDto.getPaidInstallment()[i].getFees()[j]);
+                                                    - individualClientPaidInstallmentPenalty.push(clientLoanAccountDetailsDto.getPaidInstallment()[i].getPenalty()[j]);
+                                                    - individualClientPaidInstallmentTotal.push(clientLoanAccountDetailsDto.getPaidInstallment()[i].getTotal()[j]);
+
+                                                - }
+                                            - }
+                                            - if(clientLoanAccountDetailsDto.getAccountId().length == (i+1)) {
+                                                input(type='hidden', name='clientPaidInstallmentIds', id='clientPaidInstallmentIdsId', value=clientPaidInstallmentIds)
+                                                input(type='hidden', name='clientPaidInstallmentDueDate', id='clientPaidInstallmentDueDateId', value=clientPaidInstallmentDueDate)
+                                                input(type='hidden', name='clientPaidInstallmentDatePaid', id='clientPaidInstallmentDatePaidId', value=clientPaidInstallmentDatePaid)
+                                                input(type='hidden', name='clientPaidInstallmentPrincipal', id='clientPaidInstallmentPrincipalId', value=clientPaidInstallmentPrincipal)
+                                                input(type='hidden', name='clientPaidInstallmentInterest', id='clientPaidInstallmentInterestId', value=clientPaidInstallmentInterest)
+                                                input(type='hidden', name='clientPaidInstallmentFees', id='clientPaidInstallmentFeesId', value=clientPaidInstallmentFees)
+                                                input(type='hidden', name='clientPaidInstallmentPenalty', id='clientPaidInstallmentPenaltyId', value=clientPaidInstallmentPenalty)
+                                                input(type='hidden', name='clientPaidInstallmentTotal', id='clientPaidInstallmentTotalId', value=clientPaidInstallmentTotal)
+                                            - }
+                                            - if(i == 0){
+                                                div(id="paidInstallmentTableId")
+                                                    div(data-role="horizontal",class="ui-bar ui-grid-b")
+                                                        div(class='ui-block-a',align="left")
+                                                            a(href='#', data-icon='check', data-role='button',id='clientInstallmentpaidPrevId', ,data-inline='true', data-mini='true') Prev
+                                                        div(class='ui-block-b',align="center")
+                                                            a(href='#', data-icon='check', data-role='button',id='clientInstallmentpaidPageNoId', ,data-inline='true', data-mini='true')
+                                                        div(class='ui-block-c',align="right")
+                                                            a(href='#', data-icon='check', data-role='button',id='clientInstallmentpaidNextId', ,data-inline='true', data-mini='true') Next
+
+                                                        div(data-role="fieldcontain")
+                                                        label(id="labelid" , class="MemberNameLabel") #{clientLoanAccountDetailsDto.getClientId()[i]} - #{clientLoanAccountDetailsDto.getClientName()[i]}
+                                                        div(data-role="fieldcontain")
+                                                        table(id="clientPaidInstallmentTableId")
+                                                            tr
+                                                                th(style ="text-align:center") S.No
+                                                                th(style ="text-align:center") Due Date
+                                                                th(style ="text-align:center") Date Paid
+                                                                th(style ="text-align:center") Principal
+                                                                th(style ="text-align:center") Interest
+                                                                th(style ="text-align:center") Fees
+                                                                th(style ="text-align:center") Penalty
+                                                                th(style ="text-align:center") Total
+                                                            tr
+                                                                td(align="center")
+                                                                td(align="center")
+                                                                td(align="center")
+                                                                td(align="center")
+                                                                td(align="center")
+                                                                td(align="center")
+                                                                td(align="center")
+                                                                td(align="center")
+
+                                            -}
+
+
+                                        -}
+                                    div(id="installmentsDueClientId")
+
+                                        - var clientInstallmentsDueIds = new Array();
+                                        - var clientInstallmentsDueDueDate = new Array();
+                                        - var clientInstallmentsDueDatePaid = new Array();
+                                        - var clientInstallmentsDuePrincipal = new Array();
+                                        - var clientInstallmentsDueInterest = new Array();
+                                        - var clientInstallmentsDueFees = new Array();
+                                        - var clientInstallmentsDuePenalty = new Array();
+                                        - var clientInstallmentsDueTotal = new Array();
+                                        -for(i=0;i<clientLoanAccountDetailsDto.getAccountId().length;i++){
+                                            - var individualClientInstallmentsDueIds = new Array();
+                                            - var individualClientInstallmentsDueDueDate = new Array();
+                                            - var individualClientInstallmentsDueDatePaid = new Array();
+                                            - var individualClientInstallmentsDuePrincipal = new Array();
+                                            - var individualClientInstallmentsDueInterest = new Array();
+                                            - var individualClientInstallmentsDueFees = new Array();
+                                            - var individualClientInstallmentsDuePenalty = new Array();
+                                            - var individualClientInstallmentsDueTotal = new Array();
+                                            -for(j=0;j<clientLoanAccountDetailsDto.getDueInstallment()[i].getInstallmentId().length;j++){
+                                                - if(clientLoanAccountDetailsDto.getDueInstallment()[i].getInstallmentId().length == (j+1)) {
+
+                                                    - individualClientInstallmentsDueIds.push(clientLoanAccountDetailsDto.getDueInstallment()[i].getInstallmentId()[j]);
+                                                    - individualClientInstallmentsDueIds.push("*");
+                                                    - individualClientInstallmentsDueDueDate.push(clientLoanAccountDetailsDto.getDueInstallment()[i].getActionDate()[j]);
+                                                    - individualClientInstallmentsDueDueDate.push("*");
+                                                    - individualClientInstallmentsDueDatePaid.push(clientLoanAccountDetailsDto.getDueInstallment()[i].getPaymentDate()[j]);
+                                                    - individualClientInstallmentsDueDatePaid.push("*");
+                                                    - individualClientInstallmentsDuePrincipal.push(clientLoanAccountDetailsDto.getDueInstallment()[i].getPrincipal()[j]);
+                                                    - individualClientInstallmentsDuePrincipal.push("*");
+                                                    - individualClientInstallmentsDueInterest.push(clientLoanAccountDetailsDto.getDueInstallment()[i].getInterest()[j]);
+                                                    - individualClientInstallmentsDueInterest.push("*");
+                                                    - individualClientInstallmentsDueFees.push(clientLoanAccountDetailsDto.getDueInstallment()[i].getFees()[j]);
+                                                    - individualClientInstallmentsDueFees.push("*");
+                                                    - individualClientInstallmentsDuePenalty.push(clientLoanAccountDetailsDto.getDueInstallment()[i].getPenalty()[j]);
+                                                    - individualClientInstallmentsDuePenalty.push("*");
+                                                    - individualClientInstallmentsDueTotal.push(clientLoanAccountDetailsDto.getDueInstallment()[i].getTotal()[j]);
+                                                    - individualClientInstallmentsDueTotal.push("*");
+
+
+                                                    - clientInstallmentsDueIds[i] = individualClientInstallmentsDueIds;
+                                                    - clientInstallmentsDueDueDate[i] = individualClientInstallmentsDueDueDate;
+                                                    - clientInstallmentsDueDatePaid[i] = individualClientInstallmentsDueDatePaid;
+                                                    - clientInstallmentsDuePrincipal[i] = individualClientInstallmentsDuePrincipal;
+                                                    - clientInstallmentsDueInterest[i] = individualClientInstallmentsDueInterest;
+                                                    - clientInstallmentsDueFees[i] = individualClientInstallmentsDueFees;
+                                                    - clientInstallmentsDuePenalty[i] = individualClientInstallmentsDuePenalty;
+                                                    - clientInstallmentsDueTotal[i] = individualClientInstallmentsDueTotal;
+
+                                                - }
+                                                - else {
+                                                    - individualClientInstallmentsDueIds.push(clientLoanAccountDetailsDto.getDueInstallment()[i].getInstallmentId()[j]);
+                                                    - individualClientInstallmentsDueDueDate.push(clientLoanAccountDetailsDto.getDueInstallment()[i].getActionDate()[j]);
+                                                    - individualClientInstallmentsDueDatePaid.push(clientLoanAccountDetailsDto.getDueInstallment()[i].getPaymentDate()[j]);
+                                                    - individualClientInstallmentsDuePrincipal.push(clientLoanAccountDetailsDto.getDueInstallment()[i].getPrincipal()[j]);
+                                                    - individualClientInstallmentsDueInterest.push(clientLoanAccountDetailsDto.getDueInstallment()[i].getInterest()[j]);
+                                                    - individualClientInstallmentsDueFees.push(clientLoanAccountDetailsDto.getDueInstallment()[i].getFees()[j]);
+                                                    - individualClientInstallmentsDuePenalty.push(clientLoanAccountDetailsDto.getDueInstallment()[i].getPenalty()[j]);
+                                                    - individualClientInstallmentsDueTotal.push(clientLoanAccountDetailsDto.getDueInstallment()[i].getTotal()[j]);
+
+                                                - }
+                                            - }
+                                            - if(clientLoanAccountDetailsDto.getAccountId().length == (i+1)) {
+                                                input(type='hidden', name='clientInstallmentsDueIds', id='clientInstallmentsDueIdsId', value=clientInstallmentsDueIds)
+                                                input(type='hidden', name='clientInstallmentsDueDueDate', id='clientInstallmentsDueDueDateId', value=clientInstallmentsDueDueDate)
+                                                input(type='hidden', name='clientInstallmentsDueDatePaid', id='clientInstallmentsDueDatePaidId', value=clientInstallmentsDueDatePaid)
+                                                input(type='hidden', name='clientInstallmentsDuePrincipal', id='clientInstallmentsDuePrincipalId', value=clientInstallmentsDuePrincipal)
+                                                input(type='hidden', name='clientInstallmentsDueInterest', id='clientInstallmentsDueInterestId', value=clientInstallmentsDueInterest)
+                                                input(type='hidden', name='clientInstallmentsDueFees', id='clientInstallmentsDueFeesId', value=clientInstallmentsDueFees)
+                                                input(type='hidden', name='clientInstallmentsDuePenalty', id='clientInstallmentsDuePenaltyId', value=clientInstallmentsDuePenalty)
+                                                input(type='hidden', name='clientInstallmentsDueTotal', id='clientInstallmentsDueTotalId', value=clientInstallmentsDueTotal)
+                                            - }
+                                            - if(i == 0){
+                                                div(id="InstallmentsDueTableId")
+                                                    div(data-role="horizontal",class="ui-bar ui-grid-b")
+                                                        div(class='ui-block-a',align="left")
+                                                            a(href='#', data-icon='check', data-role='button',id='clientInstallmentsDuePrevId', ,data-inline='true', data-mini='true') Prev
+                                                        div(class='ui-block-b',align="center")
+                                                            a(href='#', data-icon='check', data-role='button',id='clientInstallmentsDuePageNoId', ,data-inline='true', data-mini='true')
+                                                        div(class='ui-block-c',align="right")
+                                                            a(href='#', data-icon='check', data-role='button',id='clientInstallmentsDueNextId', ,data-inline='true', data-mini='true') Next
+
+                                                        div(data-role="fieldcontain")
+                                                        label(id="labelid" , class="paidMemberNameLabel") #{clientLoanAccountDetailsDto.getClientId()[i]} - #{clientLoanAccountDetailsDto.getClientName()[i]}
+                                                        div(data-role="fieldcontain")
+                                                        table(id="clientInstallmentDueTableId")
+                                                            tr
+                                                                th(style ="text-align:center") S.No
+                                                                th(style ="text-align:center") Due Date
+                                                                th(style ="text-align:center") Date Paid
+                                                                th(style ="text-align:center") Principal
+                                                                th(style ="text-align:center") Interest
+                                                                th(style ="text-align:center") Fees
+                                                                th(style ="text-align:center") Penalty
+                                                                th(style ="text-align:center") Total
+                                                            tr
+                                                                td(align="center")
+                                                                td(align="center")
+                                                                td(align="center")
+                                                                td(align="center")
+                                                                td(align="center")
+                                                                td(align="center")
+                                                                td(align="center")
+                                                                td(align="center")
+
+                                            -}
+
+
+                                        -}
+
+
+                                    div(id="futureInstallmentsClientId")
+                                        - var clientFutureInstallmentIds = new Array();
+                                        - var clientFutureInstallmentDueDate = new Array();
+                                        - var clientFutureInstallmentDatePaid = new Array();
+                                        - var clientFutureInstallmentPrincipal = new Array();
+                                        - var clientFutureInstallmentInterest = new Array();
+                                        - var clientFutureInstallmentFees = new Array();
+                                        - var clientFutureInstallmentPenalty = new Array();
+                                        - var clientFutureInstallmentTotal = new Array();
+                                        -for(i=0;i<clientLoanAccountDetailsDto.getAccountId().length;i++){
+                                            - var individualClientFutureInstallmentIds = new Array();
+                                            - var individualClientFutureInstallmentDueDate = new Array();
+                                            - var individualClientFutureInstallmentDatePaid = new Array();
+                                            - var individualClientFutureInstallmentPrincipal = new Array();
+                                            - var individualClientFutureInstallmentInterest = new Array();
+                                            - var individualClientFutureInstallmentFees = new Array();
+                                            - var individualClientFutureInstallmentPenalty = new Array();
+                                            - var individualClientFutureInstallmentTotal = new Array();
+                                            -for(j=0;j<clientLoanAccountDetailsDto.getFutureInstallment()[i].getInstallmentId().length;j++){
+                                                - if(clientLoanAccountDetailsDto.getFutureInstallment()[i].getInstallmentId().length == (j+1)) {
+
+                                                    - individualClientFutureInstallmentIds.push(clientLoanAccountDetailsDto.getFutureInstallment()[i].getInstallmentId()[j]);
+                                                    - individualClientFutureInstallmentIds.push("*");
+                                                    - individualClientFutureInstallmentDueDate.push(clientLoanAccountDetailsDto.getFutureInstallment()[i].getActionDate()[j]);
+                                                    - individualClientFutureInstallmentDueDate.push("*");
+                                                    - individualClientFutureInstallmentDatePaid.push(clientLoanAccountDetailsDto.getFutureInstallment()[i].getPaymentDate()[j]);
+                                                    - individualClientFutureInstallmentDatePaid.push("*");
+                                                    - individualClientFutureInstallmentPrincipal.push(clientLoanAccountDetailsDto.getFutureInstallment()[i].getPrincipal()[j]);
+                                                    - individualClientFutureInstallmentPrincipal.push("*");
+                                                    - individualClientFutureInstallmentInterest.push(clientLoanAccountDetailsDto.getFutureInstallment()[i].getInterest()[j]);
+                                                    - individualClientFutureInstallmentInterest.push("*");
+                                                    - individualClientFutureInstallmentFees.push(clientLoanAccountDetailsDto.getFutureInstallment()[i].getFees()[j]);
+                                                    - individualClientFutureInstallmentFees.push("*");
+                                                    - individualClientFutureInstallmentPenalty.push(clientLoanAccountDetailsDto.getFutureInstallment()[i].getPenalty()[j]);
+                                                    - individualClientFutureInstallmentPenalty.push("*");
+                                                    - individualClientFutureInstallmentTotal.push(clientLoanAccountDetailsDto.getFutureInstallment()[i].getTotal()[j]);
+                                                    - individualClientFutureInstallmentTotal.push("*");
+
+
+                                                    - clientFutureInstallmentIds[i] = individualClientFutureInstallmentIds;
+                                                    - clientFutureInstallmentDueDate[i] = individualClientFutureInstallmentDueDate;
+                                                    - clientFutureInstallmentDatePaid[i] = individualClientFutureInstallmentDatePaid;
+                                                    - clientFutureInstallmentPrincipal[i] = individualClientFutureInstallmentPrincipal;
+                                                    - clientFutureInstallmentInterest[i] = individualClientFutureInstallmentInterest;
+                                                    - clientFutureInstallmentFees[i] = individualClientFutureInstallmentFees;
+                                                    - clientFutureInstallmentPenalty[i] = individualClientFutureInstallmentPenalty;
+                                                    - clientFutureInstallmentTotal[i] = individualClientFutureInstallmentTotal;
+
+                                                - }
+                                                - else {
+                                                    - individualClientFutureInstallmentIds.push(clientLoanAccountDetailsDto.getFutureInstallment()[i].getInstallmentId()[j]);
+                                                    - individualClientFutureInstallmentDueDate.push(clientLoanAccountDetailsDto.getFutureInstallment()[i].getActionDate()[j]);
+                                                    - individualClientFutureInstallmentDatePaid.push(clientLoanAccountDetailsDto.getFutureInstallment()[i].getPaymentDate()[j]);
+                                                    - individualClientFutureInstallmentPrincipal.push(clientLoanAccountDetailsDto.getFutureInstallment()[i].getPrincipal()[j]);
+                                                    - individualClientFutureInstallmentInterest.push(clientLoanAccountDetailsDto.getFutureInstallment()[i].getInterest()[j]);
+                                                    - individualClientFutureInstallmentFees.push(clientLoanAccountDetailsDto.getFutureInstallment()[i].getFees()[j]);
+                                                    - individualClientFutureInstallmentPenalty.push(clientLoanAccountDetailsDto.getFutureInstallment()[i].getPenalty()[j]);
+                                                    - individualClientFutureInstallmentTotal.push(clientLoanAccountDetailsDto.getFutureInstallment()[i].getTotal()[j]);
+
+                                                - }
+                                            - }
+                                            - if(clientLoanAccountDetailsDto.getAccountId().length == (i+1)) {
+                                                input(type='hidden', name='clientFutureInstallmentIds', id='clientFutureInstallmentIdsId', value=clientFutureInstallmentIds)
+                                                input(type='hidden', name='clientFutureInstallmentDueDate', id='clientFutureInstallmentDueDateId', value=clientFutureInstallmentDueDate)
+                                                input(type='hidden', name='clientFutureInstallmentDatePaid', id='clientFutureInstallmentDatePaidId', value=clientFutureInstallmentDatePaid)
+                                                input(type='hidden', name='clientFutureInstallmentPrincipal', id='clientFutureInstallmentPrincipalId', value=clientFutureInstallmentPrincipal)
+                                                input(type='hidden', name='clientFutureInstallmentInterest', id='clientFutureInstallmentInterestId', value=clientFutureInstallmentInterest)
+                                                input(type='hidden', name='clientFutureInstallmentFees', id='clientFutureInstallmentFeesId', value=clientFutureInstallmentFees)
+                                                input(type='hidden', name='clientFutureInstallmentPenalty', id='clientFutureInstallmentPenaltyId', value=clientFutureInstallmentPenalty)
+                                                input(type='hidden', name='clientFutureInstallmentTotal', id='clientFutureInstallmentTotalId', value=clientFutureInstallmentTotal)
+                                            - }
+                                            - if(i == 0){
+                                                div(id="futureInstallmentTableId")
+                                                    div(data-role="horizontal",class="ui-bar ui-grid-b")
+                                                        div(class='ui-block-a',align="left")
+                                                            a(href='#', data-icon='check', data-role='button',id='clientFutureInstallmentPrevId', ,data-inline='true', data-mini='true') Prev
+                                                        div(class='ui-block-b',align="center")
+                                                            a(href='#', data-icon='check', data-role='button',id='clientFutureInstallmentPageNoId', ,data-inline='true', data-mini='true')
+                                                        div(class='ui-block-c',align="right")
+                                                            a(href='#', data-icon='check', data-role='button',id='clientFutureInstallmentNextId', ,data-inline='true', data-mini='true') Next
+
+                                                        div(data-role="fieldcontain")
+                                                        label(id="labelid" , class="futureMemberNameLabel") #{clientLoanAccountDetailsDto.getClientId()[i]} - #{clientLoanAccountDetailsDto.getClientName()[i]}
+                                                        div(data-role="fieldcontain")
+                                                        table(id="clientFutureInstallmentTableId")
+                                                            tr
+                                                                th(style ="text-align:center") S.No
+                                                                th(style ="text-align:center") Due Date
+                                                                th(style ="text-align:center") Date Paid
+                                                                th(style ="text-align:center") Principal
+                                                                th(style ="text-align:center") Interest
+                                                                th(style ="text-align:center") Fees
+                                                                th(style ="text-align:center") Penalty
+                                                                th(style ="text-align:center") Total
+                                                            tr
+                                                                td(align="center")
+                                                                td(align="center")
+                                                                td(align="center")
+                                                                td(align="center")
+                                                                td(align="center")
+                                                                td(align="center")
+                                                                td(align="center")
+                                                                td(align="center")
+
+                                            -}
+
+
+                                        -}
+
+
+                                    div(data-role="navbar",id="subClientNavbarId")
+                                        ul(id="custom-nav-subClient")
+                                            li
+                                                a(rel="external", data-role="tab" , id="custom-li-subClientTab1",class="ui-btn-active ") Installments Paid
+                                            li
+                                                a(rel="external", data-role="tab" , id="custom-li-subClientTab2") Installments Due
+                                            li
+                                                a(rel="external", data-role="tab" , id="custom-li-subClientTab3") Future Installments
+                            div(data-role="content",id="recentActivity",style = "overflow: auto;")
+                                div(id="recentActivitySubContent")
+                                    div(id="recentActivityDetailsId")
+                                        div(data-role="fieldcontain")
+                                            table
+                                                tr
+                                                    th(style ="text-align:center") S.No
+                                                    th(style ="text-align:center") Date
+                                                    th(style ="text-align:center") Description
+                                                    th(style ="text-align:center") Amount
+                                                -for(i=0;i<recentAccountActivity.getId().length;i++){
+                                                    tr
+                                                        td(align="center")    #{i+1}
+                                                        td(align="center")    #{recentAccountActivity.getActionDate()[i]}
+                                                        td(align="center")    #{recentAccountActivity.getActivity()[i]}
+                                                        td(align="center")    #{recentAccountActivity.getTotalValue()[i]}
+                                                -}
+                                        div(data-role="fieldcontain",align="right")
+                                            a(href='#', data-icon='check', data-role='button',id='viewAccActivityId', data-inline='true', data-mini='true') View All Account Activity
+                                    div(id="outstandingBalanceRecentId")
+                                        -if(viewAllAccountActivity.getId().length >5){
+                                            div(data-role="horizontal",class="ui-bar ui-grid-b")
+                                                div(class='ui-block-a',align="left")
+                                                    a(href='#', data-icon='check', data-role='button',id='recentOutstandingBalanceDetailPrevId', ,data-inline='true', data-mini='true') Prev
+                                                div(class='ui-block-b',align="center")
+                                                    a(href='#', data-icon='check', data-role='button',id='recentOutstandingBalanceDetailPageNoId', ,data-inline='true', data-mini='true') Page 1 of 5 of #{viewAllAccountActivity.getId().length}
+                                                div(class='ui-block-c',align="right")
+                                                    a(href='#', data-icon='check', data-role='button',id='recentOutstandingBalanceDetailNextId', ,data-inline='true', data-mini='true') Next
+                                        -}
+                                        div(data-role="fieldcontain")
+                                            table(id="recentOutstandingBalanceDetailTableId")
+                                                tr
+                                                    th(style ="text-align:center") S.No
+                                                    th(style ="text-align:center") Principal
+                                                    th(style ="text-align:center") Interest
+                                                    th(style ="text-align:center") Fees
+                                                    th(style ="text-align:center") Penalty
+                                                    th(style ="text-align:center") Total
+                                                -for(i=0;i<viewAllAccountActivity.getId().length;i++){
+                                                    tr(class="showhide")
+                                                        td(align="center")    #{i+1}
+                                                        td(align="center")    #{viewAllAccountActivity.getRunningBalancePrinciple()[i]}
+                                                        td(align="center")    #{viewAllAccountActivity.getRunningBalanceInterest()[i]}
+                                                        td(align="center")    #{viewAllAccountActivity.getRunningBalanceFees()[i]}
+                                                        td(align="center")    #{viewAllAccountActivity.getRunningBalancePenalty()[i]}
+                                                        td(align="center")    #{viewAllAccountActivity.getRunningBalancePrincipleWithInterestAndFees()[i]}
+                                                - }
+                                    div(id="allAccountActivityId")
+                                        -if(viewAllAccountActivity.getId().length >5){
+                                            div(data-role="horizontal",class="ui-bar ui-grid-b")
+                                                div(class='ui-block-a',align="left")
+                                                    a(href='#', data-icon='check', data-role='button',id='viewAllAccountActivityDetailPrevId', ,data-inline='true', data-mini='true') Prev
+                                                div(class='ui-block-b',align="center")
+                                                    a(href='#', data-icon='check', data-role='button',id='viewAllAccountActivityDetailPageNoId', ,data-inline='true', data-mini='true') Page 1 of 5 of #{viewAllAccountActivity.getId().length}
+                                                div(class='ui-block-c',align="right")
+                                                    a(href='#', data-icon='check', data-role='button',id='viewAllAccountActivityDetailNextId', ,data-inline='true', data-mini='true') Next
+                                        -}
+                                        div(data-role="fieldcontain")
+                                            table(id="viewAllAccountActivityDetailTableId")
+                                                tr
+                                                    th(style ="text-align:center") S.No
+                                                    th(style ="text-align:center") Transaction Date
+                                                    th(style ="text-align:center") Activity
+                                                    th(style ="text-align:center") Principal
+                                                    th(style ="text-align:center") Interest
+                                                    th(style ="text-align:center") Fees
+                                                    th(style ="text-align:center") Penalty
+                                                    th(style ="text-align:center") Total
+                                                -for(i=0;i<viewAllAccountActivity.getId().length;i++){
+                                                    tr(class="showhide")
+                                                        td(align="center")    #{i+1}
+                                                        td(align="center")    #{viewAllAccountActivity.getActionDate()[i]}
+                                                        td(align="center")    #{viewAllAccountActivity.getActivity()[i]}
+                                                        td(align="center")    #{viewAllAccountActivity.getPrincipal()[i]}
+                                                        td(align="center")    #{viewAllAccountActivity.getInterest()[i]}
+                                                        td(align="center")    #{viewAllAccountActivity.getFees()[i]}
+                                                        td(align="center")    #{viewAllAccountActivity.getPenalty()[i]}
+                                                        td(align="center")    #{viewAllAccountActivity.getTotal()[i]}
+                                                - }
+                                    div(data-role="navbar",id="subRecentNavbarId")
+                                        ul(id="custom-nav-subRecent")
+                                            li
+                                                a(rel="external", data-role="tab" , id="custom-li-subRecentTab1",class="ui-btn-active ") Outstanding Balance
+                                            li
+                                                a(rel="external", data-role="tab" , id="custom-li-subRecentTab2") Account Activity
+                        div(data-role="fieldcontain",align="center")
+                            - if(loanStatusId == 1 | loanStatusId == 2 | loanStatusId == 3 | loanStatusId == 5 |loanStatusId == 9) {
+                                - for(var i=0;i<roleArray.length;i++) {
+                                    - if(roleArray[i] == 'Can make payments to group accounts') {
+                                        a(href='JavaScript:applyPayment();', data-icon='check', data-role='button',id='applyPaymentId', data-inline='true', data-mini='true') Apply Payment
+                                    - }
+                                    - if(roleArray[i] == 'Can make adjustment entries to group account') {
+                                        a(href='JavaScript:applyAdjustment();', data-icon='check', data-role='button',id='applyAdjustmentId', ,data-inline='true', data-mini='true') Apply Adjustment
+                                    - }
+                                    - if(roleArray[i] == 'Can repay loan') {
+                                        a(href='JavaScript:viewPreclosure()', data-icon='check', data-role='button',id='preclosureId', ,data-inline='true', data-mini='true') Preclosure
+                                    - }
+                                    - if(roleArray[i] == 'Can change state to Closed- Written off') {
+                                        a(href='JavaScript:editAccountStatus();', data-icon='check', data-role='button',id='editAccountStatusId', ,data-inline='true', data-mini='true') Edit Account Status
+                                    - }
+                                    - if(roleArray[i] == 'ROLE_CAN_REVERSE_LOAN_DISBURSAL') {
+                                        a(href='JavaScript:loanReverse();', data-icon='check', data-role='button',id='loanReversalId', ,data-inline='true', data-mini='true') Loan Reversal
+                                    - }
+                                - }
+                            - }
+                            - else if(loanStatusId == 6){
+                                - for(var i=0;i<roleArray.length;i++) {
+                                    - if(roleArray[i] == 'Can make adjustment entries to group account') {
+                                        a(href='JavaScript:applyAdjustment()', data-icon='check', data-role='button',id='applyAdjustmentId', ,data-inline='true', data-mini='true') Apply Adjustment
+                                    - }
+                                - }
+                            - }
+                            a(href="JavaScript:back('#{loanAccInformationDto.getGlobalCustNum()}',#{loanStatusId});", data-icon='back', data-role='button',id='backId', ,data-inline='true', data-mini='true') Back
+
+                        input(type='hidden', name='clientIndexHidden', id='clientIndexHiddenId', value="")
+                        input(type='hidden', name='noOfClientHidden', id='noOfClientHiddenId', value="#{clientLoanAccountDetailsDto.getAccountId().length}")
+                        input(type='hidden', name='accountId', id='accountIdHiddenId', value="#{loanAccInformationDto.getAccountId()}")
+                        input(type='hidden', name='accountTypeId', id='accountTypeIdHiddenId', value="#{loanAccInformationDto.getAccountTypeId()}")
+                        input(type='hidden', name='globalAccountNum', id='globalAccountNumId', value="#{loanAccInformationDto.getGlobalAccountNum()}")
+                        input(type='hidden', name='roleArrayName', id='roleArrayId', value="#{roleArray}")
+                div(class="ui-loader-background")

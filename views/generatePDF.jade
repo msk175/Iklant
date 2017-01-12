@@ -1,0 +1,25 @@
+!!! 5/
+html(lang = "en")
+    head
+        title= 'IKLANT-GeneratePdf'
+        meta(charset='utf-8')
+        meta(name='viewport',content='width=device-width, initial-scale=1')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+        link(rel='stylesheet', href='/stylesheets/dialogStyle.css')
+        script(type='text/javascript', src='/javascripts/jquery-1.7.1.min.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile.custom.js')
+        script(type='text/javascript', src="/javascripts/fieldVerificationOnChange.js")
+        script(type='text/javascript', src='/javascripts/constantjs.js')
+        script(type='text/javascript', src="/javascripts/forClientDetails.js")
+        script(type='text/javascript', src="/javascripts/forLoanSanction.js")
+        script(type='text/javascript', src="/javascripts/loansactionfileupload.js")
+        script(type='text/javascript', src='/javascripts/common.js')
+    body(id="pageID")
+        form(id='BMFormId')
+            div(data-role='page', data-theme='a')
+                div(data-role="fieldcontain", data-mini="true" )
+                    a(href='#{path}', target="_blank", title='Abishek', rel="external",data-icon='arrow-l', data-role='button', title=' Back', data-inline='true') Back
+                div(class="ui-loader-background")

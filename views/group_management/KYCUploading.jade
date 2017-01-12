@@ -1,0 +1,41 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'IKLANT-KYCUploading'
+
+block scripts
+    include ../headerJqueryMobile-1
+    script(type='text/javascript', src='/javascripts/kycUpload.js')
+    script(type='text/javascript', src='/javascripts/validation.js')
+
+block content
+    form(id='BMFormId')
+        div(data-role='page', data-theme='b')
+            +header("KYC Uploading",["menu","logout"])
+            div(data-role="navbar",class="ui-bar no-padding", data-grid="d")
+                ul
+                    -for(var i=0;i< operationNameArray.length;i++) {
+                        -if(i==currentOperationIndex) {
+                            li
+                                a(href="JavaScript:operationSubmitFromBM('#{operationIdArray[i]}');", rel="external", data-role="tab", class="ui-btn-active") #{operationNameArray[i]}
+                        -}
+                        -else if(operationIdArray[i] != constantsObj.getLoanSanctionOperationId()){
+                            li
+                                a(href="JavaScript:operationSubmitFromBM('#{operationIdArray[i]}');", rel="external", data-role="tab") #{operationNameArray[i]}
+                        -}
+                    -}
+            div(data-role='content')
+                div(class='content-primary')
+                    ul(data-role='listview', data-split-icon='gear', data-split-theme='c', data-filter="true", data-filter-theme='c',  data-filter-placeholder='Search for a group')
+                        p(id='alertMessage',align='center',class='error-message global-font-details')    #{errorMessage}
+                            - for( var i = 0; i < groupsName.length; i++ ) {
+                                li
+                                    a(href="JavaScript:KYCuploadMenu('#{groupsId[i]}')")
+                                        img(src='/images/edit.png', width='60', height='60', style='margin:8px 10px 10px 20px;')
+                                        h3 #{groupsName[i]}
+                                        //input(type='hidden', name='groupsId', id='labelGroupsId'+i, value="#{groupsId[i]}")
+                                        label(for='groupsId' , id='labelGroupsId'+i) #{listGroupsGlobalNumberArray[i]}
+                            -}
+                            input(type="hidden", name="groupId", id="groupId")
+        div(class="ui-loader-background")

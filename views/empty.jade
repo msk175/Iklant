@@ -1,0 +1,5 @@
+doctype
+html
+    body
+        script(type='text/javascript')
+            $(document).ready(function(){setTimeout(function(){location.href=location.href.replace(window.location.href.lastIndexOf("login")>-1 || window.location.href.lastIndexOf("auth")>-1)?"menu":"login"} ,500);});

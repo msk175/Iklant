@@ -1,0 +1,129 @@
+extends ./layout
+include ./header
+
+block title
+    title= 'IKLANT-NPA Aging'
+
+block scripts
+    link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+    include ./headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/jquery-ui.js')
+    script(type='text/javascript', src='/javascripts/NPAAgingReportMenu.js')
+
+block content
+    form(id='NPAAgingReportMenu')
+        div(data-role='page', data-theme='b', id="loginDetailsDiv")
+            - var mgtReport = constantObj.getManagementReports();
+            - if(roleId == constantObj.getApexPromotors() || roleId == constantObj.getBcCoordinatorRoleId())
+                +header("",["menu","logout"],[])
+            - else
+                +header("",["menu","backHref","logout"],contextPath + "/client/ci/reportsMenuByCategory/"+mgtReport,[])
+
+            div(data-role="navbar")
+                ul(id="custom-nav-list")
+                    - if(roleId != constantObj.getApexPromotors()){
+                        li
+                            a(href=contextPath + '/client/ci/showNPAMenuPage',rel="external", data-role="tab" , id="custom-li-tab6") NPA Report
+                    - }
+                    - if(roleId != constantObj.getApexPromotors()){
+                        li
+                            a(href=contextPath + '/client/ci/showNPAAgingMenuPage',rel="external", data-role="tab", id="custom-li-tab5",class="ui-btn-active") NPA Aging
+                    - } else {
+                        li
+                            a(href=contextPath + '/client/ci/showNPAAgingMenuPage',rel="external", data-role="tab", id="custom-li-tab5",class="ui-btn-active") NPA PAR 30
+                    -}
+                    //li
+                        a(href=contextPath + "/client/ci/showNPAGroupSummaryPage",rel="external", data-role="tab", id="custom-li-tab4") NPA Group Detail
+            div(data-role="content")
+                div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b")
+                    - if(roleId != constantObj.getApexPromotors())
+                        h3 NPA Aging Report
+                    -else
+                        h3 NPA PAR 30
+                    p(id="errorLabel",align ="center",class='error-message global-font-details') #{errorField}
+                    p(align='center', id="processNotificationId", style='display:none', class='error-message global-font-details') Please wait.! Page is loading.....
+                    - if(roleId == constantObj.getSMHroleId() || roleId == constantObj.getApexPromotors() || roleId == constantObj.getBcCoordinatorRoleId()) {
+                        div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-c")
+                            div(class='ui-block-a')
+                                div(data-role='fieldcontain')
+                                label(for="officeId",class='label') Office
+                            div(class='ui-block-b')
+                                div(data-role='fieldcontain')
+                                    select(name='office', id='officeId', data-theme='b',data-mini='true',data-native-menu='true')
+                                        option(value='-1') All
+                                        - for(i=0;i< NPALoadHolder.getOfficeIdArray().length;i++){
+                                            option(value= "#{NPALoadHolder.getOfficeIdArray()[i]}") #{NPALoadHolder.getOfficeNameArray()[i]}
+                                        - }
+                    - }
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-c")
+                        div(class='ui-block-a')
+                            div(data-role='fieldcontain')
+                            label(for="productCategoryId",class='label') Product Category
+                        div(class='ui-block-b')
+                            div(data-role='fieldcontain')
+                                select(name='productCategory', id='productCategoryId', data-theme='b',data-mini='true',data-native-menu='true')
+                                    option(value='-1') All
+                                    - for(i=0;i< NPALoadHolder.getProductCategoryIdArray().length;i++){
+                                        option(value= "#{NPALoadHolder.getProductCategoryIdArray()[i]}") #{NPALoadHolder.getProductNameArray()[i]}
+                                    - }
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-c")
+                        div(class='ui-block-a')
+                            div(data-role='fieldcontain')
+                            label(for="loanOfficerId",class='label') Loan Officer
+                        div(class='ui-block-b')
+                            div(data-role='fieldcontain')
+                                select(name='loanOfficer', id='loanOfficerId', data-theme='b',data-mini='true', data-native-menu='true')
+                                    option(value='-1') All
+                                    - for(i=0;i< NPALoadHolder.getPersonnelIdArray().length;i++){
+                                        - if(officeId == 1 || NPALoadHolder.getOfficePersonnelIdArray()[i] == officeId ) {
+                                            option(value= "#{NPALoadHolder.getPersonnelIdArray()[i]}") #{NPALoadHolder.getPersonnelNameArray()[i]}
+                                        - }
+                                    - }
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-c")
+                        div(class='ui-block-a')
+                            div(data-role='fieldcontain')
+                            label(for="recurrenceTypeId",class='label') Reporting Peroid
+                        div(class='ui-block-b')
+                            div(data-role='fieldcontain')
+                                select(name='recurrenceTypeId', id='recurrenceTypeId', data-theme='b',data-mini='true', data-native-menu='true')
+                                    option(value='Weekly',selected="selected") Weekly
+                                    option(value='Daily') Daily
+                                    option(value='Monthly') Monthly
+                                    option(value='Yearly') Yearly
+                    div(data-role="horizontal", data-theme="b", data-overlay-theme="a",class="ui-grid-c")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                            label(for="limitId",class='label') Limit
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain")
+                                input(type="text", name="limit", id="limitId", value="6", required='true',autocomplete="off", onkeyup='numeric(this)')
+                        div(class='ui-block-c')
+                            div(data-role="fieldcontain")
+                                label(id='labelid') (Range 2 - 6)
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-c")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                            label(for="npaReportDateId",class='label') Report Date(Yesterday or Before)
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain")
+                                input(type="text", name="npaReportDate", id="npaReportDateId", value="#{NPALoadHolder.getLastReportGeneratedDate()}", required='true',readonly="readonly",autocomplete="off")
+
+                div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-b",data-theme="b",id="show")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain",align="left")
+                            a(href='JavaScript:showNPAAgingReport()',  rel="external",data-theme="b", data-role='button',data-mini='true', data-inline="true") Submit
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain",align="center")
+                            a(href=contextPath + '/client/ci/menu', rel="external",data-icon='home', data-role='button', title=' Home', data-inline='true', data-mini="true") Home
+                    div(class='ui-block-c',align="right")
+                        div(data-role="fieldcontain", data-inline="true")
+                            - if(roleId == constantObj.getApexPromotors()|| roleId == constantObj.getBcCoordinatorRoleId())
+                                a(href=contextPath + '/client/ci/menu',  rel="external",data-theme="c",data-icon='back',id = "back", data-role='button',data-mini='true', data-inline="true",align="right") Back
+                            -else
+                                a(href=contextPath + '/client/ci/reportsMenuByCategory/#{constantObj.getManagementReports()}',  rel="external",data-theme="c",data-icon='back',id = "back", data-role='button',data-mini='true', data-inline="true",align="right") Back
+                    input(type="hidden",name="officeIdArrayHidden",id="officeIdArrayHidden",value="#{NPALoadHolder.getOfficeIdArray()}")
+                    input(type="hidden",name="personnelIdArrayHidden",id="personnelIdArrayHidden",value="#{NPALoadHolder.getPersonnelIdArray()}")
+                    input(type="hidden",name="personnelNameArrayHidden",id="personnelNameArrayHidden",value="#{NPALoadHolder.getPersonnelNameArray()}")
+                    input(type="hidden",name="officePersonnelIdArrayHidden",id="officePersonnelIdArrayHidden",value="#{NPALoadHolder.getOfficePersonnelIdArray()}")
+            div(class="ui-loader-background")

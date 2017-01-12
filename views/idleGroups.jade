@@ -1,0 +1,32 @@
+extends ./layout
+include ./header
+block title
+    title= 'IKLANT-KYCUpdating'
+block scripts
+    include ./headerJqueryMobile-1
+    script(type='text/javascript', src='/javascripts/validation.js')
+
+block content
+   form(id='BMFormId')
+      div(data-role='page', data-theme='b')
+         +header("Idle Groups",["welcomeNote","menu","logout"])
+         include ./GroupManagementLayout
+         div(data-role='content')
+            input(type='hidden', name='alertMessageHidden', id='alertMessageHidden', value="#{}")
+            div(class='content-primary')
+               ul(data-role='listview', data-split-icon='gear', data-split-theme='c', data-filter="true", data-filter-theme='c',  data-filter-placeholder='Search for a group')
+                  p(id='successMessage',align='center',class="error-message global-font-details")    #{errorMsg}
+                  - for(var i=0;i<groupsName.length;i++) {
+                     li
+                        a(href="JavaScript:getIdleGroupInformation('#{groupsId[i]}','#{statusIds[i]}');")
+                           img(id="image"+groupsName[i],src='/images/edit.png', width='60', height='60', style='margin:8px 10px 10px 20px;')
+                           -if(statusIds[i] == constantsObj.getCreditBureauAnalysedStatus() || statusIds[i] == constantsObj.getAssignedFO()){
+                              h3 #{groupsName[i]} :<label class="error-message">Field verification not completed
+                           -}
+                           -else{
+                              h3 #{groupsName[i]} :<label class="success-message">Field verification completed
+                           -}
+                           label(for='groupsId' , id='labelGroupsId'+i) #{listGroupsGlobalNumberArray[i]} | FieldOfficer : #{fieldOfficerName[i]}
+                  -}
+            input(type="hidden", name="groupId", id="groupId")
+            input(type="hidden", name="statusId", id="statusId")

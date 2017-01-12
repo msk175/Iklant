@@ -1,0 +1,32 @@
+extends ./layout
+include ./header
+
+block title
+    title= 'IKLANT-ReportManagement'
+
+block scripts
+    link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+    include ./headerJqueryMobile-1
+    script(type='text/javascript', src='/javascripts/jquery-ui.js')
+    script(type='text/javascript', src='/javascripts/jquery-ui.js')
+    script(type="text/javascript", src="/javascripts/reportmgmt.js")
+    script(type='text/javascript', src='/javascripts/equifaxReportClients.js')
+
+block content
+    form(id='reportformid')
+        div(data-role='page', data-theme='a')
+            +header("Report Management",["backJavascript","menu","logout"],'backToReportViewFormSubmit',[])
+            div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="a")
+                h3 Equifax Report
+                p(id ='errorField',data-theme="e",align='center',class='error-message global-font-details')
+                div(data-role="collapsible", data-collapsed="false", data-theme="e", data-content-theme="a")
+                    h3 #{groupName} | #{centerName}
+                    ul(data-role='listview', data-split-icon='arrow-d', data-split-theme='a', data-mini="true")
+                        - for( var i = 0; i < clientIdArray.length; i++ ) {
+                            li
+                                a(href="#")
+                                    img(src='/images/member.png', width='50', height='50', style='margin:8px 10px 10px 20px;')
+                                    h3 #{clientNameArray[i]}
+                                a(href="JavaScript:downloadEquifaxReport('#{clientIdArray[i]}');",  data-split-icon='gear', data-rel='popup', data-position-to='origin', data-transition='pop')
+                        -}
+            div(class="ui-loader-background")

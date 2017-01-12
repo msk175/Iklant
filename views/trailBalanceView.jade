@@ -1,0 +1,72 @@
+!!! 5
+html(lang = "en")
+    head
+        title= 'IKLANT-TrailBalanceView'
+        meta(charset='utf-8')
+        meta(name='viewport',content='width=device-width, initial-scale=1')
+        meta(http-equiv='Cache-Control', content='no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0')
+        meta(http-equiv='Pragma', content='no-cache')
+        meta(http-equiv='Expires', content='-1')
+        link(rel="stylesheet",href="/stylesheets/jquery.mobile-1.3.0-beta.1.min.css")
+        link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+        link(rel='stylesheet', href='/stylesheets/dialogStyle.css')
+        link(rel='stylesheet', href='/stylesheets/tablereport.css')
+        link(rel='stylesheet', href='/stylesheets/loanSanctionCustom.css')
+        script(type='text/javascript', src='/javascripts/jquery-1.8.3.min.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile-1.3.0-beta.1.min.js')
+        script(type='text/javascript', src='/javascripts/jquery-ui.js')
+        script(type="text/javascript",src="/javascripts/jsapi.txt")
+        script(type='text/javascript', src='/javascripts/trailBalance.js')
+        script(type='text/javascript', src='/javascripts/common.js')
+    body(style="overflow-x:hidden")
+        form(id='trailBalanceForm')
+            div(data-role='page', data-theme='b', id="loginDetailsDiv")
+                div(data-role="header", data-theme="a", class="ui-bar ui-grid-a", data-overlay-theme="c")
+                    div(class="ui-block-a")
+                        img(id='groupIcon', style="margin:5px 10px 0 0; text-align:right;",src='/images/iklant.png')
+                    div(class="ui-block-b",align="right")
+                        h3(align="right",style="margin:20px 10px 0 0")
+                        a(href=contextPath + '/client/ci/reportManagement', rel="external",data-icon='arrow-l', data-role='button', title='Back', data-inline='true') Back
+                        a(href=contextPath + '/client/ci/menu', rel="external",data-icon='home', data-role='button', title='Home', data-inline='true') Home
+                        a(href=contextPath + '/client/ci/logout',  rel="external",data-icon='back', data-role='button', title=' Logout ', data-inline="true") Logout
+                div(data-role="navbar",id="navid")
+                    ul(id="custom-nav-list")
+                        li
+                            a(rel="external", data-role="tab" , id="table-li-1",class="ui-btn-active") Trail Balance View
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a")
+                    div(class='ui-block-a',align="center")
+                        div(data-role='fieldcontain')
+                            label(for="creditAmount",id="labelid") Total Credit :
+                            label(id="creditAmount") #{totalCreditAmount}
+                    div(class='ui-block-b',align="center")
+                        div(data-role='fieldcontain')
+                            label(for="debitAmount",id="labelid") Total Debit :
+                            label(id="debitAmount") #{totalDebitAmount}
+                -    if(trailBalanceArray.length > 15){
+                    div(data-role="horizontal",class="ui-bar ui-grid-b")
+                        div(class='ui-block-a',align="left")
+                            a(href='#', data-role='button',id='NPAGroupLoansPrevId', data-inline='true', data-mini='true',data-icon='arrow-l',data-iconpos="left") Prev
+                        div(class='ui-block-b',align="center")
+                            a(href='#', data-role='button',id='NPAGroupLoansPageNoId', data-inline='true', data-mini='true') Records 1 - 10 of #{trailBalanceArray.length}
+                        div(class='ui-block-c',align="right")
+                            a(href='#', data-role='button',id='NPAGroupLoansNextId', data-inline='true', data-mini='true', data-icon='arrow-r',data-iconpos="right") Next
+                - }
+                div(id="npaLoansTableId",style = "overflow: auto;")
+                    table
+                        tr
+                            th S.No
+                            th GL Code
+                            th COA Name
+                            th Debit
+                            th Credit
+                        - for(var i=0;i<trailBalanceArray.length;i++) {
+                            tr(class="showhide")
+                                td #{i+1}
+                                td #{trailBalanceArray[i].getGlCode()}
+                                td #{trailBalanceArray[i].getCoaName()}
+                                td #{trailBalanceArray[i].getCredit()}
+                                td #{trailBalanceArray[i].getDebit()}
+                        - }
+                div(class="ui-loader-background")

@@ -1,0 +1,98 @@
+extends ./layout
+include ./header
+
+block title
+    title= 'Iklant-ClientRating'
+
+block scripts
+    include ./headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type="text/javascript", src="/javascripts/backfix.min.js")
+    script(type='text/javascript', src='/javascripts/cca1.js')
+block content
+    form(id="BMFormId")
+        div(data-role='page', data-theme='b', id="gridplus")
+            +header("Client Credit Appraisal",["backJavascript","logout"],"cancelClientQuestionChoices",[groupId])
+            div(data-role="content", data-theme="b", data-overlay-theme="a")
+                //header
+                p(id ='errorField',data-theme="e",align='center',class="error-message global-font-details") #{errorfield}
+                div(data-role="horizontal", data-theme="b", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                            h3 Client Name : #{clientName}
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain")
+                            h3 Center Name : #{centerName}
+                div(style = "overflow: auto;")
+                    table
+                        tr
+                            th(style ="text-align:center") S.No
+                            th(style ="text-align:center") Questions
+                            th(style ="text-align:center") Answer
+                            th(style ="text-align:center") Docs
+                            th(style ="text-align:center") Rating
+
+                        //menu 1
+                        -for(var i=0;i<questionsObj.getQuestionIdArray().length; i++) {
+                            tr
+                                td(style ="text-align:center")    #{i+1}
+                                td(style ="text-align:left")  #{questionsObj.getQuestionNameArray()[i]}
+                                td(style ="text-align:left")    #{choicesanswerObj.getSelectedChoice()[i]}
+                                td(style ="text-align:center")
+                                    select(name='docDownload', onchange='JavaScript:downloadDocs(this.value)',data-theme="b", id='docDownloadId',data-inline='true', data-icon='grid', data-mini='true', data-native-menu="true")
+                                        option(value='0') Select
+                                        -var docCount =1;
+                                        -for(var j=0;j<docTypeIdArray.length; j++) {
+                                            -if(docTypeIdArray[j]==6 && questionsObj.getQuestionIdArray()[i] == 1){
+                                                option(value=capturedImageArray[j]) Doc #{docCount}
+                                                -docCount++;
+                                            -}
+                                            -else if(docTypeIdArray[j]==3 && questionsObj.getQuestionIdArray()[i] > 1 && questionsObj.getQuestionIdArray()[i]<=9){
+                                                option(value=capturedImageArray[j]) Doc #{docCount}
+                                                -docCount++;
+                                            -}
+                                            -else if(docTypeIdArray[j]==10 && (questionsObj.getQuestionIdArray()[i] == 10 || questionsObj.getQuestionIdArray()[i]==11)){
+                                                option(value=capturedImageArray[j]) Doc #{docCount}
+                                                -docCount++;
+                                            -}
+                                        - }
+                                td(style ="text-align:center")    #{choicesanswerObj.getSelectedChoiceMarks()[i]}
+                        -}
+                        input(type='hidden', name='selectedDocName', id='selectedDocId')
+                        -for(var i=0;i<questionsObj.getSecondaryQuestionIdArray().length;i++) {
+                            tr
+                                td(style ="text-align:center")    #{questionsObj.getNoOfPrimaryQuestions()+i+1}
+                                input(type='hidden', name='SecondaryQuestionId[i]', value=questionsObj.getSecondaryQuestionIdArray()[i])
+                                td(style ="text-align:left")    #{questionsObj.getSecondaryQuestionNameArray()[i]}
+                                td(style ="text-align:left")
+                                    select(name='secondaryChoices[i]', rel = "external", data-inline="true", id='secondaryChoices'+i, data-theme='b', data-mini="true",data-icon='arrow-d', data-native-menu="true")
+                                        option(value=0) select
+                                        option(value=1) #{choicesObj.getSecondaryChoiceArrayOne()[i]}
+                                        option(value=2) #{choicesObj.getSecondaryChoiceArrayTwo()[i]}
+                                        option(value=3) #{choicesObj.getSecondaryChoiceArrayThree()[i]}
+                                td(style ="text-align:center")    ---
+                                td(style ="text-align:center")    ---
+                        -}
+                        //total no of questions
+                    table
+                        tr
+                            td(style ="text-align:left;width:830px")    Total Marks
+                            td(style ="text-align:center;width:170px")    #{clientTotalWeightage} / #{clientTotalWeightageRequired}
+                        tr
+                            td(style ="text-align:left;width:830px")    Rating Percentage
+                            td(style ="text-align:center;width:170px")    #{clientRatingPerc}%
+            div(data-role="fieldcontain",data-inline="true")
+                //a(href="JavaScript:submitSecondaryCCAQuestions(#{clientId},#{questionsObj.getSecondaryQuestionIdArray().length})",rel="external", data-icon='check', data-role='button', data-theme='b', title=' Save ', data-inline='true' , id="SaveButtonId") Submit
+                a(href="JavaScript:cancelClientQuestionChoices(#{groupId})", rel="external",data-icon='back', data-role='button', title=' Back', data-inline="true") Back
+                //Adarsh-Modified
+                input(type='hidden',value='#{redirectValue}',name="redirectValueName",id="redirectValueId")
+                input(type='hidden', name='ccaRedirectHiddenName',id="ccaRedirectHiddenId",value="2")
+                input(type='hidden',name="selectedOfficeIdName",value='#{selectedOfficeId}',id="branchIDId")
+                input(type='hidden',name="clientTotalWeightageRequiredHiddenCCA2Name",id="clientTotalWeightageRequiredHiddenCCA2Id",value='#{clientTotalWeightageRequired}')
+                input(type="hidden", id="groupidfordownload", name="groupnamefordownload" , value="#{groupId}")
+                input(type="hidden", id="centerNameId", name="centerNameHidden" , value="#{centerName}")
+                input(type="hidden", id="clientRatingPercId", name="clientRatingPercName" , value="#{clientRatingPerc}")
+                input(type="hidden", id="clientLoanCountId", name="clientLoanCountId" , value="#{clientLoanCount}")
+                input(type="hidden", id="clientTotalWeightageNameId", name="clientTotalWeightageName" , value="#{clientTotalWeightage}")
+                input(type="hidden", id="statusId", name="statusId" , value="#{statusId}")
+            div(class="ui-loader-background")

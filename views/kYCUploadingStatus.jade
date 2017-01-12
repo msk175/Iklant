@@ -1,0 +1,35 @@
+extends ./layout
+include ./header
+
+block title
+    title= 'KYC uploading status'
+
+block scripts
+    include ./headerJqueryMobile-1
+    script(type='text/javascript', src='/javascripts/validation.js')
+    script(type='text/javascript', src='/javascripts/kycUploadingStatus.js')
+
+block content
+    form(id='BMFormId')
+        div(data-role='page', data-theme='b')
+            +header("KYC Uploading Status",["welcomeNote","menu","logout"])
+            input(type='hidden', name='alertMessageHidden', id='alertMessageHidden', value="#{}")
+            input(type='hidden', name='groupIdHidden', id='groupIdHidden', value=groupsId)
+            include ./GroupManagementLayout
+            div(data-role='content')
+                div(class='content-primary')
+                    ul(data-role='listview', data-split-icon='gear', data-split-theme='c', data-filter="true", data-filter-theme='c',  data-filter-placeholder='Search for a group')
+                        p(id='alertMessage',align='center',class='error-message global-font-details')    #{errorMessage}
+                            - for( var i = 0; i < groupsName.length; i++ ) {
+                                li
+                                    a(href="JavaScript:openKYCUploadStatus('#{groupsId[i]}', '#{groupsName[i]}', '#{listGroupsGlobalNumberArray[i]}', '#{fieldOfficerName[i]}')", rel="external")
+                                        img(src='/images/edit.png', width='60', height='60', style='margin:8px 10px 10px 20px;')
+                                        h3 #{groupsName[i]}
+                                        //input(type='hidden', name='groupsId', id='labelGroupsId'+i, value="#{listGroupsGlobalNumberArray[i]}")
+                                        label(for='groupsId' , id='labelGroupsId'+i) #{listGroupsGlobalNumberArray[i]} | FieldOfficer : #{fieldOfficerName[i]}
+                            -}
+                            input(type="hidden", name="groupId", id="groupId")
+                            input(type="hidden", name="groupName", id="groupName")
+                            input(type="hidden", name="centerName", id="centerName")
+                            input(type="hidden", name="fieldOfficer", id="fieldOfficer")
+            div(class="ui-loader-background")

@@ -1,0 +1,135 @@
+extends ../layout
+include ../header
+block title
+    title= 'Iklant - Menu'
+block scripts
+    include ../headerJqueryMobile-1
+    script(type='text/javascript', src='/javascripts/administrative_tasks/manageLoanProducts.js')
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+block content
+    form(id='administrativeLoanProductFormID')
+        div(data-role='page', data-theme='b', id="loginDetailsDiv")
+            +header("",["menu","backHref","logout"],contextPath+ '/client/ci/loanproduct/listloanproduct',[])
+            div(data-role="content")
+                div(data-role="collapsible", id="minutes", data-overlay-theme="a", data-inline="true" , data-collapsed="false",data-content-theme="b")
+                    h3 Loan Products
+                    div(data-role="fieldcontain")
+                        div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                            div(class='ui-block-a')
+                                ul(data-role='listview', data-inset='true', data-theme='b', data-divider-theme='a', data-count-theme='a')
+                                    li(data-role='list-divider') Loan product details
+                                        li
+                                            a(href='#', data-theme='a') Product instance name
+                                                span.ui-li-count #{result.prdOfferingDetail.prdOfferingName}
+                                        li
+                                            a(href='#') Short name
+                                                span.ui-li-count #{result.prdOfferingDetail.prdOfferingShortName}
+                                        li
+                                            a(href='#') Product category
+                                                span.ui-li-count #{result.prdOfferingDetail.prdCategory}
+                                        li
+                                            a(href='#') Start date
+                                                span.ui-li-count #{result.prdOfferingDetail.startDate}
+                                        li
+                                            a(href='#') End Date
+                                                span.ui-li-count #{result.prdOfferingDetail.endDate}
+                                        li
+                                            a(href='#') Applicable for
+                                                span.ui-li-count #{result.prdOfferingDetail.applicableFor}
+                                        li
+                                            a(href='#') Include in Loan cycle counter
+                                                span.ui-li-count #{result.prdOfferingDetail.includeloanCycle}
+                                        li
+                                            a(href='#') Can waive interest on repay loan
+                                                span.ui-li-count #{result.prdOfferingDetail.waiveInterestOnRepayLoan}
+                                        li
+                                            a(href='#') Individual Tracking
+                                                span.ui-li-count #{result.prdOfferingDetail.indtracking}
+                    div(data-role="fieldcontain")
+                        div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                            div(class='ui-block-a')
+                                ul(data-role='listview', data-inset='true', data-theme='b', data-divider-theme='a', data-count-theme='a')
+                                    li(data-role='list-divider') Calculate Loan Amount as : #{result.prdOfferingDetail.loanAmountAs}
+                                        li
+                                            div(data-role='controlgroup', data-type='horizontal')
+                                                a(href='', data-role='button') Min loan amount
+                                                a(href='', data-role='button') #{result.prdOfferingDetail.minLoanAmount}
+                                        li
+                                            div(data-role='controlgroup', data-type='horizontal')
+                                                a(href='', data-role='button') Max loan amount
+                                                a(href='', data-role='button') #{result.prdOfferingDetail.maxLoanAmount}
+                                        li
+                                            div(data-role='controlgroup', data-type='horizontal')
+                                                a(href='', data-role='button') Default amount
+                                                a(href='', data-role='button') #{result.prdOfferingDetail.defLoanAmount}
+                    div(data-role="fieldcontain")
+                        div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                            div(class='ui-block-a')
+                                ul(data-role='listview', data-inset='true', data-theme='b', data-divider-theme='a', data-count-theme='a')
+                                    li(data-role='list-divider') Interest rate
+                                        li
+                                            a(href='#', data-theme='a') Interest rate type
+                                                span.ui-li-count #{result.prdOfferingDetail.interestRateType}
+                                        li
+                                            a(href='#') Min Interest rate
+                                                span.ui-li-count #{result.prdOfferingDetail.minInterestRate}
+                                        li
+                                            a(href='#') Max Interest rate
+                                                span.ui-li-count #{result.prdOfferingDetail.maxInterestRate}
+                                        li
+                                            a(href='#') Default Interest rate
+                                                span.ui-li-count #{result.prdOfferingDetail.defInterestRate}
+                    div(data-role="fieldcontain")
+                        div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                            div(class='ui-block-a')
+                                ul(data-role='listview', data-inset='true', data-theme='b', data-divider-theme='a', data-count-theme='a')
+                                    li(data-role='list-divider') Repayment schedule
+                                        li
+                                            a(href='#') Can configure variable installments
+                                                span.ui-li-count #{result.prdOfferingDetail.varaiableInstallment}
+                                        li
+                                            a(href='#') Fixed repayment schedule
+                                                span.ui-li-count #{result.prdOfferingDetail.fixedRapaymentSchedule}
+                                        li
+                                            a(href='#') Compare with Cash Flow
+                                                span.ui-li-count #{result.prdOfferingDetail.cashFlow}
+                                        li
+                                            a(href='#') Frequency of installments
+                                                span.ui-li-count #{result.prdOfferingDetail.frequencyOfInstallment}
+                                        li
+                                            a(href='#') Grace period type
+                                                span.ui-li-count #{result.prdOfferingDetail.gracePeriodType}
+                                        li
+                                            a(href='#') Grace period duration
+                                                span.ui-li-count #{result.prdOfferingDetail.gracePeriodDuration} Installments
+                    div(data-role="fieldcontain")
+                        div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                            div(class='ui-block-a')
+                                ul(data-role='listview', data-inset='true', data-theme='b', data-divider-theme='a', data-count-theme='a')
+                                    li(data-role='list-divider') Calculate # of Installments as : #{result.prdOfferingDetail.installmentAs}
+                                        li
+                                            div(data-role='controlgroup', data-type='horizontal')
+                                                a(href='', data-role='button') Min # of installments
+                                                a(href='', data-role='button') #{result.prdOfferingDetail.minInstallment}
+                                        li
+                                            div(data-role='controlgroup', data-type='horizontal')
+                                                a(href='', data-role='button') Max # of installments
+                                                a(href='', data-role='button') #{result.prdOfferingDetail.maxInstallment}
+                                        li
+                                            div(data-role='controlgroup', data-type='horizontal')
+                                                a(href='', data-role='button') Default # of installments
+                                                a(href='', data-role='button') #{result.prdOfferingDetail.defInstallment}
+                    div(data-role="fieldcontain")
+                        div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                            div(class='ui-block-a')
+                                ul(data-role='listview', data-inset='true', data-theme='b', data-divider-theme='a', data-count-theme='a')
+                                    li(data-role='list-divider') Repayment schedule
+                                        li
+                                            a(href='#') Sources of funds
+                                                span.ui-li-count #{result.prdOfferingDetail.sourceofFund}
+                                        li
+                                            a(href='#') Interest
+                                                span.ui-li-count #{result.prdOfferingDetail.interest}
+                                        li
+                                            a(href='#') Principal
+                                                span.ui-li-count #{result.prdOfferingDetail.principal}

@@ -1,0 +1,122 @@
+!!! 5
+html(lang = "en")
+    head
+        title= 'IKLANT-PreliminaryVerificationForm'
+        meta(charset='utf-8')
+        meta(name='viewport',content='width=device-width, initial-scale=1')
+        link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+        link(rel='stylesheet', href='/stylesheets/Mobile/dialogStyleMobile.css')
+        script(type='text/javascript', src='/javascripts/jquery-1.8.2.js')
+        script(type='text/javascript', src='/javascripts/jquery-ui.js')
+        //script(type='text/javascript', src='/javascripts/jquery-1.7.1.min.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile.custom.js')
+        script(type='text/javascript', src='/javascripts/preliminaryVerificationUpload.js')
+        script(type='text/javascript', src='/javascripts/Mobile/preliminaryVerificationMobile.js')
+        script(type='text/javascript', src='/javascripts/validation.js')
+    body
+        form(id="BMFormId", enctype="multipart/form-data", data-ajax="false")
+            div(data-role='page', data-theme='b')
+                div(data-role="header", data-theme="a", class="ui-bar ui-grid-a")
+                    div(class="ui-block-a")
+                        img(id='groupIcon', src='/images/iklantMobile.png')
+                    div(class="ui-block-b", align="right")
+                        a(href=contextPath+ '/client/ci/groups', rel="external",data-icon='back', data-role='button', title=' Back', data-inline='true') Back
+                        a(href=contextPath+ '/client/ci/logout',  rel="external",data-icon='back', data-role='button', title=' Logout ', data-inline="true") Logout
+                div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b")
+                    input(type='hidden', name='groupId', id='groupIdID', value=prosGroup.getGroup_id())
+                    h3
+                        p(id="header")
+                    div(data-role="content", id="groupdetails", data-theme="c", data-overlay-theme="c", data-inline="true",id="field1")
+                        div(data-role="fieldcontain", data-mini="true")
+                            label(for="groupName", data-inline="true") Group Name *
+                            input(type="text", name="groupName", id="groupName", value=prosGroup.getGroup_name() , readonly='readonly', data-mini="true")
+                        div(data-role="fieldcontain")
+                            label(for="centerName") Center Name
+                            input(type="text", name="centerName", id="centerName", value=prosGroup.getCenter_name(), readonly='readonly', required='true', data-mini="true")
+                        div(data-role="fieldcontain")
+                            label(for="branchName") Branch Name
+                            input(type="text", name="branchName", id="branchName", value=office.getOfficeName(), readonly='readonly', required='true', data-mini="true")
+                            input(type='hidden', name='branchNameHidden', id='branchNameHidden', value="")
+                        div(data-role="fieldcontain")
+                            label(for="createdDatePicker") Group Formed Date *
+                            input(type="text", name="createdDatePicker", id="createdDatePicker", value=prosGroup.getGroup_created_date(), required='true', readonly='readonly', data-mini="true")
+                        div(data-role="fieldcontain")
+                            label(for="loanTypeId") Loan Type *
+                            input(type="text", name="loanTypeName", id="loanTypeId", value=prosGroup.getLoan_type(), required='true', readonly='readonly', data-mini="true")
+                    div(data-role="fieldcontain", data-mini="true",id="field2")
+                        label(for="lastActiveDate", data-inline="true") Last Active From *
+                        input(type="text", name="lastActiveDate", id="lastActiveDate", value="", data-mini="true", required='true', readonly="readonly")
+                    div(data-role="fieldcontain", data-mini="true",id="field3")
+                        input(type='checkbox', name='savingsdiscussedCheck', data-mini="true", id='savingsdiscussedCheck', data-inline="true")
+                        label(for='savingsdiscussedCheck') Savings Discussed
+                        input(type='hidden', name='savingsDiscussed', data-mini="true", id='savingsDiscussed', value="false")
+                    div(data-role="fieldcontain", data-mini="true",id="field4")
+                        input(type='checkbox', name='completeAttendanceCheck', data-mini="true", id='completeAttendanceCheck',data-inline="true")
+                        label(for='completeAttendanceCheck') Complete Attendance
+                        input(type='hidden', name='completeAttendance', data-mini="true", id='completeAttendance', value="false")
+                    div(data-role="fieldcontain",id="field5")
+                        input(type='checkbox', name='bankAccountCheck', data-mini="true", id='bankAccountCheck', data-inline="true")
+                        label(for='bankAccountCheck') Bank Account
+                        input(type='hidden', name='bankAccountHidden', data-mini="true", id='bankAccountHidden', value="false")
+                    div(data-role='fieldcontain', id="bankName",id="field6")
+                        label(for='bankNameSelect') Bank Name *
+                        input(type='text', name='bankNameSelect', data-mini="true", id='bankNameSelect',maxlength="50",autocomplete="off", value="")
+                    div(data-role="fieldcontain",id='AccNo',id="field7")
+                        label(for="accountNumber") Account Number *
+                        input(type="text", name="accountNumber", data-mini="true",autocomplete="off",maxlength="20", id="accountNumber", value="", required='true')
+                    div(data-role="fieldcontain",id='AccCr',id="field8")
+                        label(for="accountCreatedDate") Account Created Date *
+                        input(type="text", name="accountCreatedDate", data-mini="true", id="accountCreatedDate", value="", required='true', readonly="readonly")
+                    div(data-role="fieldcontain",id="field9")
+                        label(for='creditTransaction') Deposits
+                        input(type="number", name="creditTransaction", data-mini="true",autocomplete="off", id="creditTransaction", min="0", max="99", value="", required='true')
+                    div(data-role="fieldcontain",id="field10")
+                        label(for='debitTransaction') Withdrawals
+                        input(type="number", name="debitTransaction", data-mini="true",autocomplete="off", id="debitTransaction", min="0", max="99", value="", required='true')
+                    div(data-role="fieldcontain",id="field11")
+                        input(type='checkbox', name='anyInternalLoansCheck', data-mini="true", id='anyInternalLoansCheck', data-inline="true")
+                        label(for='anyInternalLoansCheck') Any Internal Loans
+                        input(type='hidden', name='anyInternalLoansHidden', id='anyInternalLoansHidden', value="false")
+                    div(data-role="fieldcontain", id="internalLoanDetails",id="field12")
+                        div(data-role="fieldcontain")
+                            a(href='#internalloan', data-icon='plus', data-mini="true", data-role='button', title=' Add ', data-rel='popup', data-position-to='window', data-transition='pop', data-inline='true', data-mini='true', id="internalLoanAdd") Add Internal Loan Clients
+                    div(data-role="fieldcontain", data-mini="true",id="field13")
+                        a(href='#',rel="external",data-mini="true", data-role='button', data-theme='b', title=' Save ', data-inline='true' , id="saveGroupId") Submit Preliminary Verification Details
+                    p(id ='errorFieldInternalLoan',data-theme="e",align='center',style="color:red")
+                    p(id ='errorField',data-theme="e",align='center') #{alertMsg}
+                    div(data-role="horizontal", data-theme="b",data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-a")
+                        div(class='ui-block-a',align="left")
+                            div(data-role='fieldcontain')
+                                a(href='#' ,id='previous',data-role='button' ,data-mini="true",data-icon='arrow-l' ,data-theme='b' ,data-inline='true' ,data-shadow='true' ,data-iconshadow='true') Previous
+                        div(class='ui-block-b',align="right")
+                            div(data-role='fieldcontain')
+                                a(href='#' ,id='next',data-role='button' ,data-mini="true",data-icon='arrow-r' ,data-iconpos="right",data-theme='b' ,data-inline='true' ,data-shadow='true' ,data-iconshadow='true') Next
+                    div(data-role='content')
+                        div(class='content-primary')
+                            div(id='addClientDivId')
+                div(data-role="fieldcontain", data-mini="true")
+                    input(type='hidden', name='clientNames', id='clientNamesId')
+                    input(type='hidden', name='overdues', id='overduesId')
+                    input(type='hidden', name='deleteclientNamehidden', id='deletecnameid', value="")
+                -if(typeof prosClient.getClientIds() != "undefined"){
+                    div(data-role="popup", id="internalloan", data-theme="b", data-overlay-theme="b", class="ui-content")
+                        h3(align="center") Internal Loan
+                        div(data-role="fieldcontain", data-mini="true")
+                            label(for="clientName", data-inline="true") Client Name
+                            select(name='clientName', id='clientName', data-theme='a', data-icon='bank',data-mini='true', data-inline='true', data-native-menu="false")
+                                option(value='0') Select
+                                - for( var i = 0; i < prosClient.getClientIds().length; i++ ) {
+                                    option(value=prosClient.getClientIds()[i]) #{prosClient.getMemberNames()[i]}
+                                - }
+                        div(data-role="fieldcontain", data-inline="true")
+                            input(type='checkbox', name='overdueCheck', id='overdueCheck')
+                            label(for='overdueCheck') Overdue
+                            input(type='hidden', name='overDue', id='over', value="")
+                        div(data-role="fieldcontain", data-inline="true")
+                            a(href='#internalloan3',  rel="external",data-icon='plus', data-role='button', title=' Add ', data-inline="true", id='saveClient') Save
+                            a(href='#internalloan', rel="external",data-icon='back', data-role='button', title=' Back', data-inline="true") Back
+                -}

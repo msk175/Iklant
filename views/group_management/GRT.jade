@@ -1,0 +1,106 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'GRT'
+
+block scripts
+    include ../headerJqueryMobile-1
+    script(type='text/javascript', src='/javascripts/groupRecognitionTest.js')
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+
+block content
+    form(id="BMFormId",enctype='multipart/form-data')
+        div(data-role='page',id="gridplus")
+            +header("Group Recognition Test",["backJavascript","logout"],"grtCancelButton",[])
+            div(data-role='content')
+                input(type="hidden",id="categoryId",value= categoryId)
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar")
+                    p(id='successMessage',align='center')
+                    p(id='alertMessage',align='center',class='error-message global-font-details')
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-b")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain",data-mini='true',class='oldDE')
+                            a(href='#', rel="external",data-icon='minus', data-role='button', title='Collapse', data-inline="true", data-mini="true",id='minimize',data-iconpos="notext")
+                            a(href='#', rel="external",data-icon='plus', data-role='button', title='Expand', data-inline="true", data-mini="true",id='maximize',data-iconpos="notext")
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain")
+                            h3(for="value") Center Name :
+                            label(for="groupName val") #{centerName}
+                    div(class='ui-block-c')
+                        div(data-role="fieldcontain")
+                            h3(for="value") Group Name :
+                            label(for="groupName val") #{groupName}
+                div(style = "overflow: auto;")
+                    table
+                        thead
+                            tr
+                                th(data-priority="5",rowspan="2",style='width:5%') S.No
+                                th(data-priority="5",rowspan="2",style='width:87%') GRT Check Points
+                                th(data-priority="5",rowspan="2",style='width:8%') Ratings
+                        tbody
+                        - for(var i=0; i<categoryId.length; i++) {
+                            tr
+                                td(class='center-text') #{i+1}
+                                td
+                                    div(data-role="collapsible", data-collapsed="false", data-theme="b",data-content-theme="c",class='collapsible_content')
+                                        h3 #{categoryDesc[i]}
+                                        div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-a")
+                                            div(class='ui-block-a')
+                                                fieldset(data-role="controlgroup")
+                                                    - var firstIndex = questionCategoryId.indexOf(categoryId[i]);
+                                                    - if(firstIndex >= 0) {
+                                                        - var lastIndex = questionCategoryId.lastIndexOf(categoryId[i]);
+                                                        - for(var j=firstIndex; j<=lastIndex; j=j+2) {
+                                                        input(type="checkbox",name="categoryCheck_#{i}",id="question_#{questionIdDetails[j]}",onclick="JavaScript:updateCreditScore(categoryCheck_#{i})")
+                                                        label(for="question_#{questionIdDetails[j]}") #{question[j]}
+                                                        - }
+                                                    - }
+                                            div(class='ui-block-b')
+                                                fieldset(data-role="controlgroup")
+                                                    - var firstIndex = questionCategoryId.indexOf(categoryId[i]);
+                                                    - if(firstIndex >= 0) {
+                                                        - var lastIndex = questionCategoryId.lastIndexOf(categoryId[i]);
+                                                        - for(var j=firstIndex+1; j<=lastIndex; j=j+2) {
+                                                        input(type="checkbox",name="categoryCheck_#{i}",id="question_#{questionIdDetails[j]}",onclick="JavaScript:updateCreditScore(categoryCheck_#{i})")
+                                                        label(for="question_#{questionIdDetails[j]}") #{question[j]}
+                                                        - }
+                                                    - }
+                                td
+                                    fieldset(data-role="controlgroup")
+                                        input(type="radio",name="category_#{i}",id="category_#{i}a",value="1",checked="checked",onclick='updateTotalRating()')
+                                        label(for="category_#{i}a") 1
+                                        input(type="radio",name="category_#{i}",id="category_#{i}b",value="2",onclick='updateTotalRating()')
+                                        label(for="category_#{i}b") 2
+                                        input(type="radio",name="category_#{i}",id="category_#{i}c",value="3",onclick='updateTotalRating()')
+                                        label(for="category_#{i}c") 3
+                        -}
+
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-c")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                            h3(for="value") Remarks :
+                    div(class='ui-block-b')
+                        textarea(id="remarks",name='remarks', maxlength=50,onkeyup="forNamesValidation(this)")
+                    div(class='ui-block-c',align="right")
+                        div(data-role="fieldcontain")
+                            h3(for="value",align="right") Total Rating :
+                    div(class='ui-block-d')
+                        div(data-role="fieldcontain")
+                            div(id="totalRating",align="center") 0
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-c")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                            h3(for="value") Total Members approved for Loan :  #{noOfClients}
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain")
+                            div(id="totalMembers",align="center")
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar")
+                    -if(roleId !=constantsObj.getGuestUserRoleId()){
+                        a(href="JavaScript:submitRating()", data-theme="b",id='submitRating',data-icon='arrow-r', data-role='button', title=' Submit the rating', data-inline="true", data-mini="true") Submit Rating
+                    -}
+                input(type='hidden',id='totalRatingHidden',name='totalRatingHidden',value='0')
+                input(type='hidden',id='questionIdDetails',name='questionIdDetails')
+                input(type='hidden',id='checkedOrNotDetails',name='checkedOrNotDetails')
+                input(type='hidden',id='groupId',name='groupId',value=groupId)
+            div(class="ui-loader-background")

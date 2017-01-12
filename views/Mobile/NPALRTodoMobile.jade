@@ -1,0 +1,59 @@
+!!! 5
+html(lang = "en")
+	head
+		title= 'IKLANT-TODO'
+		meta(charset='utf-8')
+		meta(name='viewport',content='width=device-width, initial-scale=1')
+		link(rel='stylesheet', href='/stylesheets/jquery.mobile.css')
+		link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+		link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+		link(rel='stylesheet', href='/stylesheets/dialogStyle.css')
+		link(rel='stylesheet', href='/stylesheets/iklantStyle.css')
+		script(type='text/javascript', src='/javascripts/jquery-1.7.1.min.js')
+		script(type='text/javascript', src='/javascripts/jquery.mobile.js')
+		script(type='text/javascript', src='/javascripts/constantjs.js')
+		script(type='text/javascript', src='/javascripts/NPALRTodo.js')
+	body(style="overflow-x:hidden")
+		form(id="todoFormId")
+			div(data-role='page', data-theme='b', id="gridplus")
+				div(data-role="header", data-theme="a", class="ui-bar ui-grid-a")
+					div(class="ui-block-a")
+						img(id='groupIcon', src='/images/iklantMobile.png')
+					div(class="ui-block-b",align="right",style="padding:20px 50px 0 0;")
+						a(href=contextPath+ '/client/ci/menu', rel="external",data-icon='grid', data-role='button', title=' Menu', data-inline='true') Menu		
+						a(href=contextPath+ '/client/ci/logout',style="margin:0px 0px 0px 20px;vertical-align:middle")
+							img(id='logoff', src='/images/logoff.png')
+				div(data-role="navbar")	  
+					ul
+						li
+							a(href=contextPath+ '/client/ci/NPALRGroups/todo/current',rel="external", data-role="tab" , id="currentTaskNavBarId") Current task
+						li
+							a(href=contextPath+ '/client/ci/NPALRGroups/todo/future',rel="external", data-role="tab" , id="futureTaskNavBarId") Future Task 
+						li
+							a(href=contextPath+ '/client/ci/NPALRGroups/todo/overdue',rel="external", data-role="tab" , id="overdueTaskNavBarId") Overdue Task
+						li
+							a(href=contextPath+ '/client/ci/NPALRGroups/todo/closed',rel="external", data-role="tab" , id="closedTaskNavBarId") Closed Task
+				div(data-role="content",style = "overflow: auto;",id="npaTodoCurrentDivId")
+					p(id ='errorField',data-theme="e",align='center')
+					table
+						tr
+							th(style ="text-align:center") S.NO
+							th(style ="text-align:center") Activity
+							th(style ="text-align:center") Expected Due Date
+							th(style ="text-align:center") Remarks
+							th(style ="text-align:center") Action
+							-for(var i=0;i<taskNameArray.length;i++) {
+								tr()
+									td(style ="text-align:center")	#{i+1}
+									td(style ="text-align:center")	#{taskNameArray[i]} - #{customerArray[i]}
+									td(style ="text-align:center")	#{dueDateArray[i]}	
+									td()
+										div(data-role="fieldcontain")
+											textarea(name='todoRemarks', id='todoRemarksId'+i,maxlength="200",data-inline="true",data-mini="true",maxlength = 99)
+									td(style ="text-align:center",id='actionButton'+i)
+										a(href="Javascript:submitTask(#{i})", rel="external",data-theme="b",data-inline='true', data-role='button', title='Submit', data-mini="true",id='taskSubmit'+i) Done
+										label(id="labelSubmitID"+i,style="font-size: 15px;color:green;font-weight:bold")
+							input(type="hidden", name="taskId", id="taskId"+i, value='#{taskIdArray[i]}')
+							-}
+					input(type="hidden", name="date", id="date", value='#{date}')
+					input(type="hidden", name="taskLength", id="taskLength", value='#{taskNameArray.length}')

@@ -1,0 +1,8 @@
+body {
+    overflow-y: auto;
+}
+
+.ui-field-contain input.ui-input-text, .ui-field-contain textarea.ui-input-text, .ui-field-contain .ui-input-search {
+    width: 60%;
+    display: inline-block;
+}

@@ -1,0 +1,302 @@
+!!! 5
+html(lang = "en")
+	head
+		title= 'IKLANT-FieldVerificationForm'
+		meta(charset='utf-8')
+		meta(name='viewport',content='width=device-width, initial-scale=1')
+		link(rel='stylesheet', href='/stylesheets/jquery.mobile.css')
+		link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+		link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+		link(rel='stylesheet', href='/stylesheets/Mobile/dialogStyleMobile.css')	
+		script(type='text/javascript', src='/javascripts/jquery-1.7.1.min.js')
+		script(type='text/javascript', src='/javascripts/jquery.mobile.js')
+		script(type='text/javascript', src='/javascripts/jquery.mobile.custom.js')
+		script(type='text/javascript', src='/javascripts/constantjs.js')
+		script(type='text/javascript', src="/javascripts/fieldVerificationOnChange.js")
+		script(type='text/javascript', src="/javascripts/forClientDetails.js")
+		script(type='text/javascript', src='/javascripts/validation.js')
+		script(type='text/javascript', src='/javascripts/Mobile/fieldVerificationMobile.js')
+	body(id="pageID")
+	form(id='BMFormId')
+		div(data-role='page', data-theme='b')
+			div(data-role="fieldcontain")
+				input(type='hidden', name='cl', id='cls', value= thisclientId)
+			div(data-role="header", data-theme="a", class="ui-bar ui-grid-a")
+				div(class="ui-block-a")
+					img(id='groupIcon', src='/images/iklantMobile.png')
+				div(class="ui-block-b", align="right")
+					a(href=contextPath+ '/client/ci/groups', rel="external",data-icon='back', data-role='button', title=' Back', data-inline='true') Back
+					a(href=contextPath+ '/client/ci/logout',  rel="external",data-icon='back', data-role='button', title=' Logout ', data-inline="true") Logout			
+			div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b")
+				h3 Field Verification
+				p(id ='errorFieldTop',data-theme="e",align='center')
+				div(data-role="content", id="members123", data-theme="c", data-overlay-theme="c", data-inline="true")
+					div(data-role="fieldcontain")
+						label(for="groupname") Group Name
+						input(type="text", name="groupname", readonly="readonly",id="groupname", value="#{groupName}", required='true')
+					div(data-role="fieldcontain")
+						label(for="members") Member Name
+						select(name='members', onchange = 'getclientdetails(this)',  id='members', data-theme='b', data-icon='grid', data-inline='true', data-native-menu="true",data-mini="true")
+							option(value='0') Select Member
+							-for(i=0;i< clientIdArray.length;i++){
+								-if(clientIdArray[i] == thisclientId)
+									option(value= clientIdArray[i] , selected="selected") #{clientNameArray[i]}
+								-else
+									option(value= clientIdArray[i]) #{clientNameArray[i]}
+							-}
+				
+				
+				div(data-role="collapsible", data-collapsed="false", id="memberdetaildiv", data-theme="b", data-overlay-theme="a", data-inline="true",data-mini="true")
+					h3(for="value")
+						p(id='header')
+					div(data-role='fieldcontain' ,id='field1')
+						div(data-role='fieldcontain')
+							label(for='memberaddress') Client Address      
+							textarea(id='memberaddress',name='memberaddress', readonly="readonly") #{prospectClientPersonalObj.getAddress()}
+						div(data-role='fieldcontain')
+							label(for="proof") Address ProofID
+							select(name='clientProof', id='proof', data-theme='b', data-icon='grid', data-inline='true', data-native-menu="true",data-mini="true")
+								option(value='0',selected='selected') Select Proof
+								option(value='GAS BILL') GAS BILL
+								option(value='Driving Licence') Driving Licence
+								option(value='EBBILL') EBBILL
+								option(value='VoterId') VoterId
+								option(value='Ration Card') Ration Card
+						div(data-role='fieldcontain')
+							input(type='checkbox', name='addressmatchedCheck', id='addressmatchedCheck', data-inline="true")
+							label(for='addressmatchedCheck') Address Matched
+					div(data-role="fieldcontain" ,id='field2')
+						div(data-role='fielcontain')
+							label(for="rcnumber") Ration Card Number
+							input(type="text", name="rcnumber", id="rcnumber",readonly="readonly", value=prospectClientPersonalObj.getRation_card_number(), required='true')
+						div(data-role='fielcontain')
+							input(type='checkbox', name='rcnumbermatched', id='rcnumbermatched', data-inline="true")
+							label(for='rcnumbermatched') Ration Card Number Matched
+					div(data-role="fieldcontain" ,id='field3')
+						div(data-role='fielcontain')
+							label(for="phonenumber") Phone Number
+							input(type="text", name="phonenumber", id="phonenumber", readonly="readonly",value=prospectClientPersonalObj.getContact_number()  , required='true')
+						div(data-role='fielcontain')
+							input(type='checkbox', name='phonenumbercheck', id='phonenumbercheck', data-inline="true")
+							label(for='phonenumbercheck') Phone Number Matched
+					div(data-role="fieldcontain" ,id='field4')
+						div(data-role='fielcontain')
+							label(for="voteridno") VoterID
+							input(type="text", name="voteridno", id="voteridno", readonly="readonly",value=prospectClientPersonalObj.getVoter_id()  , required='true')
+							label(for="gasidno") Gas Number
+							input(type="text", name="gasidno", id="gasidno", readonly="readonly",value=prospectClientPersonalObj.getGas_number()  , required='true')
+							label(for="aadharno") Aadhar Number
+							input(type="text", name="aadharno", id="aadharno", readonly="readonly",value=prospectClientPersonalObj.getAadhaar_number()  , required='true')
+							label(for="otherid") Other Id
+							input(type="text", name="otherid", id="otherid", readonly="readonly",value=prospectClientPersonalObj.getOther_id()  , required='true')
+						div(data-role='fielcontain')
+							label(for="idproof") ID Proof
+							select(name='ID_Proof', id='idproof', data-theme='b', data-icon='grid', data-inline='true', data-native-menu="true",data-mini="true")
+								option(value='0') Select Proof
+								option(value='Voter ID') Voter ID
+								option(value='Gas Number') Gas Number
+								option(value='Aadhar Number') Aadhar Number
+								option(value='PANCARD') PANCARD
+								option(value='Driving Licence') Driving Licence
+						div(data-role='fielcontain')
+							input(type='checkbox', name='id_proofcheck', id='idproofcheck', data-inline="true")
+							label(for='idproofcheck') Identity Proof Matched
+					div(data-role='fieldcontain',id='field5')
+						div(data-role='fielcontain')
+							label(for='guarantoraddress') Guarantor Address      
+							textarea(id='guarantoraddress',name='guarantoraddress',readonly="readonly")  #{prospectClientGuarantorObj.getGuarantorAddress()}
+						div(data-role='fielcontain')
+							label(for="guarantoraddprooff") Guarantor Address Proof ID
+							select(name='guarantor_addproof', id='guarantoraddprooff', data-theme='b', data-icon='grid', data-inline='true', data-native-menu="true",data-mini="true")
+								option(value='0') Select Proof
+								option(value='Voter ID') Voter ID
+								option(value='GAS BILL') GAS BILL
+								option(value='EB BILL') EB BILL
+								option(value='Ration Card') Ration Card
+						div(data-role='fielcontain')
+							input(type='checkbox', name='guarantoraddressmatchedCheck', id='guarantoraddressmatchedCheck', data-inline="true")
+							label(for='guarantoraddressmatchedCheck') Guarantor Address Matched
+					div(data-role="fieldcontain",id='field6')
+						div(data-role='fielcontain')
+							label(for="guarantorId") Guarantor Id
+							input(type="text", name="guarantorId", id="guarantorId", readonly="readonly",value=prospectClientGuarantorObj.getGuarantorId()  , required='true')
+						div(data-role='fielcontain')
+							label(for="idguarantorproof") Guarantor Id Proof
+							select(name='id_guarantorproof', id='idguarantorproof', data-theme='b', data-icon='grid', data-inline='true', data-native-menu="true",data-mini="true")
+								option(value='0') Select Proof
+								option(value='Voter ID') Voter ID
+								option(value='Driving Licence') Driving Licence
+								option(value='PANCARD') PANCARD
+								option(value='Ration Card') Ration Card
+						div(data-role='fielcontain')
+							input(type='checkbox', name='guarantoridproofcheck', id='guarantoridproofcheck', data-inline="true")
+							label(for='guarantoridproofcheck') Guarantor Identity Proof Matched
+					div(data-role="fieldcontain",id='field7')
+						div(data-role='fielcontain')
+							label(for="guarantorrelationship") Guarantor Relationship
+							input(type="text", name="guarantorrelationship", id="guarantorrelationship",readonly="readonly", value= prospectClientGuarantorObj.getGuarantorRelationship()  , required='true')
+						div(data-role='fielcontain')
+							input(type='checkbox', name='guarantorrelationshipCheck', id='guarantorrelationshipCheck', data-inline="true")
+							label(for='guarantorrelationshipCheck') GuarantorRelationship Matched
+					div(data-role='fieldcontain',id='field8')
+						div(data-role='fielcontain')
+							label(for="house") House
+							select(name='House',onchange="JavaScript:houseTypeOnchange()",rel = "external", data-mini="true" ,data-inline="true",autofocus="autofocus", id='house', data-theme='b', data-icon='arrow-d', data-native-menu="true")
+								option(value='0',selected='selected') Select
+								-for(i=0;i<lookupEntityObj.getHouse().length;i++){
+									option(value=lookupEntityObj.getHouse()[i]) #{lookupEntityObj.getHouseName()[i]}
+								- }
+						div(data-role='fielcontain')
+							label(for='timePeriod',id="timePeriodLabelId") Time Period
+							input(type='text', name='TimePeriod',autocomplete="off", id='timePeriod',maxlength="2", data-inline="true",value="")
+						div(data-role='fielcontain')
+							label(for='housesqft') House Sq.ft
+							input(type='text', name='Housesqft',autocomplete="off", maxlength="4",id='housesqft', data-inline="true",value="")
+					div(data-role='fieldcontain',id='field9')
+						div(data-role='fielcontain')
+							label(for="houseCeilingType",align="left") House Ceiling Type
+							select(name='HouseCeilingType',rel = "external", data-mini="true" ,data-inline="true",autofocus="autofocus", id='houseCeilingType', data-theme='b', data-icon='arrow-d', data-native-menu="true")
+								option(value='0',selected='selected') Select
+								-for(i=0;i<lookupEntityObj.getHouseCeiling().length;i++){
+									option(value=lookupEntityObj.getHouseCeiling()[i]) #{lookupEntityObj.getHouseCeilingName()[i]}
+								- }
+					div(data-role='fieldcontain',id='field10')
+						div(data-role='fielcontain')
+							label(for="houseWallType",align="left") HouseWall Type
+							select(name='HouseWallType',rel = "external", data-mini="true" ,data-inline="true",autofocus="autofocus", id='houseWallType', data-theme='b', data-icon='arrow-d', data-native-menu="true")
+								option(value='0',selected='selected') Select
+								-for(i=0;i<lookupEntityObj.getHouseWall().length;i++){
+									option(value=lookupEntityObj.getHouseWall()[i]) #{lookupEntityObj.getHouseWallName()[i]}
+								- }
+					div(data-role='fieldcontain',id='field11')
+						div(data-role='fielcontain')
+							label(for="houseFlooringDetails",align="left") House Flooring Details
+							select(name='HouseFlooringDetails',rel = "external", data-mini="true" ,data-inline="true",autofocus="autofocus", id='houseFlooringDetails', data-theme='b', data-icon='arrow-d', data-native-menu="true")
+								option(value='0',selected='selected') Select
+								-for(i=0;i<lookupEntityObj.getHouseFloor().length;i++){
+									option(value=lookupEntityObj.getHouseFloor()[i]) #{lookupEntityObj.getHouseFloorName()[i]}
+								- }
+					div(data-role='fieldcontain',id='field12')
+						div(data-role='fielcontain')
+							label(for="housetoilet",align="left") House Toilet
+							select(name='HouseToilet',rel = "external", data-mini="true" ,data-inline="true",autofocus="autofocus", id='housetoilet', data-theme='b', data-icon='arrow-d', data-native-menu="true")
+								option(value='0',selected='selected') Select
+								-for(i=0;i<lookupEntityObj.getHouseToilet().length;i++){
+									option(value=lookupEntityObj.getHouseToilet()[i]) #{lookupEntityObj.getHouseToiletName()[i]}
+								- }
+					div(data-role='fieldcontain',id='field13')
+						div(data-role='fielcontain')
+							label(for="vehicleDetails") VehicleDetails
+						div(data-role='fielcontain')
+							input(type='checkbox', name='Bi-CycleName', id='bicycle', data-inline="true")
+							label(for='bicycle',id='bicycleID') Bi-Cycle
+						div(data-role='fielcontain')
+							input(type='checkbox', name='ScooterName', id='scooter', data-inline="true")
+							label(for='scooter',id='scooterID') Scooter
+						div(data-role='fielcontain')
+							input(type='checkbox', name='MopedName', id='moped', data-inline="true")
+							label(for='moped',id='mopedID') Moped
+						div(data-role='fielcontain')
+							input(type='checkbox', name='BikeName', id='bike', data-inline="true")
+							label(for='bike',id='bikeID') Bike
+						div(data-role='fielcontain')
+							input(type='checkbox', name='CarName', id='car', data-inline="true")
+							label(for='car',id='carID') Car
+						div(data-role='fielcontain')
+							input(type='checkbox', name='OthersName', id='others', data-inline="true")
+							label(for='others',id='othersID') Others
+					div(data-role='fieldcontain',id='field14')
+						div(data-role='fielcontain')
+							label(for='houseRooomDetails') HouseRooomDetails
+						div(data-role='fielcontain')
+							input(type='checkbox', name='HallName', id='hall', data-inline="true")
+							label(for='hall',id='hallID') Hall
+						div(data-role='fielcontain')
+							input(type='checkbox', name='KitchenName', id='kitchen', data-inline="true")
+							label(for='kitchen',id='kitchenID') Kitchen
+						div(data-role='fielcontain')
+							input(type='checkbox', name='1RoomName', id='1room', data-inline="true")
+							label(for='1room',id='1roomID') One Room
+						div(data-role='fielcontain')
+							input(type='checkbox', name='2RoomsName', id='2rooms', data-inline="true")
+							label(for='2rooms',id='2roomsID') Two Rooms 
+						div(data-role='fielcontain')
+							input(type='checkbox', name='3RoomsName', id='3rooms', data-inline="true")
+							label(for='3rooms',id='3roomsID') Three Rooms
+					//hidden textbox for checkbox value assign
+					div(data-role="fielcontain")
+						input(type='hidden', name='household', id='hiddenHousehold', data-inline="true")
+						input(type='hidden', name='householdFetch', id='hiddenHouseholdFetch', data-inline="true",value="")
+					div(data-role="fielcontain")
+						input(type='hidden', name='vehicles', id='hiddenVehicle', data-inline="true")
+						input(type='hidden', name='vehiclesFetch', id='hiddenVehicleFetch', data-inline="true",value="")
+					div(data-role="fielcontain")
+						input(type='hidden', name='houseroom', id='hiddenHouseroom', data-inline="true")
+						input(type='hidden', name='houseroomFetch', id='hiddenHouseroomFetch', data-inline="true",value="")
+					div(data-role="fieldcontain",id='field15')
+						div(data-role='fielcontain')
+							label(for="bankaccountdetails") Bank Account Details
+							input(type="text", name="bankaccountdetails", readonly="readonly",id="bankaccountdetails", value=prospectClientBankDetailObj.getIs_bank_account(), required='true')
+						div(data-role='fielcontain')
+							input(type='checkbox', name='bankaccountdetailscheck', id='bankaccountdetailscheck', data-inline="true")
+							label(for='bankaccountdetailscheck') BankAccountDetails Checked
+					div(data-role="fieldcontain",id='field16')
+						div(data-role='fielcontain')
+							label(for="insurancedetail") Insurance Details
+							input(type="text", name="insurancedetail", id="insurancedetail", readonly="readonly", value=prospectClientBankDetailObj.getIs_Insurance_Lifetime(), required='true')
+						div(data-role='fielcontain')
+							input(type='checkbox', name='insurancedetailcheck', id='insurancedetailcheck', data-inline="true")
+							label(for='insurancedetailcheck') Insurance Details Checked
+					div(data-role="fieldcontain",id='field17')
+						//div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-a")
+							div(class='ui-block-a')
+								div(data-role="fieldcontain",id="formTypeDivId")
+									label(for="formType") Form Type
+									select(name='formType', onchange = "JavaScript:downloadClientDocuments(this)", id='formType', data-theme="b",data-icon='grid', data-mini='true',data-inline='true',data-theme="a", data-native-menu="true")
+										option(value='0') Select Document Type
+										-for(var j=0;j<docTypeIdArray.length; j++) {
+											-if(docTypeIdArray[j] == docId)
+												option(value= docTypeIdArray[j] , selected="selected") #{docTypeNameArray[j]}
+											-else
+												option(value=docTypeIdArray[j]) #{docTypeNameArray[j]}
+										- }
+							div(class='ui-block-b')
+								div(data-role="fieldcontain")
+									select(name='docDownload', onchange = 'JavaScript:downloadDocs(this.value)',data-theme="b", id='docDownloadId',data-inline='true', data-icon='grid', data-mini='true', data-native-menu="true")
+										option(value='0') Select Doc
+										-for(var j=0;j<fileLocation.length; j++) {
+											option(value=fileLocation[j])	Doc #{j+1}
+										-}
+						div(data-role='fielcontain')
+							input(type='checkbox', name='memberaddproof', id='memberaddproof', data-inline="true")
+							label(for='memberaddproof') Member Address Proof Provided
+						div(data-role='fielcontain')
+							input(type='checkbox', name='memberidproof', id='memberidproof', data-inline="true")
+							label(for='memberidproof') Member Id Proof Provided
+					div(data-role="fieldcontain",id='field18')
+						div(data-role='fielcontain')
+							input(type='checkbox', name='guarantoraddproof', id='guarantoraddproof', data-inline="true")
+							label(for='guarantoraddproof') Guarantor Address Proof Provided
+						div(data-role='fielcontain')
+							input(type='checkbox', name='guarantoridproof', id='guarantoridproof', data-inline="true")
+							label(for='guarantoridproof') Guarantor Id Proof Provided
+					div(data-role="fieldcontain", data-mini="true",id='field19')
+						div(data-role='fielcontain')
+							label(for="remarks", data-inline="true") Remarks
+							input(type="text", name="remarks", id="remarks",maxlength="100",autocomplete="off",value="")
+							input(type="hidden", name="statusid", id="statusid", value="")
+				p(id ='errorField',data-theme="e",align='center') #{errorfield}
+				div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+					div(class='ui-block-a',align="left")
+						div(data-role='fieldcontain')
+							a(href='#' ,id='previous',data-role='button' ,data-icon='arrow-l' ,data-theme='b' ,data-inline='true' ,data-shadow='true' ,data-iconshadow='true',data-mini="true",data-iconpos="left") Previous
+					div(class='ui-block-b',align="right")
+						div(data-role='fieldcontain')
+							a(href='#' ,id='next',data-role='button' ,data-icon='arrow-r' ,data-theme='b' ,data-inline='true' ,data-shadow='true' ,data-iconshadow='true',data-mini="true",data-iconpos="right") Next
+				//hidden to get selected doc to download		
+				input(type='hidden', name='selectedDocName', id='selectedDocId', value="")
+				input(type='hidden', name='selectedDocName', id='selectedDocId', value="")
+			div(data-role="fieldcontain", data-mini="true",id='field20' )
+				a(href='#',rel="external", data-icon='check', onclick = 'JavaScript:submitform();', data-role='button', data-theme='b', title=' Save ', data-inline='true' , id="SaveButtonId",data-mini="true") Submit
+				a(href='#',rel="external", data-icon='check', onclick = 'JavaScript:clarificationform();', data-role='button', data-icon="info",data-theme='b', title=' needclarification ', data-inline='true' , id="abcId",data-mini="true") Need Information
+				a(href=contextPath+ '/client/ci/groups', rel="external",data-icon='back', data-role='button', title='Back', data-inline='true',data-mini="true") Back

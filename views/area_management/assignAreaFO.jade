@@ -1,0 +1,116 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'Iklant-Manage Area'
+
+block scripts
+    include ../headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/area_management/areaManagement.js')
+
+block content
+    form(id='areaManagementForm')
+        div(data-role='page', data-theme='b')
+            +header("Area Management",["menu","logout"],'',[])
+            div(data-role="navbar", class="ui-bar no-padding", data-grid="d")
+                ul
+                    -for(var i=0;i< operationId.length;i++) {
+                        -if(operationId[i] == selectedOperationId) {
+                            -if(roleId == constantsObj.getSMHroleId() && selectedOperationId == constantsObj.getAssignAreaOperationId()){
+                                li
+                                    a(href="JavaScript:operationSubmitForAreaMgmt('#{operationId[i]}');", rel="external", data-role="tab", class="ui-btn-active") Release Area
+                            -}
+                            -else{
+                                li
+                                    a(href="JavaScript:operationSubmitForAreaMgmt('#{operationId[i]}');", rel="external", data-role="tab", class="ui-btn-active") #{operationName[i]}
+                            -}
+                        -}
+                        -else if(roleId == constantsObj.getSMHroleId() && operationId[i] != constantsObj.getAreaCreationOperationId()){
+                            -if(operationId[i] == constantsObj.getAssignAreaOperationId()){
+                                li
+                                    a(href="JavaScript:operationSubmitForAreaMgmt('#{operationId[i]}');", rel="external", data-role="tab") Release Area
+                            -}
+                            -else{
+                                li
+                                    a(href="JavaScript:operationSubmitForAreaMgmt('#{operationId[i]}');", rel="external", data-role="tab") #{operationName[i]}
+                            -}
+                        -}
+                        -else if(roleId == constantsObj.getBMroleId()){
+                            li
+                                a(href="JavaScript:operationSubmitForAreaMgmt('#{operationId[i]}');", rel="external", data-role="tab") #{operationName[i]}
+                        -}
+                    -}
+            -if(roleId == constantsObj.getSMHroleId()){
+                div(data-role="content", data-theme="b", data-overlay-theme="a",class="ui-grid-d",style='width:100%;')
+                    div(class='ui-block-e',style='width:50%;',align="right")
+                        div(data-role='fieldcontain')
+                            label(for="listoffice",style='font-weight:bold') Select office
+                    div(class='ui-block-e',style='width:50%;',align="left")
+                        div(data-role='fieldcontain')
+                            select(name='listoffice', id='listoffice', data-theme='b', data-icon='grid', data-inline='true', data-mini='true',onchange='retrieveAreaList()')
+                                option(value='-1') All
+                                -for(i=0;i<officeIdArray.length;i++){
+                                    -if(officeId == officeIdArray[i] && officeId != constantsObj.getApexHeadOffice()){
+                                        option(value=officeIdArray[i],selected="selected") #{officeNameArray[i]}
+                                    -}
+                                    -else if(officeIdArray[i] != constantsObj.getApexHeadOffice()){
+                                        option(value=officeIdArray[i]) #{officeNameArray[i]}
+                                    -}
+                                - }
+            -}
+            -if(areaCodeId.length>0){
+                -if(roleId != constantsObj.getSMHroleId()){
+                    div(data-role="content",id="assignAreaDivId")
+                        div(data-role='horizontal', id="menu", class="ui-bar ui-grid-a")
+                            div(class='ui-block-a')
+
+                            div(class='ui-block-b',align="right")
+                                div(data-role="fieldcontain")
+                                    select(name='selectFO', onchange='',data-theme="b", id='selectFO',data-inline='true', data-icon='grid', data-mini='true', data-native-menu="true")
+                                        option(value='') Select FO
+                                        -for(var j=0;j<foIdArray.length; j++) {
+                                            option(value="#{foIdArray[j]}") #{foNameArray[j]}
+                                        - }
+                                    a(href="JavaScript:assignFOSubmission(#{areaCodeId.length});", rel="external", data-role='button',id='Assign', title='assign', data-inline="true",data-mini="true") Assign
+                -}
+                div(style = "overflow: auto;")
+                    p(class='success-message global-font-details',align='center') #{statusMessage}
+                    p(id ='errorField',data-theme="e",align='center',class='error-message global-font-details')
+                    table(id='areaCodeDiv')
+                        tr
+                            th(class='center-text') S.NO
+                            -if(roleId != constantsObj.getSMHroleId())
+                                th(class='center-text') Check
+                            th(class='center-text') Area Code
+                            th(class='center-text') Area Name
+                            -if(roleId == constantsObj.getSMHroleId()){
+                                th(class='center-text') Assigned to
+                                th(class='center-text') Action
+                            -}
+                            -for(var i=0;i< areaCodeId.length;i++){
+                                tr
+                                    td(align ="center") #{i+1}
+                                    -if(roleId != constantsObj.getSMHroleId()){
+                                        td(align ="center")
+                                            div(data-inline="true",style="width:50px;margin: auto",align='center')
+                                                label(for="areaCodeChkId#{i}")
+                                                input(type="checkbox", name="areaCodeChkId#{i}", id="areaCodeChkId#{i}", data-mini="false", data-inline="true")
+                                                input(type="hidden", name="areaCodeId#{i}", id="areaCodeId#{i}", data-mini="false", data-inline="true",value='#{areaCodeId[i]}')
+                                    -}
+                                    td(class='center-text') #{areaCode[i]}
+                                    td(class='center-text') #{areaName[i]}
+                                    -if(roleId == constantsObj.getSMHroleId()){
+                                        td(class='center-text') #{foNames[i]}
+                                        td(class='center-text')
+                                            a(href="JavaScript:releaseArea(#{areaCodeId[i]},#{foIds[i]}, 0)",rel="external",data-theme="b",data-icon='check', data-role='button',data-mini="true", title='Release', data-inline="true") Release
+                                    -}
+                            -}
+            -}
+            -else{
+                p(data-theme="e",align='center',class='error-message global-font-details') No records found
+            -}
+            input(type='hidden',id='operationId',name='operationId',value=selectedOperationId)
+            input(type='hidden',id='areaCodesId',name='areaCodesId')
+            input(type='hidden',id='existingFieldOfficerId',name='existingFieldOfficerId')
+            div(class="ui-loader-background")

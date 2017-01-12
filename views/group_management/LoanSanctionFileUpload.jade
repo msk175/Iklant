@@ -1,0 +1,61 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'Iklant-LoanSanctionFileDownload'
+
+block scripts
+    include ../headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+    link(rel='stylesheet', href='/stylesheets/dialogStyle.css')
+    script(type='text/javascript', src="/javascripts/forLoanSanction.js")
+    script(type='text/javascript', src="/javascripts/loansactionfileupload.js")
+
+block content
+    form(id='BMFormId')
+        div(data-role='page', data-theme='b')
+            +header("Synchronized",["backJavascript","logout"],"synchronizedPageCancelButton",[])
+            div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b")
+                h3 Synchronized
+                p(id='errorField',align='center',class='error-message global-font-details')
+                div(data-role="content", id="groupdetails", data-theme="c", data-overlay-theme="c", data-inline="true")
+                    div(data-role="fieldcontain")
+                        label(for="groupname") Group Name
+                        input(type="text", name="groupname", id="groupname", value="#{groupNameForLoanSanction}", required='true', readonly="readonly")
+                    div(data-role="fieldcontain")
+                        label(for="formTypeId") Form Type
+                        select(onchange = 'populateLoanType()', name = 'formTypeName', id='formTypeId', data-theme='b', data-icon='grid', data-inline='true', data-native-menu="false",data-mini="true")
+                            option(value='0') Select
+                            option(value='1') KYC Form
+                            option(value='2') Loan Sanction Form
+                            option(value='3') Legal Form
+                            option(value='4') Promissory Note
+                            option(value='5') Installment Schedule
+                            option(value='6') Receipt Form
+                            option(value='7') MAS Loan Agreement Form
+                            option(value='8') MAS Loan Card Form
+                            option(value='9') MAS Demand Promissory Note Form
+                            option(value='10') MAS Credit Appraisal Form
+                    div(data-role="fieldcontain", id="loanTypeDiv")
+                        label(for="loantypeid") Loan Product
+                        select(name='loantype', onchange = '',  id='loantypeid', data-theme='b', data-icon='grid', data-inline='true', data-native-menu="false",data-mini="true",disabled="disabled")
+                            -for(i=0;i< (productCategoryId.length);i++){
+                                option(value= productCategoryId[i]) #{ProductCategoryType[i]}
+                            -}
+                    div(data-role="fieldcontain")
+                        input(type="hidden", name="clientidhidden", id="clientidhidden", value=clientIdArray)
+                        input(type="hidden", name="clientnamehidden", id="clientnamehidden", value=clientNameArray)
+                        input(type="hidden", name="prdidhidden", id="prdidhidden", value="")
+                        input(type="hidden", name="pathHidden", id="pathHidden", value=path)
+                        input(type="hidden", name="isSynchronizedHidden", id="isSynchronizedHidden", value=isSynchronized)
+                        input(type="hidden", name="mifosCustomerIdHidden", id="mifosCustomerIdHiddenId", value=mifosCustomerId)
+                        input(type="hidden", name="reqOfficeHidden", id="reqOfficeHidden", value=officeValue)
+                        input(type="hidden", name="docLanguage", id="docLanguage", value=docLanguage)
+            div(data-role="fieldcontain", data-mini="true" )
+                a(href='JavaScript:generatePDF(#{groupId})',rel="external",data-role='button', data-theme='b', title=' Generate PDF ', data-inline='true' , id="SaveButtonId",data-mini="true") Generate PDF
+                //-if(isSynchronized == 0) {
+                    a(href='JavaScript:Synchronize(#{groupId})', rel="external",data-icon='back', data-role='button', title=' Synchronize', data-inline='true', id="synchronizeButton",data-mini="true") Synchronize
+                    -}
+                a(href='JavaScript:synchronizedPageCancelButton()', rel="external",data-icon='back', data-role='button', title=' Back', data-inline='true',data-mini="true") Back
+                a(href='#{path}', target="_blank",rel="external",data-icon='back', data-role='button', title='View PDF', data-inline='true',id="generatePDFId",data-mini="true") View PDF
+            div(class="ui-loader-background")

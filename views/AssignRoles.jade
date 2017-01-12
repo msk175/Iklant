@@ -1,0 +1,69 @@
+!!! 5
+html(lang = "en")
+    head
+        title= 'IKLANT-AssignRoles'
+        meta(charset='utf-8')
+        meta(name='viewport',content='width=device-width, initial-scale=1')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+        link(rel='stylesheet', href='/stylesheets/dialogStyle.css')
+        script(type='text/javascript', src='/javascripts/jquery-1.7.1.min.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile.custom.js')
+        script(type='text/javascript', src='/javascripts/constantjs.js')
+        script(type='text/javascript', src='/javascripts/manageusers.js')
+        script(type='text/javascript', src='/javascripts/manageRoles.js')
+        script(type='text/javascript', src='/javascripts/common.js')
+    body
+        form(id='BMFormId')
+            div(data-role='page', data-theme='a')
+                div(data-role="header", data-theme="a", class="ui-bar ui-grid-a")
+                    div(class="ui-block-a")
+                        img(id='groupIcon', src='/images/iklant.png')
+                        h2(for="value", style="margin:20px 10px 0 0;")    User Management
+                    div(class="ui-block-b", align="right")
+                        h3(align="right") Welcome #{userName}
+                        a(href=contextPath + '/client/ci/menu', rel="external",data-icon='grid', data-role='button', title=' Menu', data-inline='true') Menu
+                        a(href=contextPath + '/client/ci/logout',  rel="external",data-icon='back', data-role='button', title=' Logout ', data-inline="true") Logout
+                div(data-role="navbar")
+                    ul
+                        -for(var i=0;i< operationNameArray.length;i++) {
+                            -if(i==0) {
+                                li
+                                    a(href="JavaScript:operationSubmitFromAdmin('#{operationIdArray[i]}');", rel="external", data-role="tab") #{operationNameArray[i]}
+                            -}
+                            -else if(i==2){
+                                li
+                                    a(href="JavaScript:assignRolesShow()", rel="external", data-role="tab", class="ui-btn-active") #{operationNameArray[i]}
+                            -}
+                            -else{
+                                li
+                                    a(href="JavaScript:operationSubmitFromAdmin('#{operationIdArray[i]}');", rel="external", data-role="tab") #{operationNameArray[i]}
+                            -}
+                        -}
+                div(data-role='content', data-theme="a", data-overlay-theme="a", data-inline="true")
+                    p(id='errorMessageIdAssignRoles',align="center",style="color:red")
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-c")
+                        div(class='ui-block-a')
+                        div(class='ui-block-b',align="center")
+                            div(data-role='fieldcontain')
+                                label(for="usersId") Users
+                                select(name='usersId',rel = "external", data-mini="true" ,data-inline="true", id='usersId', data-theme='a', data-icon='arrow-d', data-native-menu="false")
+                                    option(value='0') Select
+                                    -for(i=0;i<assignRolesObj.getUser_id().length;i++){
+                                        option(value=assignRolesObj.getUser_id()[i]) #{assignRolesObj.getUser_name()[i]}
+                                    - }
+
+                        div(class='ui-block-d',align="center")
+                            div(data-role='fieldcontain')
+                                label(for="rolesId") Roles
+                                select(name='rolesId',rel = "external", data-mini="true" ,data-inline="true", id='rolesId', data-theme='a', data-icon='arrow-d', data-native-menu="false")
+                                    option(value='0') Select
+                                    -for(i=0;i<assignRolesObj.getRole_id().length;i++){
+                                        option(value=assignRolesObj.getRole_id()[i]) #{assignRolesObj.getRole_name()[i]}
+                                    - }
+                        div(class='ui-block-c')
+                div(data-role="fieldcontain")
+                    a(href='JavaScript:assignRolesSave()',  rel="external",data-theme="b",data-icon='check', data-role='button', title=' Save ', data-inline="true") Save
+                div(class="ui-loader-background")

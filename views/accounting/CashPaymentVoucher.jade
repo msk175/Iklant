@@ -1,0 +1,146 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'Iklant - Menu'
+
+block scripts
+    link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+    link(rel='stylesheet', href='/stylesheets/jquery.mobile.sevennavbar.css')
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/jquery.mobile.sevennavbar.js')
+    script(type='text/javascript', src='/javascripts/jquery-ui.js')
+    script(type='text/javascript', src='/javascripts/CashPaymentVoucher.js')
+
+block content
+    form(id='cashPaymentVoucherFormID')
+        div(data-role='page', data-theme='b', id="loginDetailsDiv")
+            +header("",["menu","backHref","logout"],contextPath+ '/client/ci/accounts/accountsMenu',[])
+            div(data-role="navbar")
+                ul
+                    li
+                        a(rel="external", data-role="tab") View Transactions
+            div(data-role="navbar", data-grid="e")
+                ul
+                    li
+                        a(href="JavaScript:cashPaymentVoucherFormSubmission(1);", rel="external", data-role="tab" , id="custom-li-1") Cash Payment Voucher
+                    li
+                        a(href="JavaScript:cashPaymentVoucherFormSubmission(2);", rel="external", data-role="tab" , id="custom-li-2") Cash Receipt Voucher
+                    li
+                        a(href="JavaScript:cashPaymentVoucherFormSubmission(3);", rel="external", data-role="tab" , id="custom-li-3") Bank Payment Voucher
+                    li
+                        a(href="JavaScript:cashPaymentVoucherFormSubmission(4);", rel="external", data-role="tab" , id="custom-li-4") Bank Receipt Voucher
+                    li
+                        a(href="JavaScript:cashPaymentVoucherFormSubmission(5);", rel="external", data-role="tab" , id="custom-li-5") Contra Voucher
+                    li
+                        a(href="JavaScript:cashPaymentVoucherFormSubmission(6);", rel="external", data-role="tab" , id="custom-li-6") Journal Voucher
+            div(data-role="content")
+                div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b")
+                    -if(typeOfTransaction == 1)
+                        h3 Cash Payment Voucher
+                    -else if(typeOfTransaction == 2)
+                        h3 Cash Receipt Voucher
+                    -else if(typeOfTransaction == 3)
+                        h3 Bank Payment Voucher
+                    -else if(typeOfTransaction == 4)
+                        h3 Bank Receipt Voucher
+                    -else if(typeOfTransaction == 5)
+                        h3 Contra Voucher
+                    -else if(typeOfTransaction == 6)
+                        h3 Journal Voucher
+                    div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-d")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                            label(for="dateofTransactionId") From Date
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain")
+                                input(type="text", name="dateofTransaction", id="dateofTransactionId", value="#{dateofTransaction}", readonly='readonly', required='true')
+                        div(class='ui-block-c')
+                            div(data-role="fieldcontain")
+                            label(for="dateofTransactionToDateId") To Date
+                        div(class='ui-block-d')
+                            div(data-role="fieldcontain")
+                                input(type="text", name="dateofTransactionToDate", id="dateofTransactionToDateId", value="#{dateofTransactionToDate}", readonly='readonly', required='true')
+                        div(class='ui-block-e')
+                            div(data-role="fieldcontain")
+                            label(for="officeId") Office
+                        div(class='ui-block-f')
+                            div(data-role="fieldcontain")
+                                select(name='selectedOfficeId', id='officeId', data-icon='grid',data-theme="b", data-inline="true",data-mini="true", data-overlay-theme="d", data-native-menu="true")
+                                    option(value='1',selected='selected') Head Office
+                                    -for(var i=0;i<offices.length;i++){
+                                        -if(offices[i].getId() == officeId ){
+                                            option(value=offices[i].getId(),selected='selected') #{offices[i].getName()}
+                                        -}
+                                        -else{
+                                            option(value=offices[i].getId()) #{offices[i].getName()}
+                                        -}
+                                    -}
+
+                    div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-d")
+                        div(class='ui-block-a')
+                            label(for="search") Search Voucher
+                        div(class='ui-block-b')
+                            input(type="text", name="search", id="search", required='true', style='width:466px')
+                        div(class='ui-block-c')
+                        div(class='ui-block-d')
+                        div(class='ui-block-e')
+                            p(id="successMsg",style="color:green;font-weight:bold;width:400px;",align="right") #{statusMessage}
+                    div(data-role="content",style = "overflow: auto;")
+                        table
+                            thead
+                                th #
+                                th Trans'nDate
+                                th VoucherNumber
+                                th Debit
+                                th Credit
+                                th Amount
+                                th Narration
+                                th Print
+                                -if((roleId == constantsObj.getAMHroleId())){
+                                    //-if(typeOfTransaction != 1 && typeOfTransaction != 2 && (roleId == constantsObj.getAMHroleId())){
+                                    th Action
+                                -}
+                                th CrBy
+                                th UpBy
+                            tbody
+                                - for(var i=0; i<CashPaymentVoucher.length;i++){
+                                    tr
+                                        td #{i+1}
+                                        td #{CashPaymentVoucher[i].getPaymentDate()}
+                                        td #{CashPaymentVoucher[i].getVoucherNum()}
+                                        td #{CashPaymentVoucher[i].getDebitAccName()}
+                                        td #{CashPaymentVoucher[i].getCreditAccName()}
+                                        td #{CashPaymentVoucher[i].getTrxnAmount()}
+                                        td #{CashPaymentVoucher[i].getNarration()}
+                                        td
+                                            input(type="hidden", name="filePath"+i, id="filePathId"+i,value="")
+                                            a(href="JavaScript:generateCashPaymentVoucherPDF('#{i}','#{CashPaymentVoucher[i].getDebitAccName()}','Dr','#{CashPaymentVoucher[i].getCreditAccName()}','#{CashPaymentVoucher[i].getTrxnAmount()}','#{CashPaymentVoucher[i].getNarration()}','#{CashPaymentVoucher[i].getAmountInWords()}','#{CashPaymentVoucher[i].getTransactionMasterId()}','#{CashPaymentVoucher[i].getVoucherNum()}','#{CashPaymentVoucher[i].getPaymentDate()}')",rel="external", data-mini="true", id="generatePDF"+i, data-inline='true')
+                                                img(src="/images/download.png",title='Download')
+                                        //-if(typeOfTransaction != 1 && typeOfTransaction != 2 && (roleId == constantsObj.getAMHroleId())){
+                                        -if((roleId == constantsObj.getAMHroleId())){
+                                        -if(CashPaymentVoucher[i].getCustomerName() == "ACCOUNTING" || CashPaymentVoucher[i].getCustomerName() == "ACCOUNTING-FT"){
+                                        td
+                                            a(href="JavaScript:editPaymentVoucherFormSubmission('#{CashPaymentVoucher[i].getTransactionType()}','#{CashPaymentVoucher[i].getTransactionMasterId()}')", rel="external",data-theme="b", data-role='button', title='Edit', data-inline="true", data-mini='true') Edit
+                                        -}
+                                        -else if(CashPaymentVoucher[i].getCustomerName() == "ACCOUNTING-CV"){
+                                        td CV
+                                        -}
+                                        -else{
+                                        td MFI
+                                        -}
+                                        -}
+                                        //td
+                                            a(href="JavaScript:generateCashPaymentVoucherPDF('#{i}','#{CashPaymentVoucher[i].getDebitAccName()}','#{CashPaymentVoucher[i].getCreditAccName()}','#{CashPaymentVoucher[i].getTrxnAmount()}','#{CashPaymentVoucher[i].getNarration()}','#{CashPaymentVoucher[i].getAmountInWords()}','#{CashPaymentVoucher[i].getTransactionMasterId()}','#{CashPaymentVoucher[i].getVoucherNum()}','#{CashPaymentVoucher[i].getPaymentDate()}')",rel="external", data-mini="true", title='Generate',id="generatePDF"+i, data-role="button", data-inline='true') Generate PDF
+                                        td #{CashPaymentVoucher[i].getCreatedBy()}
+                                        td #{CashPaymentVoucher[i].getUpdatedBy()}
+                                    label(id="successMsg"+i,style="font-size: 15px;color:green;font-weight:bold")
+                                        //td
+                                            a(href="JavaScript:downloadCashPaymentVoucherPDF(#{i})",rel="external", title='Download', data-role="button", data-mini="true", data-inline='true',class="ui-disabled",id="downloadId"+i) Download
+                                    input(type="hidden", name="filePath"+i, id="filePathId"+i,value="")
+                                - }
+                input(type="hidden", name="selectedDocName", id="selectedDocNameId",value="")
+                input(type="hidden", name="transactionMasterId", id="transactionMasterId",value="")
+                input(type="hidden", name="typeOfTransaction", id="typeOfTransactionIdHidden",value="#{typeOfTransaction}")
+                input(type="hidden", name="roleId", id="roleId",value="#{roleId}")
+            div(class="ui-loader-background")

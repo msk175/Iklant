@@ -1,0 +1,94 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'Iklant-Accounts Menu'
+
+block scripts
+    include ../headerJqueryMobile-1
+    script(type='text/javascript', src='/javascripts/accountsMenu.js')
+
+block content
+    form(id='accountsMenuFormID')
+        div(data-role='page', data-theme='b', id="menuDisplay")
+            +header("",["menu","backHref","logout"],contextPath+ '/client/ci/menu')
+            div(id="menu", data-theme="b", data-overlay-theme="b", class="ui-content", align="center")
+                div(id="menuDetails", data-theme="b", class="ui-bar ui-grid-a", data-overlay-theme="b", data-inline="true")
+                    div(data-role="horizontal", id="menuDetailsId", data-theme="b", class="ui-bar ui-grid-c", data-overlay-theme="b", data-inline="true")
+                        -if(roleId != constantsObj.getBMroleId()){
+                            //div(class="ui-block-a")
+                                div(data-role="fieldcontain", data-mini="true")
+                                    a(href='JavaScript:expensesTrackingFormSubmission()', rel="external", title='Groups', data-inline='true')
+                                        img(id='groupIcon', src='/images/groups.png')
+                                        h3(class="menu-label") Expenses Tracking
+                            div(class="ui-block-a")
+                                div(data-role="fieldcontain", data-mini="true")
+                                    a(href='JavaScript:showCashPaymentForm()', rel="external", title='Day Book', data-inline='true')
+                                        img(id='AccountingTrxn', src='/images/AccountingTrxn.png')
+                                        h3(class="menu-label") Accounting Transactions
+                            //div(class="ui-block-b")
+                                div(data-role="fieldcontain", data-mini="true")
+                                    a(href='JavaScript:accountAdjustmentFormSubmission()', rel="external", title='Groups', data-inline='true')
+                                        img(id='groupIcon', src='/images/groups.png')
+                                        h3(class="menu-label") Account Adjustment
+                            div(class="ui-block-b")
+                                div(data-role="fieldcontain", data-mini="true")
+                                    a(href='JavaScript:showBankPaymentForm()', rel="external", title='Contra', data-inline='true')
+                                        img(id='ContraTrxn', src='/images/ContraTrxn.png')
+                                        h3(class="menu-label") Contra Transactions
+                            div(class="ui-block-c")
+                                div(data-role="fieldcontain", data-mini="true")
+                                    a(href='JavaScript:journalTransactionFormSubmission()', rel="external", title='Groups', data-inline='true')
+                                        img(id='JournalTrxn', src='/images/JournalTrxn.png')
+                                        h3(class="menu-label") Journal Transactions
+                            -if(roleId == constantsObj.getSMHroleId()  || roleId == constantsObj.getAMHroleId()) {
+                            div(class="ui-block-d")
+                                div(data-role="fieldcontain", data-mini="true")
+                                    a(href='JavaScript:showBankReconciliation()', rel="external", title='Bank Reconciliation', data-inline='true')
+                                        img(id='Bank Reconciliation', src='/images/BR.png', width='100',height='128')
+                                        h3(class="menu-label") Bank Reconciliation
+                            -}
+                        - }
+                    div(data-role="horizontal", id="nextMenuDetailsId", data-theme="b", class="ui-bar ui-grid-c", data-overlay-theme="b", data-inline="true")
+                        div(class="ui-block-a")
+                            div(data-role="fieldcontain", data-mini="true")
+                                a(href='JavaScript:cashPaymentVoucherFormSubmission()', rel="external", title='Groups', data-inline='true')
+                                    img(id='ViewTrxn', src='/images/ViewTrxn.png')
+                                    h3(class="menu-label") View Transactions
+                        div(class="ui-block-b")
+                            div(data-role="fieldcontain", data-mini="true")
+                                a(href=contextPath+ '/client/ci/daybook/dayBookLoadInit', rel="external", title='Day Book', data-inline='true')
+                                    img(id='Day Book', src='/images/book-open-icon.png')
+                                    h3(class="menu-label") Day Book
+                        div(class="ui-block-c")
+                            div(data-role="fieldcontain", data-mini="true")
+                                a(href='JavaScript:showtransactionHistoryForm()', rel="external", title='Transaction History', data-inline='true')
+                                    img(id='TrxnHistory', src='/images/transactionhistroy.png', height='128')
+                                    h3(class="menu-label") Transaction History
+                        -if(roleId == constantsObj.getSMHroleId()  || roleId == constantsObj.getAMHroleId()) {
+                        div(class="ui-block-d")
+                            div(data-role="fieldcontain", data-mini="true")
+                                a(href='JavaScript:showTrailBalanceWithLedger()', rel="external", title='Day Book', data-inline='true')
+                                    img(id='AccountingTrxn', src='/images/Accounting.png')
+                                    h3(class="menu-label") Ledger Transactions
+                        -}
+                        //-if(roleId == constantsObj.getBMroleId()){
+                            div(class="ui-block-c")
+                                div(data-role="fieldcontain", data-mini="true")
+                                    a(href=contextPath+ '/client/ci/daybook/showFreezUnfreezeDay', rel="external", title='Day Book', data-inline='true')
+                                        img(id='groupIcon', src='/images/FreezeDay.png')
+                                        h3(class="menu-label") Freez Day
+                        //-}
+                        -if(roleId == constantsObj.getSMHroleId()  || roleId == constantsObj.getAMHroleId()) {
+                            div(class="ui-block-d")
+                                div(data-role="fieldcontain", data-mini="true")
+                                    a(href='JavaScript:showFundManagementScreen()', rel="external", title='Day Book', data-inline='true')
+                                        img(id='Fund Management', src='/images/AccountingTrxn.png')
+                                        h3(class="menu-label") Fund Management
+                        -}
+                        div(data-role="popup",id="dayBookAlertMsgId",data-dismissible="false", class="ui-content", style="width:400px")
+                            p Kindly make sure that MIS process has been done.
+                            div(align="center")
+                                a(href=contextPath+ '/client/ci/daybook/dayBookLoadInit',data-icon='back',rel="external", data-role='button', data-inline="true") Ok
+                                a(href='#',data-icon='back', data-role='button',data-rel="back", data-inline="true") Cancel
+            div(class="ui-loader-background")

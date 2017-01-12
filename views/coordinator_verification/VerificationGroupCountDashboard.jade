@@ -1,0 +1,62 @@
+extends ../layout
+include ../header
+include ./verificationNavbar
+block title
+   title= 'IKLANT-KYCVerificationDashboard'
+block scripts
+   include ../headerJqueryMobile-1
+   link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+   script(type='text/javascript', src="/javascripts/coordinator_verification/coordValidation.js")
+   script(type='text/javascript', src='/javascripts/validation.js')
+block content
+   form(id='BMFormId')
+      div(data-role='page', data-theme='b')
+         +header("KYC Document Verification",["menu","logout"])
+         +verificationNavbar("groupCountDashboard")
+         div
+            table
+               tr
+                  th S.No
+                  th office Name
+                  - if(roleId != constantsObj.getBMroleId()) {
+                     th Fresh Groups
+                  - }
+                  - if(roleId == constantsObj.getBMroleId()) {
+                     th Query BY DEO
+                  - }
+                  th Query cleared By FO
+                  th Hold groups In FO Queue
+               -for(var i=0;i<groupCountDashBoardForVerification.officeIdList.length; i++) {
+                  tr
+                     td(style ="text-align:center") #{i+1}
+                     td(style ="text-align:center") #{groupCountDashBoardForVerification.officeNameList[i]}
+                     - if(roleId != constantsObj.getBMroleId()) {
+                        - if(groupCountDashBoardForVerification.freshGroupCountList[i] == 0) {
+                           td(style ="text-align:center") -
+                        - }
+                        - else {
+                           td(style ="text-align:center") #{groupCountDashBoardForVerification.freshGroupCountList[i]}
+                        - }
+                     - }
+                      - if(roleId == constantsObj.getBMroleId()) {
+                        - if(groupCountDashBoardForVerification.rejectedByDEOCountList[i] == 0) {
+                           td(style ="text-align:center") -
+                        - }
+                        - else {
+                           td(style ="text-align:center") #{groupCountDashBoardForVerification.rejectedByDEOCountList[i]}
+                        - }
+                     - }
+                     - if(groupCountDashBoardForVerification.recapturedGroupsCountList[i] == 0) {
+                        td(style ="text-align:center") -
+                     - }
+                     - else {
+                        td(style ="text-align:center") #{groupCountDashBoardForVerification.recapturedGroupsCountList[i]}
+                     - }
+
+                     - if(groupCountDashBoardForVerification.inFOQueueGroupCountList[i] == 0) {
+                        td(style ="text-align:center") -
+                     - }
+                     - else {
+                        td(style ="text-align:center") #{groupCountDashBoardForVerification.inFOQueueGroupCountList[i]}
+                     - }
+               - }

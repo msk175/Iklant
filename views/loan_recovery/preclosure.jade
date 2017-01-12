@@ -1,0 +1,126 @@
+doctype
+html(lang = "en")
+    head
+        title= 'IKLANT-Preclosure'
+        meta(charset='utf-8')
+        meta(name='viewport',content='width=device-width, initial-scale=1')
+        meta(http-equiv='Cache-Control', content='no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0')
+        meta(http-equiv='Pragma', content='no-cache')
+        meta(http-equiv='Expires', content='-1')
+        link(rel="stylesheet", href='/stylesheets/jquery.mobile-1.3.0-beta.1.min.css')
+        link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+        link(rel='stylesheet', href='/stylesheets/dialogStyle.css')
+        link(rel='stylesheet', href='/stylesheets/iklantStyle.css')
+        link(rel='stylesheet', href='/stylesheets/loanSanctionCustom.css')
+        script(type='text/javascript', src='/javascripts/jquery-1.8.3.min.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile-1.3.0-beta.1.min.js')
+        script(type='text/javascript', src='/javascripts/jquery-ui.js')
+        script(type='text/javascript', src='/javascripts/constantjs.js')
+        script(type='text/javascript', src='/javascripts/loan_recovery/preclosure.js')
+        script(type='text/javascript', src='/javascripts/common.js')
+    body
+        form(id='preclosureForm')
+            div(data-role='page', data-theme='b', id="loginDetailsDiv")
+                div(data-role="header", data-theme="a", class="ui-bar ui-grid-a", data-overlay-theme="c")
+                    div(class="ui-block-a")
+                        img(id='groupIcon', style="margin:5px 10px 0 0; text-align:right;",src='/images/iklant.png')
+                    div(class="ui-block-b",align="right")
+                        a(href=contextPath + '/client/ci/menu', rel="external",data-icon='home', data-role='button', title=' Home', data-inline='true') Home
+                        a(href='JavaScript:backFormSubmission("#{glCodes.getGlobalAccNumber()}")',  rel="external",data-icon='arrow-l', data-role='button', title=' back ', data-inline="true") Back
+                        a(href=contextPath + '/client/ci/logout',  rel="external",data-icon='back', data-role='button', title=' Logout ', data-inline="true") Logout
+                div(data-role="navbar")
+                    ul(id="custom-nav-list")
+                        li
+                            a(rel="external", data-role="tab" , id="custom-li-1") Preclosure
+                div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b")
+                    h3 #{groupName} - #{glCodes.getGlobalAccNumber()}
+                    p(id="errorLabel",align ="center")
+                    div(data-role="horizontal",class="ui-bar ui-grid-d",id="waivercheck")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain",data-mini="true")
+                                label(for="waiveInterestCheckboxId",id="labelid") Waived Interest
+                        div(class='ui-block-c')
+                            div(data-role="fieldcontain",data-mini="true")
+                                input(type="checkbox", name="waiveInterestCheckboxId", id="waiveInterestCheckboxId", data-mini="true",data-inline="true")
+                                input(type="hidden", name="checkName", id="checkId",value="#{glCodes.getChecked()}", data-mini="true",data-inline="true")
+                                input(type="hidden", name="waiverInterest", id="waiverInterest",value="#{repayLoanHolder.getWaiverInterest()}", data-mini="true",data-inline="true")
+                                input(type="hidden", name="globalAccNumber", id="globalAccNumber",value="#{glCodes.getGlobalAccNumber()}", data-mini="true",data-inline="true")
+                    div(data-role="horizontal",class="ui-bar ui-grid-d")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain",data-mini="true")
+                            label(for="dOTransactionId",id="labelid") Date Of Transaction
+                        div(class='ui-block-c')
+                            div(data-role="fieldcontain",data-mini="true")
+                                input(type="text", name="dOTransaction", id="dOTransactionId", value="#{repayLoanHolder.getDateOfPayment()}", data-mini="true",data-inline="true",required='true', readonly="readonly")
+                    div(data-role="horizontal",class="ui-bar ui-grid-d")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                            label(for="sourceOfPayId",id="labelid") Source Of Payment
+                        div(class='ui-block-c',id="sopiddd")
+                            div(data-role="fieldcontain",data-mini="true")
+                                select(name='sourceOfPay', id='sourceOfPayId',onchange='sourceOfPayment(this)',data-icon='grid',data-theme="d", data-overlay-theme="a",  data-mini="true",data-inline="true",data-native-menu="true")
+                                    option(value='0',selected='selected') Select Source Of Payment
+                                    - for(var i=0;i<glCodes.getGlcodeId().length;i++) {
+                                        option(value='#{glCodes.getGlcodeId()[i]}') #{glCodes.getGlcode()[i]}
+                                    - }
+                    div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-d", id = "voucherNumberDiv", style="display:none")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                            label(for="voucherNumberId",id="labelid") Voucher Number
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain")
+                            label(for="voucherNumberValue",id="voucherNumberValueId")
+                    input(type='hidden', name='voucherNumberIfBank', id='voucherNumberIfBankId', value="#{repayLoanHolder.getVoucherNumberIfBank()}")
+                    input(type='hidden', name='voucherNumberIfCash', id='voucherNumberIfCashId', value="#{repayLoanHolder.getVoucherNumberIfCash()}")
+                    input(type='hidden', name='voucherNumber', id='voucherNumberId', value="")
+                    div(data-role="horizontal",class="ui-bar ui-grid-d",id="ChequeNo")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                            label(for="chequeNoId",id="labelid") Cheque No
+                        div(class='ui-block-c')
+                            div(data-role="fieldcontain",data-mini="true")
+                                input(type="text", name="chequeNumber", id="chequeNoId", data-mini="true",data-inline="true", value="", required='true',autocomplete="off",onkeyup='forNumbers(this)')
+                    div(data-role="horizontal",class="ui-bar ui-grid-d",id="ChequeDate")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                            label(for="chequeDateId",id="labelid") Cheque Date
+                        div(class='ui-block-c')
+                            div(data-role="fieldcontain",data-mini="true")
+                                input(type="text", name="chequeDateName", id="chequeDateId", data-mini="true",data-inline="true", value="", required='true', readonly="readonly",autocomplete="off")
+                    div(data-role="horizontal",class="ui-bar ui-grid-d")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                                label(for="amountId",id="labelid") Amount
+                        div(class='ui-block-c')
+                            div(data-role="fieldcontain",data-mini="true")
+                                input(type="text", name="amount",autocomplete="off", data-mini="true",data-inline="true", id="amountId", value= '#{repayLoanHolder.getAmount()}' , required='true', readonly="readonly",onkeyup='forNumbers(this)')
+                                input(type="hidden", name="waivedrepaymentamount", id="waivedrepaymentamountid",value="#{repayLoanHolder.getWaivedRepaymentMoney()}", data-mini="true",data-inline="true")
+                                input(type="hidden", name="earlyRepaymentMoney", id="earlyRepaymentMoneyid",value="#{repayLoanHolder.getEarlyRepaymentMoney()}", data-mini="true",data-inline="true")
+                                input(type="hidden", name="accountId", id="accountId",value="#{repayLoanHolder.getAccountId()}", data-mini="true",data-inline="true")
+                                input(type="hidden", name="lastPaymentDate", id="lastPaymentDateId",value="#{repayLoanHolder.getDisbursementDate()}", data-mini="true",data-inline="true")
+                                input(type="hidden", name="cashOrBank", id="cashOrBank",value="#{glCodes.getCashOrBank()}", data-mini="true",data-inline="true")
+                                input(type="hidden", name="sopname", id="sopid",value="#{glCodes.getGlcodeId()}", data-mini="true",data-inline="true")
+                                input(type="hidden", name="paymentType", id="paymentTypeId",value="", data-mini="true",data-inline="true")
+                                input(type='hidden', name='globalAccountNum', id='globalAccountNumId', value="#{glCodes.getGlobalAccNumber()}")
+                                input(type='hidden', name='accountTypeId', id='accountTypeIdHiddenId', value="#{accountTypeId}")
+                                input(type='hidden', name='lastDateClosed', id='lastDateClosedId', value="#{lastDayBookClosedDate}")
+                div(data-role="horizontal",class="ui-bar ui-grid-b")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain", data-inline="true",align="left")
+                            a(href='JavaScript:submitPreclosure()',  rel="external",data-role='button', title=' Submit Preclosure Details ', data-inline="true",data-mini="true", id='submit') Preclose Loan
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain", data-inline="true",align="center")
+                            a(href=contextPath + '/client/ci/menu', data-icon="home", rel="external",data-role='button', title='Home', data-inline="true",data-mini="true", id='submit') Home
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain", data-inline="true",align="right")
+                            a(href='JavaScript:backFormSubmission("#{glCodes.getGlobalAccNumber()}")',  rel="external",data-icon='back', data-role='button', title=' Back ', data-inline="true", data-mini="true",id='cancel') Back
+                div(data-role="popup", id="preclosureConfirmationId",data-theme="a",align='center') Confirmation!
+                    div(data-role="collapsible", data-collapsed="false",data-theme="b", data-content-theme="b")
+                        div
+                            label(id="labelid") Are you sure to Preclosure Loan - #{groupName} - #{glCodes.getGlobalAccNumber()} ?
+                        div(align="center",id="ynButtonDivId")
+                            a(href='#showId',data-icon='check',data-role='button',id='yesClosureId',data-inline='true', data-mini='true') Yes
+                            a(href='#showId', data-icon='delete', data-role='button',id='noClosureId',data-inline='true', data-mini='true') No
+                div(class="ui-loader-background")

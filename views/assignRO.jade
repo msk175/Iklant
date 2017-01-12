@@ -1,0 +1,132 @@
+extends ./layout
+include ./header
+
+block title
+    title= 'IKLANT-AssignRO'
+
+block scripts
+    include ./headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/assignRO.js')
+
+block content
+    form(id="assignROFormId")
+        div(data-role='page', data-theme='b', id="gridplus")
+            +header("NPA Loan Recovery",["menu","logout"],"",[])
+            div(data-role="navbar")
+                ul
+                    li
+                        a(href=contextPath + '/client/ci/NPALRGroups/assignROLoad', rel="external", data-role="tab" , id="assignRONavBarId",class="ui-btn-active") Assign Recovery Officer
+                    //li
+                        a(rel="external", data-role="tab" , id="closedGroupsNavBarId") Case Closed
+                    //li
+                        a(rel="external", data-role="tab" , id="malGroupsNavBarId") Malpractice Groups
+                    li
+                        a(href=contextPath + '/client/ci/searchnpa',rel="external", data-role="tab") Search NPA
+            div(data-role="content",id="assignRODivId")
+                p(id ='errorField',data-theme="e",align='center',class='error-message global-font-details')
+                div(data-role='horizontal', id="menu", class="ui-bar ui-grid-a")
+                    div(class='ui-block-a')
+
+                    div(class='ui-block-b',align="right")
+                        div(data-role="fieldcontain")
+                            select(name='selectRO', onchange='',data-theme="b", id='selectROId',data-inline='true', data-icon='grid', data-mini='true', data-native-menu="true")
+                                option(value='') Select RO
+                                -for(var j=0;j<userId.length; j++) {
+                                    option(value="#{userId[j]}") #{userName[j]}
+                                - }
+                            a(href="JavaScript:assignFOSubmission(#{NPALoanRecoveryGroupsObject.length});", rel="external", data-role='button', title='assign', data-inline="true",data-mini="true") Assign
+
+                div(style = "overflow: auto;")
+                    -    if(NPALoanRecoveryGroupsObject.length > 10){
+                        div(data-role="horizontal",class="ui-bar ui-grid-b")
+                            div(class='ui-block-a',align="left")
+                                a(href='#', data-role='button',id='NPAGroupLoansPrevId', data-inline='true', data-mini='true',data-icon='arrow-l',data-iconpos="left") Prev
+                            div(class='ui-block-b',align="center")
+                                a(href='#', data-role='button',id='NPAGroupLoansPageNoId', data-inline='true', data-mini='true') Records 1 - 10 of #{NPALoanRecoveryGroupsObject.length}
+                            div(class='ui-block-c',align="right")
+                                a(href='#', data-role='button',id='NPAGroupLoansNextId', data-inline='true', data-mini='true', data-icon='arrow-r',data-iconpos="right") Next
+                    - }
+                    table(id="npaLoansTableId")
+                        tr
+                            th(class='center-text') S.NO
+                            th(class='center-text') Check
+                            th(class='center-text') Group Name
+                            th(class='center-text') Address
+                            -for(var i=0;i<NPALoanRecoveryGroupsObject.length;i++) {
+                                tr(class="showhide")
+                                    td(class='center-text')    #{i+1}
+                                    td(class='center-text')
+                                        div(data-role="fieldcontain", data-inline="true",style="width:50px")
+                                            label(for='checkGroupId'+i)
+                                            input(type="checkbox", name='checkGroup'+i, id='checkGroupId'+i, data-mini="false", data-inline="true")
+                                    td(style ="text-align:left")    #{NPALoanRecoveryGroupsObject[i].getGroupName()}
+                                    td(style ="text-align:left")    #{NPALoanRecoveryGroupsObject[i].getGlAddress()}
+                                    td(style ="display:none")        #{NPALoanRecoveryGroupsObject[i].getAccountId()}
+                            -}
+                    input(type="hidden",name="isCheckedGroup",id="isCheckedGroupÏd")
+                    input(type="hidden",name="accountId",id="accountIdÏd")
+            div(data-role='content',id="closedGroupsDivId")
+                div(class='content-primary')
+                    ul(data-role='listview', data-split-icon='gear', data-split-theme='b', data-filter="true", data-filter-theme='c',  data-filter-placeholder='Search for a group')
+                        p(id='alertMessage',align='center')
+                        - for( var i = 0; i <NPALoanRecoveryGroupsStatusObject.length; i++ ) {
+                            - if(NPALoanRecoveryGroupsStatusObject[i].getIsRecovered() != 2){
+                                li
+                                    - if(NPALoanRecoveryGroupsStatusObject[i].getIsRecovered() == 3 || NPALoanRecoveryGroupsStatusObject[i].getIsRecovered() == 4) {
+                                        a(href="#closedGroupPopupId", id='groupListId'+i, data-rel="popup", data-position-to="window", data-transition="flow",)
+                                            img(src='/images/edit.png', width='60', height='60', style='margin:8px 10px 10px 20px;')
+                                            h3 #{NPALoanRecoveryGroupsStatusObject[i].getGroupName()}
+                                            label(for='groupsId' , id='labelGroupsId'+i) #{NPALoanRecoveryGroupsStatusObject[i].getLoansStatusDescription()}
+                                        a(href='#',  data-split-icon='gear', data-rel='popup', data-position-to='origin', data-transition='pop')
+                                    -}
+                                    - else {
+                                        a(href="", id='groupListId'+i, data-rel="popup", data-position-to="window", data-transition="flow",)
+                                            img(src='/images/edit.png', width='60', height='60', style='margin:8px 10px 10px 20px;')
+                                            h3 #{NPALoanRecoveryGroupsStatusObject[i].getGroupName()}
+                                            label(for='groupsId' , id='labelGroupsId'+i) #{NPALoanRecoveryGroupsStatusObject[i].getLoansStatusDescription()}
+                                        a(href='#',  data-split-icon='gear', data-rel='popup', data-position-to='origin', data-transition='pop')
+                                    - }
+
+                            -}
+                        -}
+                        input(type="hidden",id="noOfGroupId",value="#{NPALoanRecoveryGroupsStatusObject.length}")
+            div(data-role='content',id="malpracticeGroupsDivId")
+                div(class='content-primary')
+                    ul(data-role='listview', data-split-icon='gear', data-split-theme='b', data-filter="true", data-filter-theme='c',  data-filter-placeholder='Search for a group')
+                        p(id='alertMessage',align='center')
+                        - for( var i = 0; i <NPALoanRecoveryGroupsStatusObject.length; i++ ) {
+                            - if(NPALoanRecoveryGroupsStatusObject[i].getIsRecovered() == 2){
+                                li
+                                    a(href="",id='groupListId'+i,)
+                                        img(src='/images/edit.png', width='60', height='60', style='margin:8px 10px 10px 20px;')
+                                        h3 #{NPALoanRecoveryGroupsStatusObject[i].getGroupName()}
+                                        label(for='groupsId' , id='labelGroupsId'+i) #{NPALoanRecoveryGroupsStatusObject[i].getLoansStatusDescription()}
+                                    a(href='#',  data-split-icon='gear', data-rel='popup', data-position-to='origin', data-transition='pop')
+                            -}
+                        -}
+            -var reasonForNotPaid = new Array();
+            -var capablilityPercentage = new Array();
+            -var expectedPaymentDate = new Array();
+            -var remarks = new Array();
+            -var statusId = new Array();
+
+            -for(var i=0; i<NPALoanRecoveryGroupsStatusObject.length; i++){
+                - reasonForNotPaid[i] = NPALoanRecoveryGroupsStatusObject[i].getReasonForNotPaid();
+                - capablilityPercentage[i] = NPALoanRecoveryGroupsStatusObject[i].getCapablilityPercentage();
+                - expectedPaymentDate[i] = NPALoanRecoveryGroupsStatusObject[i].getExpectedPaymentDate();
+                - remarks[i] = NPALoanRecoveryGroupsStatusObject[i].getRemarks();
+                - statusId[i] = NPALoanRecoveryGroupsStatusObject[i].getIsRecovered();
+            -}
+            div(data-role="popup" , id="closedGroupPopupId", class="ui-content", style="width:400px")
+                a(href="#", data-rel="back", data-role="button", data-theme="a", data-icon="delete", data-iconpos="notext", class="ui-btn-right") Close
+                div(id="parentPopupDivId")
+                    div(id="reasonPopupDivId")
+
+
+            input(type="hidden",name="reasonForNotPaid",id="reasonForNotPaidId",value=reasonForNotPaid)
+            input(type="hidden",name="capablilityPercentage",id="capablilityPercentageId",value=capablilityPercentage)
+            input(type="hidden",name="expectedPaymentDate",id="expectedPaymentDateId",value=expectedPaymentDate)
+            input(type="hidden",name="remarks",id="remarksId",value=remarks)
+            input(type="hidden",name="statusId",id="statusIdId",value=statusId)
+            div(class="ui-loader-background")

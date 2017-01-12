@@ -1,0 +1,72 @@
+*{
+ padding: 0;
+ margin: 0;
+}
+
+body {
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  width: 350px;
+  height: 500px;
+}
+
+a {
+  color: black;
+  text-decoration: none;
+}
+
+.heading {
+  text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.5);
+  background: #328324;
+  border-style:solid;
+  border-width:1px;
+  border-color: #adadad;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+  border-top-width: 10px;
+  font-size: 20px;
+  text-align: center;
+}
+
+ul {
+  background: #F8FF92;
+}
+
+li {
+  display:block;
+  line-height:300%;
+  padding-left: 2px;
+  padding-right:2px;
+  text-align: left;
+}
+
+.image {
+  vertical-align:middle;
+  padding-left: 3px;
+  padding-right:4px;
+}
+
+.completed {
+  text-decoration:line-through;
+  font-style: italic;
+}
+
+.notcompleted {
+  text-decoration:none;
+  font-style: normal;
+}
+
+.actionbar {
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#b0bccd), color-stop(0.5, #889bb3), color-stop(0.5, #8195af), to(#6d84a2));
+}
+
+.addtodosave {
+  text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.5);
+}
+
+.addtodoaction {
+  text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.5);
+}
+
+.list {
+  background: #189282;
+}

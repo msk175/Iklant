@@ -1,0 +1,31 @@
+#login-style {
+    position:fixed;
+    top:25%;
+    left:36%;
+    border: 0px solid #ccc;
+    width:20em
+}
+
+#alert-message {
+    font-size: 13px;
+}
+
+#forgotPasswordDiv {
+    position:absolute;
+    border: 0px solid #ccc;
+    width: 40%;
+    top:20%;
+    left: 30%;
+    margin: 0px;
+}
+#changePasswordDiv {
+    position:absolute;
+    border: 0px solid #ccc;
+    width: 40%;
+    top:20%;
+    left: 30%;
+    margin: 0px;
+}
+#label {
+    width: 100px;
+}

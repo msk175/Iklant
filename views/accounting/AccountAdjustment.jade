@@ -1,0 +1,157 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'Iklant-Accounts Menu'
+
+block scripts
+    link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+    include ../headerJqueryMobileBeta-3
+    script(type='text/javascript', src='/javascripts/jquery-ui.js')
+    script(type='text/javascript', src='/javascripts/AccountAdjustment.js')
+
+block content
+    form(id="accountAdjustmentFormId")
+        div(data-role='page', data-theme='b', id="loginDetailsDiv")
+            div(data-role="header", data-theme="a", class="ui-bar ui-grid-a",style ="background:#38404B", data-overlay-theme="c")
+                div(class="ui-block-a")
+                    img(id='groupIcon', style="margin:5px 10px 0 0; text-align:right;",src='/images/iklant.png')
+                div(class="ui-block-b",align="right")
+                    a(href=contextPath + '/client/ci/menu', rel="external",data-icon='grid', data-role='button', title=' Menu', data-inline='true') Menu
+                    a(href=contextPath + '/client/ci/accounts/accountsMenu', rel="external",data-icon='arrow-l', data-role='button', title=' Back', data-inline="true") Back
+                    a(href=contextPath + '/client/ci/logout',  rel="external",data-icon='back', data-role='button', title=' Logout ', data-inline="true") Logout
+            div(data-role="navbar")
+                ul(id="custom-nav-list")
+                    li
+                        a(href="JavaScript:operationSubmitFromBM('');", rel="external", data-role="tab" , id="custom-li-1") Accounting Adjustment
+            div(data-role="collapsible", id="minutes", data-overlay-theme="a", data-inline="true" , data-collapsed="false",data-content-theme="b")
+                h3 Journal Voucher
+                p(align="left",class="error-message global-font-details",id="errorMsgForVoucherDateId") #{accountAdjustmentMonthClosingError}
+                p(align="left",class="error-message global-font-details",id="errorMsgForVoucherDateId")
+                p(align="left",class="error-message global-font-details",id="errorMsgForOfficeHierarchyId")
+                p(align="left",class="error-message global-font-details",id="errorMsgForOfficeId")
+                p(align="left",class="error-message global-font-details",id="errorMsgForDebitAccId")
+                p(align="left",class="error-message global-font-details",id="errorMsgForCreditAccId")
+                p(align="left",class="error-message global-font-details",id="errorMsgForAmountId")
+                p(align="left",class="error-message global-font-details",id="errorMsgForVouchernNotesId")
+                p(align="left",class="error-message global-font-details",id="errorMsgForDecimalId")
+                div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-d")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                        label(for="voucherDateId") Voucher Date
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain")
+                            input(type="text", name="voucherDate", id="voucherDateId", value=journalVoucherHolder.getVoucherDateStr(), readonly='readonly', required='true')
+                div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-d")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                        label(for="officeHierarchyId") Office Hierarchy
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain", id="officeHierarchyDivId")
+                            select(name='officeHierarchy', id='officeHierarchyId', data-icon='grid',data-theme="b", data-overlay-theme="d", data-native-menu="true",data-inline="true",data-mini="true")
+                                option(value='',selected='selected') Select
+                                option(value='1') Head Office
+                                option(value='2') Regional Office
+                                option(value='3') Divisional Office
+                                option(value='4') Area Office
+                                option(value='5') Branch Office
+                                option(value='6') Center
+                                option(value='7') Group
+                    div(class='ui-block-c')
+                        div(data-role="fieldcontain")
+                        label(for="officeId") Office
+                    div(class='ui-block-d')
+                        div(data-role="fieldcontain")
+                            select(name='office', id='officeId',data-inline="true",data-mini="true", data-icon='grid',data-theme="b", data-overlay-theme="d", data-native-menu="true")
+                                option(value='',selected='selected') Select
+                                -for(var i=0;i<journalVoucherHolder.getOffices().length;i++){
+                                    -if(journalVoucherHolder.getOffices()[i].getGlobalOfficeNum() !=""){
+                                        -if(journalVoucherHolder.getOffices()[i].getGlobalOfficeNum() == journalVoucherHolder.getOffice()){
+                                            option(value=journalVoucherHolder.getOffices()[i].getGlobalOfficeNum(),selected='selected') #{journalVoucherHolder.getOffices()[i].getDisplayName()}
+                                        -}
+                                        -else{
+                                            option(value=journalVoucherHolder.getOffices()[i].getGlobalOfficeNum()) #{journalVoucherHolder.getOffices()[i].getDisplayName()}
+                                        -}
+                                    -}
+                                -}
+                div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-d")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                        label(for="debitAccountHeadId") Debit Account Head
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain",  id="debitAccountHeadDivId")
+                            select(name='debitAccountHead', id='debitAccountHeadId',data-inline="true",data-mini="true", data-icon='grid',data-theme="b", data-overlay-theme="d", data-native-menu="true")
+                                option(value='',selected='selected') Select
+                                -for(var i=0;i<journalVoucherHolder.getDebitAccount().length;i++){
+                                    -if(journalVoucherHolder.getDebitAccount()[i].getGlcode() == journalVoucherHolder.getDebitAccountHead()){
+                                        option(value=journalVoucherHolder.getDebitAccount()[i].getGlcode(), selected='selected') #{journalVoucherHolder.getDebitAccount()[i].getGlcode()} - #{journalVoucherHolder.getDebitAccount()[i].getGlname()}
+                                    -}
+                                    -else{
+                                        option(value=journalVoucherHolder.getDebitAccount()[i].getGlcode()) #{journalVoucherHolder.getDebitAccount()[i].getGlcode()} - #{journalVoucherHolder.getDebitAccount()[i].getGlname()}
+                                    -}
+                                -}
+                    div(class='ui-block-c')
+                        div(data-role="fieldcontain")
+                        label(for="creditAccountHeadId") Credit Account Head
+                    div(class='ui-block-d')
+                        div(data-role="fieldcontain")
+                            select(name='creditAccountHead', id='creditAccountHeadId',data-inline="true",data-mini="true", data-icon='grid',data-theme="b", data-overlay-theme="d", data-native-menu="true")
+                                option(value='',selected='selected') Select
+                                -for(var i=0;i<journalVoucherHolder.getCreditAccount().length;i++){
+                                    -if(journalVoucherHolder.getCreditAccount()[i].getGlcode() != ""){
+                                        -if(journalVoucherHolder.getCreditAccount()[i].getGlcode() == journalVoucherHolder.getCreditAccountHead()){
+                                            option(value=journalVoucherHolder.getCreditAccount()[i].getGlcode(), selected='selected') #{journalVoucherHolder.getCreditAccount()[i].getGlcode()} - #{journalVoucherHolder.getCreditAccount()[i].getGlname()}
+                                        -}
+                                        -else{
+                                            option(value=journalVoucherHolder.getCreditAccount()[i].getGlcode()) #{journalVoucherHolder.getCreditAccount()[i].getGlcode()} - #{journalVoucherHolder.getCreditAccount()[i].getGlname()}
+                                        -}
+                                    -}
+                                -}
+                div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-d")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                        label(for="amountId") Amount
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain")
+                            input(type="text", name="amount", id="amountId", value=journalVoucherHolder.getAmount() ,onkeyup='forNumbersWithDot(this)',required='true')
+                div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-d")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                        label(for="voucherNotesId") Voucher Notes
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain")
+                            textarea(name="voucherNotes", id="voucherNotesId", maxlength="250",onkeyup='forRemoveSpecialCharcters(this)', style="width:460px; height:80px;") #{journalVoucherHolder.getVoucherNotes()}
+                div(data-role="fieldcontain", data-inline="true")
+                    a(href='#internalloan3',  rel="external",data-icon='star', data-role='button', title=' Add ', data-inline="true", id='save') Save
+                    a(href=contextPath + '/client/ci/accounts/accountsMenu', rel="external",data-icon='arrow-l', data-role='button', title=' Back', data-inline="true") Back
+                input(type='hidden', name='financialYearStartDate', id='financialYearStartDateId', value="#{journalVoucherHolder.getFinancialYearStartDate()}")
+                input(type='hidden', name='financialYearEndDate', id='financialYearEndDateId', value="#{journalVoucherHolder.getFinancialYearEndDate()}")
+                -var officeId = new Array();
+                -var officeName = new Array();
+                -for(var i=0;i<journalVoucherHolder.getOffices().length;i++){
+                    -officeId[i] = journalVoucherHolder.getOffices()[i].getGlobalOfficeNum();
+                    -officeName[i] = journalVoucherHolder.getOffices()[i].getDisplayName();
+                -}
+                input(type='hidden', name='officeIds', id='officeIdsId', value=officeId)
+                input(type='hidden', name='officeNames', id='officeNamesId', value=officeName)
+                -var debitAccId = new Array();
+                -var debitAccName = new Array();
+                -for(var i=0;i<journalVoucherHolder.getDebitAccount().length;i++){
+                    -debitAccId[i] = journalVoucherHolder.getDebitAccount()[i].getGlcode();
+                    -debitAccName[i] = journalVoucherHolder.getDebitAccount()[i].getGlname();
+                -}
+                input(type='hidden', name='debitAccId', id='debitAccIdId', value=debitAccId)
+                input(type='hidden', name='debitAccName', id='debitAccNameId', value=debitAccName)
+                -var creditAccId = new Array();
+                -var creditAccName = new Array();
+                -for(var i=0;i<journalVoucherHolder.getCreditAccount().length;i++){
+                    -creditAccId[i] = journalVoucherHolder.getCreditAccount()[i].getGlcode();
+                    -creditAccName[i] = journalVoucherHolder.getCreditAccount()[i].getGlname();
+                -}
+                input(type='hidden', name='creditAccId', id='creditAccIdId', value=creditAccId)
+                input(type='hidden', name='creditAccName', id='creditAccNameId', value=creditAccName)
+                input(type='hidden', name='currentSelectValue', id='currentSelectValueId', value="")
+                input(type='hidden', name='selectedOfficeHierarchy', id='selectedOfficeHierarchyId', value=journalVoucherHolder.getOfficeHierarchy())
+                input(type='hidden', name='validateEndDate', id='validateEndDateId', value="#{journalVoucherHolder.getValidateEndDate()}")
+                input(type='hidden', name='allowedDecimals', id='allowedDecimalsId', value="#{journalVoucherHolder.getAllowedDecimals()}")
+                div(class="ui-loader-background")

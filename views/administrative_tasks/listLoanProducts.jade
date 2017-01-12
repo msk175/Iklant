@@ -1,0 +1,30 @@
+extends ../layout
+include ../header
+block title
+    title= 'Iklant - Menu'
+block scripts
+    include ../headerJqueryMobile-1
+    script(type='text/javascript', src='/javascripts/administrative_tasks/manageLoanProducts.js')
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+block content
+    form(id='administrativeLoanProductFormID')
+        div(data-role='page', data-theme='b', id="loginDetailsDiv")
+            +header("",["menu","backHref","logout"],contextPath+ '/client/ci/getAdminstrativeTasksMenu',[])
+            div(data-role="content")
+                div(data-role="collapsible", id="minutes", data-overlay-theme="a", data-inline="true" , data-collapsed="false",data-content-theme="b")
+                    h3 Loan Products
+                    table
+                        tr
+                            th Product Name
+                            th Status
+                        - for(var i=0;i<prdOfferingList.length;i++){
+                            tr
+                                td
+                                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-b")
+                                        div(class='ui-block-a')
+                                            label &nbsp;
+                                        div(class='ui-block-b')
+                                            a(href="JavaScript:SubmitForm(#{prdOfferingList[i].getPrdOfferingId()})",id="loanProductId"+id,data-mini="true",data-role="button") #{prdOfferingList[i].getPrdOfferingName()}
+                                td
+                                    label(for="loanProductId"+i) #{(prdOfferingList[i].getPrdOfferingStatus()== 1) ? "Active":"Inactive"}
+                        -}

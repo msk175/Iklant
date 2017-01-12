@@ -1,0 +1,123 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'IKLANT-Manage Audit Questions'
+
+block scripts
+    link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+    include ../headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/jquery-ui.js')
+    script(type='text/javascript', src='/javascripts/auditing/auditing.js')
+
+block content
+    form(id='auditManagementForm')
+        div(data-role='page', data-theme='b')
+            +header("Manage Audit Questions",["menu","logout"])
+            div(data-role="navbar", data-grid="d")
+                ul
+                    -for(var i=0;i< operationIdArray.length;i++) {
+                        -if(operationIdArray[i] == selectedOperationId) {
+                            li
+                                a(href="JavaScript:operationSubmitForAuditMgmt('#{operationIdArray[i]}');", rel="external", data-role="tab", class="ui-btn-active") #{operationNameArray[i]}
+                        -}
+                        -else {
+                            li
+                                a(href="JavaScript:operationSubmitForAuditMgmt('#{operationIdArray[i]}');", rel="external", data-role="tab") #{operationNameArray[i]}
+                        -}
+                    -}
+                    input(type='hidden',id='operationId',name='operationId',value=selectedOperationId)
+            div(data-role='content', data-theme="b", data-overlay-theme="b", data-inline="true")
+                div(data-role="collapsible", data-collapsed="false", data-content-theme="b", id="addUDiv")
+                    h3 Manage Questions
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a")
+                        p(id='errorMessageId',align="center",class='error-message global-font-details')
+                        p(id='successMessage',align="center",class='success-message global-font-details') #{statusMessage}
+                        div(class='ui-block-a',style="width:15%")
+                            div(data-role='fieldcontain')
+                                label(id="auditLabel",class='label') Audit Type
+                        div(class='ui-block-b',style="width:15%")
+                            div(data-role='fieldcontain')
+                                select(name='auditType',data-mini="true" ,data-inline="true", id='auditType')
+                                    option(value='0') Select Audit Type
+                                    - for(var i=0;i<auditIdArray.length;i++) {
+                                        -if(auditValue == auditIdArray[i]){
+                                            option(value='#{auditIdArray[i]}',selected="selected") #{auditNameArray[i]}
+                                        -}else{
+                                            option(value='#{auditIdArray[i]}') #{auditNameArray[i]}
+                                        -}
+                                    - }
+                        div(class='ui-block-a',style="width:15%")
+                            div(data-role='fieldcontain')
+                                label(id="categoryLabel",class='label') Category Type
+                        div(class='ui-block-b',style="width:25%")
+                            div(data-role='fieldcontain')
+                                select(name='categoryType',data-mini="true" ,data-inline="true", id='categoryType', onchange="retriveQuestions()")
+                                    option(value='0') Select Category
+                                    - for(var i=0;i<categoryAllId.length;i++) {
+                                        -if (categoryValue == categoryAllId[i]){
+                                            option(value='#{categoryAllId[i]}',selected="selected") #{categoryAllName[i]}
+                                        -}else{
+                                            option(value='#{categoryAllId[i]}') #{categoryAllName[i]}
+                                        -}
+                                    - }
+                        input(type='hidden', name='categoryAllIdHidden',autocomplete="off", id='categoryAllIdHidden', data-inline="true",value=categoryAllId)
+                        input(type='hidden', name='categoryAllNameHidden',autocomplete="off", id='categoryAllNameHidden', data-inline="true",value=categoryAllName)
+                        div(class='ui-block-b',style="width:20%")
+                            div(data-role='fieldcontain')
+                                input(type='text', name='categoryName',autocomplete="off", id='categoryName', maxlength="50",data-inline="false",onkeyup="forRemoveSpecialCharcterCategory(this)")
+                        div(class='ui-block-b',style="width:15%")
+                            div(data-role='fieldcontain')
+                                a(href='',  rel="external",data-theme="b",data-icon='plus', data-role='button', title='Add CategoryName', data-inline="true" ,id ="addCategoryId", data-mini='true') Add Category
+                        div(data-role="fieldcontain",id ='addQDiv',name='addQDiv')
+                            a(href='',  rel="external",data-theme="b",data-icon='plus', data-role='button', title='Add Questions', data-inline="true" ,id ="addQId", data-mini='true') Add Questions
+                    div(id="displayQuestionarieid", data-theme="b", data-overlay-theme="b", data-inline="true")
+                        div(data-role="fieldcontain",id="questionsDivTable")
+                    div(id="addQuestionarieid", data-theme="b", data-overlay-theme="b", data-inline="true")
+                        div(data-role="fieldcontain",id="questionsDivTable")
+                        table
+                                thead
+                                    tr
+                                        th(data-priority="1",rowspan="1",style='width:5%') S.No
+                                        th(data-priority="1",rowspan="1",style='width:30%') Question Name
+                                        th(data-priority="1",rowspan="1",style='width:15%') Question Short Name
+                                        th(data-priority="1",rowspan="1",style='width:8%') Weightage %
+                                        th(data-priority="1",rowspan="1",style='width:5%') Action
+                                tbody
+                                    tr
+                                        td
+                                            label(id="sno",class='label') 1
+                                        td(data-priority="1",rowspan="1",style='width:5%')
+                                            input(type='text', name='questionName',autocomplete="off",maxlength="100", id='questionName', data-inline="true",onkeyup="forRemoveSpecialCharcterCategory(this)")
+                                        td
+                                            input(type='text', name='questionShortName',autocomplete="off",maxlength="100", id='questionShortName', data-inline="true",onkeyup="forRemoveSpecialCharcterCategory(this)")
+                                        td
+                                            input(type='text', name='weightAge',autocomplete="off",maxlength="3", id='weightAge', data-inline="true",onblur='calculateWeightage()',onkeyup="forNumbers(this)")
+                                        td
+                                            a(href='',  rel="external",data-theme="b",data-icon='delete', data-role='button', title='Remove', data-inline="true" ,id ="removeId", data-mini='true') Remove
+                    div(data-role="horizontal", id="saveQuestionarieid",data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-b")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                                a(href='JavaScript:submitAuditQuestionCreation()',  rel="external",data-theme="b",data-icon='check', data-role='button', title=' Save ', data-inline="true", data-mini='true') Save
+                                a(href="",id="backUId", rel="external",data-theme="b",data-icon='back', data-role='button', title='Back', data-inline="true", data-mini='true') Back
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain")
+                        div(class='ui-block-c')
+                            div(data-role="fieldcontain")
+                                h3(for="value") Total WeightAge %:
+                                label(id="totalWeightage", name="totalWeightage") &nbsp;
+                    div(data-role="popup", id="deleteConfirmationId",data-theme="a",align='center') Confirmation!
+                        div(data-role="collapsible", data-collapsed="false",data-theme="b", data-content-theme="b")
+                            div
+                                label(class='label') Do you really want to delete this question?
+                            div(align="center",id="ynButtonDivId")
+                                a(href='#showId',data-icon='check',data-role='button',id='yesQuestionDeleteId',data-inline='true', data-mini='true') Yes
+                                a(href='#showId', data-icon='delete', data-role='button',id='noQuestionDeleteId',data-inline='true', data-mini='true') No
+                    input(type='hidden', name='questionDeleteId',autocomplete="off", id='questionDeleteId', data-inline="true")
+                    input(type='hidden', name='questionNewId',autocomplete="off", id='questionNewId', data-inline="true", value="1")
+                    input(type='hidden', name='questionWeightAgeId',autocomplete="off", id='questionWeightAgeId', data-inline="true")
+                    input(type='hidden', name='oldQuestionWeightId',autocomplete="off", id='oldQuestionWeightId', data-inline="true")
+                    input(type='hidden', name='questionLength',autocomplete="off", id='questionLength', data-inline="true")
+            div(class="ui-loader-background")

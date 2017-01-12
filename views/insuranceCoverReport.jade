@@ -1,0 +1,113 @@
+extends ./layout
+include ./header
+
+block title
+    title= 'IKLANT-InsuranceCover'
+
+block scripts
+    link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+    include ./headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/jquery-ui.js')
+    script(type="text/javascript", src="/javascripts/reportmgmt.js")
+    script(type="text/javascript", src="/javascripts/jquery.dataTables.js")
+    script(type='text/javascript', src='/javascripts/trailBalance.js')
+
+block content
+    form(id='insuranceCoverReport')
+        input(type='hidden', name='selectedDocName', id='selectedDocName', value="#{fileLocation}")
+        input(type='hidden', name='reportPageName', id='reportPageName', value="insuranceCoverReport")
+        input(type='hidden', name='report_download_flag', id='report_download_flag', value="#{download_report}")
+        div(data-role='page', data-theme='b', id="loginDetailsDiv")
+            -var operationReport = constantsObj.getOperationalReports()
+            +header("",["backHref","menu","logout"],contextPath + '/client/ci/reportsMenuByCategory/'+operationReport)
+            div(data-role="navbar",id="navid")
+                ul(id="custom-nav-list")
+                    li
+                        a(rel="external", data-role="tab" , id="table-li-1",class="ui-btn-active") Insurance Cover
+            div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b",id='insuranceCoverReportDiv')
+                h3 Select Dates to view Insurance Cover
+                p(id="errorField",class='error-message global-font-details',align="center")
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a")
+                    div(class='ui-block-a',style="width:25%")
+                        div(data-role="fieldcontain")
+                        label(id="report_label_top") From Date
+                    div(class='ui-block-b',style="width:25%")
+                        div(data-role="fieldcontain")
+                            input(type="text",class="fromDate", name="fromdateICR", id="fromdateICR",readonly = "readonly", value="#{startDate}", required='true')
+                    div(class='ui-block-c',style="width:25%")
+                        div(data-role="fieldcontain")
+                        label(id="report_label_top") To Date
+                    div(class='ui-block-d',style="width:25%")
+                        div(data-role="fieldcontain")
+                            input(type="text",class="toDate", name="todateINS", id="todateINS", value="#{endDate}",readonly = "readonly", required='true')
+                    - if(roleId == constantsObj.getSMHroleId()) {
+                    div(class='ui-block-c',style="width:9%")
+                        div(data-role="fieldcontain")
+                        label(id="report_label_top") Office
+                    div(class='ui-block-d',style="width:15%")
+                        div(data-role="fieldcontain")
+                        select(name='listoffice', id='listoffice', data-theme='b', data-icon='grid', data-inline='true', data-mini='true',onchange="loadFO()")
+                            option(value='-1') All
+                            -for(i=0;i<officeIdArray.length;i++){
+                                -if(officeValue == officeIdArray[i]){
+                                    option(value=officeIdArray[i],selected="") #{officeNameArray[i]}
+                                -}else{
+                                    option(value=officeIdArray[i]) #{officeNameArray[i]}
+                                -}
+                            -}
+                    -}
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-bar ui-grid-c")
+                    div(class="ui-block-a")
+                    div(class="ui-block-b")
+                        div(data-role="fieldcontain", data-mini="true")
+                            a(href="JavaScript:generateInsuranceCoverReport('insuranceCoverReport','')",  rel="external",data-theme="b", data-role='button', title=' Save ', data-inline="true", data-mini='true') GenerateReport
+                    div(class="ui-block-c")
+                        div(data-role="fieldcontain", data-mini="true")
+                            a(href='#',id="insurance_report_download",rel="external",data-role='button', title=' Download ', data-inline="true",data-mini="true",onclick="generateInsuranceCoverReport('insuranceCoverReport','Download')",data-align="right") Export To Excel
+            - if(result != null ){
+                -if(result.length>0){
+                div(id="insuranceClaimReportTableId",style = "overflow: auto;",class=(result.length>10)?'container_insurance ':"")
+                    div(data-role="navbar",id="navid")
+                        ul(id="custom-nav-list")
+                            li
+                                a(rel="external", data-role="tab" , id="table-li-1",class="ui-btn-active") Insurance Cover Report
+                    table(id="fixedHeader_detailedsummary_full", CLASS="DISPLAY", cellspacing="0", width="100%")
+                        thead
+                            tr
+                                th S.No
+                                th Office
+                                th Group Name
+                                th Member Name
+                                th Member Age
+                                th Loan Amount
+                                th Customer No.
+                                th Global Cust No
+                        -if(result.length != 0){
+                        - for(var i=0;i<result.length;i++) {
+                            tbody
+                                tr(class="showhide")
+                                    td(align='center') #{i+1}
+                                    td #{result[i].office}
+                                    td #{result[i].group_name}
+                                    td #{result[i].member_name}
+                                    td #{result[i].member_age}
+                                    td(class='text-right-align') #{Number(result[i].loan_amount).toFixed()}
+                                    td #{result[i].cus_no}
+                                    td #{result[i].global_cust_num}
+                            -}
+                        -}else{
+                            tbody
+                                tr
+                                    td(align="center",colspan=9) No Records
+                        -}
+                -}
+                -else{
+                    tbody
+                        tr
+                            div(align='center')
+                                span(style='font-weight:bold') No records to display
+                -}
+            - }
+            div(class="ui-loader-background")

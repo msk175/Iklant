@@ -1,0 +1,73 @@
+extends ../layout
+include ../header
+block title
+   title= 'IKLANT-KYCRMApproval'
+block scripts
+   include ../headerJqueryMobile-1
+   link(rel='stylesheet', href='/stylesheets/jqx.base.css')
+   link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+   link(rel='stylesheet', href='/stylesheets/popup.css')
+   link(rel="stylesheet", href="/stylesheets/jquery.iviewer.css")
+   link(rel="stylesheet", href="/stylesheets/iklant-table-layout.css")
+   script(type='text/javascript', src='/javascripts/jquery-ui.js')
+   script(type="text/javascript", src="/javascripts/jquery.mousewheel.min.js")
+   script(type="text/javascript", src="/javascripts/jquery.iviewer.js")
+   script(type='text/javascript', src='/javascripts/jqxcore.js')
+   script(type='text/javascript', src="/javascripts/jqxsplitter.js")
+   script(type='text/javascript', src='/javascripts/validation.js')
+   script(type='text/javascript', src='/javascripts/data_entry/KYCRMValidation.js')
+block content
+   form(id='BMFormId')
+      div(data-role='page', data-theme='b')
+         +header("KYC Approval",["backJavascript","logout"],"cancelKYCRMApproval",[])
+         input(type='hidden', name='alertMessageHidden', id='alertMessageHidden', value="#{}")
+         input(type='hidden', name='groupId', id='groupId', value="#{clientDetailsForRMApproval.groupId}")
+         div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-a",style='width:80%')
+            div(class='ui-block-a',style='width:10%')
+               div(data-role="fieldcontain")
+               label(for="groupName") Group Name
+            div(class='ui-block-b',style='width:10%')
+               div(data-role="fieldcontain")
+               h3 #{clientDetailsForRMApproval.groupName}
+            div(class='ui-block-c',style='width:20%')
+               div(data-role="fieldcontain")
+               label(for="centerName", data-inline="true") |   Center Name
+            div(class='ui-block-d',style='width:20%')
+               div(data-role="fieldcontain")
+               h3 #{clientDetailsForRMApproval.centerName}
+            div(class='ui-block-e',style='width:20%')
+               div(data-role="fieldcontain")
+               label |   Member Name
+            div(class='ui-block-e',style='width:20%')
+               div(data-role="fieldcontain")
+               h3 #{clientDetailsForRMApproval.clientName}
+         div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-solo")
+            div(class='ui-block-a',style='width:60%')
+               div(data-role="fieldcontain")
+                  label(for="membFirstNameId") Remarks By DEO
+                  h3 #{clientDetailsForRMApproval.remarksByDEO}
+                  //input(type="text", name="MembFirstName",maxlength="100",autocomplete="off",id="membFirstNameId",onkeyup='forAlphaNumericWithSpace(this)',required='true', value="#{clientDetailsForRMApproval.remarksByDEO}")
+         hr
+         div(data-role='content', id="imageDiv" data-theme="b" ,style="width:100%;height:800px;")
+            div(class='buttonWrapper', data-overlay-theme="b",style='display:none;')
+               a(href='#', rel="external",data-icon='arrow-r', data-role='button', title='Next', data-inline="true", data-mini="true",id='next',data-iconpos="notext")
+               a(href='#', rel="external",data-icon='arrow-l', data-role='button', title='Previous', data-inline="true", data-mini="true",id='previous',data-iconpos="notext")
+               a(href='#', rel="external",data-icon='back', data-role='button', title='Rotate Left', data-inline="true", data-mini="true",id='rotateLeft',data-iconpos="notext")
+               a(href='#', rel="external",data-icon='forward', data-role='button', title='Rotate Right', data-inline="true", data-mini="true",id='rotateRight',data-iconpos="notext")
+               h3(id='imageName',align='center')
+            div(class='wrapper',style='display:none;padding-top:2em')
+            input(type='hidden', name='availDocTypeId', id='availDocTypeId',value='#{clientDetailsForRMApproval.docIdList}')
+            input(type='hidden', name='availDocTypeName', id='availDocTypeName',value='#{clientDetailsForRMApproval.docNameList}')
+            input(type='hidden', name='base64Image', id='base64Image',value='#{clientDetailsForRMApproval.docImageList}')
+         div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-a",style='width:80%')
+            p(id='errorLabelId',align="center",class='error-message global-font-details')
+            div(class='ui-block-a',style='width:60%')
+               div(data-role="fieldcontain")
+                  label(for='commentsByRMId') Comments By RM *
+                  input(type='text', name='commentsByRM',maxlength="100",autocomplete="off", id='commentsByRMId',onkeyup='forNamesValidation(this)', value="")
+            div(class='ui-block-c',style='width:10%')
+               div(data-role="fieldcontain")
+                  a(href="JavaScript:showKYCFormsForRMReview('"+clientDetailsForRMApproval.clientId+"',1)",id='needImageClaritySaveId', rel="external", data-role='button',data-mini="true", title='Review and Approve the Client', data-theme="b", data-inline="true") Approve
+            div(class='ui-block-d',style='width:10%')
+               div(data-role="fieldcontain")
+                  a(href="JavaScript:showKYCFormsForRMReview('"+clientDetailsForRMApproval.clientId+"',0)",id='needImageClaritySaveId1', rel="external", data-role='button',data-mini="true", title='Review and Approve the Client', data-theme="b", data-inline="true") Reject

@@ -1,0 +1,144 @@
+extends ./layout
+include ./header
+
+block title
+    title= 'IKLANT-GroupAuthorization'
+
+block scripts
+    include ./headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src="/javascripts/authorization.js")
+
+block content
+    form(id='BMFormId')
+        div(data-role='page', data-theme='b')
+            +header("Group Authorization",["backJavascript","logout"],"cancelGroupAuthorization",[branchId])
+            div(data-role="fieldcontain")
+                div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b")
+                    h3 Group Details
+                    p(id ='errorField',data-theme="e",align='center',class='error-message global-font-details')
+                    p(id ='errorLabelId',data-theme="e",align='center',class='error-message global-font-details')
+                    p(id ='errorLabelIdSecondRow',data-theme="e",align='center',class='error-message global-font-details')
+                    div(id="members123", data-theme="b", data-overlay-theme="a", data-inline="true")
+                        div(data-role="fieldcontain")
+                            label(for="groupName",class="label") Group Name
+                            input(type="text", name="groupName", readonly="readonly",id="groupName", value="#{prosGroupObj.getGroup_name()}", required='true')
+                        div(data-role="fieldcontain")
+                            label(for="centerName",class="label") Center Name
+                            input(type="text", name="centerName", readonly="readonly",id="centerName", value="#{prosGroupObj.getCenter_name()}", required='true')
+                        div(data-role="fieldcontain")
+                            label(for="groupCreatedDate",class="label") Group Created Date
+                            input(type="text", name="groupCreatedDate", readonly="readonly",id="groupCreatedDate", value="#{prosGroupObj.getGroup_created_date()}", required='true')
+                        div(data-role="fieldcontain")
+                            label(for="lastActiveFrom",class="label") Group Last Active From
+                            input(type="text", name="lastActiveFrom", readonly="readonly",id="lastActiveFrom", value="#{preliminaryVerificationObj.getloan_active_from()}", required='true')
+                        div(data-role="fieldcontain")
+                            label(for="bankName",class="label") Bank Name
+                            input(type="text", name="bankName", readonly="readonly",id="bankName", value="#{preliminaryVerificationObj.getbank_name()}", required='true')
+                        div(data-role="fieldcontain")
+                            label(for="accountCreatedDate",class="label") Bank Account Created Date
+                            input(type="text", name="accountCreatedDate", readonly="readonly",id="accountCreatedDate", value="#{preliminaryVerificationObj.getaccount_created_date()}", required='true')
+                        div(data-role="fieldcontain")
+                            label(for="accountNumber",class="label") Bank Account Number
+                            input(type="text", name="accountNumber", readonly="readonly",id="accountNumber", value="#{preliminaryVerificationObj.getaccount_number()}", required='true')
+                        div(data-role="fieldcontain")
+                            label(for="rating",class="label") Average Rating
+                            input(type="text", name="rating", readonly="readonly",id="rating", value="#{Number(appraisedClientsObj.getAppraisal_Rating()).toFixed(2)}", required='true')
+                        div(data-role="fieldcontain")
+                            label(for="accountNumber",class="label") Group Recognition Test Ratings
+                            input(type="text", name="grtRatings", readonly="readonly",id="grtRatings", value="#{grtRating}")
+                    div(data-role="collapsible",data-collapsed="false", id="memberdetaildiv", data-theme="b", data-overlay-theme="b", data-inline="true")
+                        h3 Member Information
+                        div(data-role="fieldcontain")
+                            p(id ='errorField',data-theme="e",align='center',class='error-message global-font-details') #{errorfield}
+                        div(style = "overflow: auto;")
+                            table(border='0')
+                                tr
+                                    th(data-priority="5",rowspan="2",style="vertical-align:middle;text-align:center") SNO
+                                    th(data-priority="5",rowspan="2",style="vertical-align:middle;text-align:center") Member Name
+                                    th(data-priority="5",colspan="3",style="vertical-align:middle;text-align:center") Equifax Report
+                                    th(data-priority="5",rowspan="2",style="vertical-align:middle;text-align:center") CCA
+                                    th(data-priority="5",rowspan="2",style="vertical-align:middle;text-align:center") Document Type
+                                    th(data-priority="5",rowspan="2",style="vertical-align:middle;text-align:center") Download Docs
+                                    th(data-priority="5",rowspan="2",style="vertical-align:middle;text-align:center") Action
+                                tr
+                                    th(style ="text-align:center") Count
+                                    th(style ="text-align:center") Balance Amount
+                                    th(style ="text-align:center") Written-Off Amount
+                                -var count = 0;
+                                -for(i=0;i<appraisedClientsObj.getListClientIdArray().length;i++){
+                                    -if(appraisedClientsObj.getReinitiatedStatus()[i] && appraisedClientsObj.getStatusId()[i] != 17){
+                                        tr
+                                            td(style="vertical-align:middle;text-align:center") #{count+1}
+                                            -if(appraisedClientsObj.getIsReinitiated() [i] == 1 ){
+                                                td(style ="text-align:center;color:#03CE17;vertical-align:middle") #{appraisedClientsObj.getListClientNameArray() [i]}
+                                            -}
+                                            -else{
+                                                td(style ="text-align:center;vertical-align:middle") #{appraisedClientsObj.getListClientNameArray() [i]}
+                                            -}
+                                            td(style="vertical-align:middle;text-align:center") #{appraisedClientsObj.getcountOfOtherMFILoans()[i]}
+                                            td(style="vertical-align:middle;text-align:center") #{appraisedClientsObj.getotherMFIBalanceAmount()[i]}
+                                            td(style="vertical-align:middle;text-align:center") #{appraisedClientsObj.getotherMFIWrittenOffAmount()[i]}
+                                            td(style="vertical-align:middle;text-align:center")
+                                                a(href="JavaScript:clientAppraisalAnswersSmh(#{groupId},#{appraisedClientsObj.getListClientIdArray()[i]},#{appraisedClientsObj.getListLoanCountArray()[i]},#{appraisedClientsObj.getListClientRatingArray()[i]},#{appraisedClientsObj.getListClientTotalWeightageArray()[i]},#{appraisedClientsObj.getListClientTotalWeightageRequiredArray()[i]})",title='Rating Detail',data-mini='true', data-role='button',data-theme="b") #{appraisedClientsObj.getListClientRatingArray()[i]} %
+                                            td(style="vertical-align:middle")
+                                                div(data-role="fieldcontain")
+                                                    select(name='members', onchange = "JavaScript:downloadClientDocumentsAuth(this.value,#{appraisedClientsObj.getListClientIdArray()[i]})", id='members', data-icon='grid', data-mini='true',data-inline='true',data-theme="b", data-native-menu="true")
+                                                        option(value='0') Select Doc Type
+                                                        -for(var j=0;j< appraisedClientsObj.getDocumentIdArray().length; j++) {
+                                                            -if(clientId == appraisedClientsObj.getListClientIdArray()[i] && appraisedClientsObj.getDocumentIdArray()[j]==selectedDocTypeId)
+                                                                option(value=appraisedClientsObj.getDocumentIdArray()[j],selected='selected') #{appraisedClientsObj.getDocumentNameArray()[j]}
+                                                            -else
+                                                                option(value=appraisedClientsObj.getDocumentIdArray()[j]) #{appraisedClientsObj.getDocumentNameArray()[j]}
+                                                        - }
+                                            td(style ="text-align:center")
+                                                div(data-role="fieldcontain")
+                                                    select(name='docDownload', onchange = 'JavaScript:downloadDocs(this.value)',data-theme="b", id='docDownloadId',data-inline='true', data-icon='grid', data-mini='true', data-native-menu="true")
+                                                        option(value='0') Select Doc
+                                                        -if(clientId == appraisedClientsObj.getListClientIdArray()[i]){
+                                                            -for(var j=0;j<fileLocation.length; j++) {
+                                                                option(value=fileLocation[j]) Doc #{j+1}
+                                                            - }
+                                                        -}
+                                            td(style="vertical-align:middle;text-align:center")
+                                                div(data-role="fieldcontain")
+                                                    a(href="JavaScript:rejectClient(#{appraisedClientsObj.getListClientIdArray()[i]},'rejectClient_#{i}','#{appraisedClientsObj.getListClientNameArray() [i]}')", id='rejectClient_#{appraisedClientsObj.getListClientNameArray() [i]}',data-theme="b",data-icon='delete', data-role='button',title='RejectClient', data-mini="true", data-inline="true",data-rel="popup",data-position-to='window') Reject
+                                    -count++
+                                    -}
+                                - }
+                        input(type='hidden', name='selectedDocType', id='selectedDocTypeId', value="")
+                        input(type='hidden', name='selectedDocName', id='selectedDocId', value="")
+                        input(type='hidden', name='currentgroupid', id='currentgroupid', value="#{groupId}")
+                        input(type='hidden', name='clientRatingPercHidden',id="clientRatingPercHiddenId")
+                        input(type='hidden', name='clientTotalWeightageHidden',id="clientTotalWeightageHiddenId")
+                        input(type='hidden', name='clientTotalWeightageRequiredHiddenCCA1Name',id="clientTotalWeightageRequiredHiddenCCA1Id")
+                        input(type='hidden', name='ccaRedirectHiddenName',id="ccaRedirectHiddenId",value="1")
+                        input(type='hidden', name='rejectedClientName', id='rejectedClientID', value="")
+                        input(type='hidden', name='approvedGroupName', id='approvedGroupId', value="")
+                        input(type='hidden', name='groupnamefordownload', id='groupidfordownload', value="#{groupId}")
+                        input(type='hidden', name='operationId', id='operationId', value="12")
+                        input(type='hidden', name='brchid', id='brchid', value="#{branchId}")
+                        input(type='hidden', name='membersCount', id='membersCount', value="#{appraisedClientsObj.getListClientIdArray().length}")
+                        input(type='hidden', name='reinitiatedClientsFlag', id='reinitiatedClientsFlag', value='#{appraisedClientsObj.getReinitiatedStatus()}')
+                        input(type='hidden', name='reinitiatedClients', id='reinitiatedClients', value='#{appraisedClientsObj.getListClientNameArray()}')
+                        input(type='hidden', name='rejectedClient', id='rejectedClient', value='')
+                div(data-role="fieldcontain", data-mini="true",id="submitDivId" )
+                    a(href='JavaScript:approveGroup(#{groupId})',data-icon='check', data-role='button', data-theme='b', title='Approve', data-inline='true' , id="approve",data-rel="popup",data-position-to='window') Approve
+                    a(href='JavaScript:rejectGroup(#{groupId})',rel="external", data-icon='delete', data-role='button', data-theme='b', title='Reject', data-inline='true' , id="reject") Reject
+                    a(href='JavaScript:cancelGroupAuthorization(#{branchId})', rel="external",data-icon='back', data-role='button', title='Back', data-inline='true') Back
+
+            div(data-role="popup", id="approveConfirmationId", data-inline='true',data-theme="a",align='center') Confirmation!
+                div(data-role="collapsible", data-collapsed="false",data-theme="b", data-content-theme="b")
+                    div
+                        span This group will be rejected due to active clients less than 5. Do you want to continue?
+                    div(align="center",id="ynButtonDivId")
+                        a(href='#showId',data-icon='check',data-role='button',id='yesApproveId',data-inline='true', data-mini='true') Yes
+                        a(href='#showId', data-icon='delete', data-role='button',id='noApproveId',data-inline='true', data-mini='true') No
+            div(data-role="popup", id="rejectConfirmationId", data-inline='true',data-theme="a",align='center') Confirmation!
+                div(data-role="collapsible", data-collapsed="false",data-theme="b", data-content-theme="b")
+                    div
+                        span If active clients less than 5 then this group will be rejected while Authorization. Do you want to continue?
+                    div(align="center",id="ynButtonDivId")
+                        a(href='#showId',data-icon='check',data-role='button',id='yesRejectId',data-inline='true', data-mini='true') Yes
+                        a(href='#showId', data-icon='delete', data-role='button',id='noRejectId',data-inline='true', data-mini='true') No
+        div(class="ui-loader-background")

@@ -1,0 +1,77 @@
+doctype
+html(lang = "en")
+    head
+        title= 'IKLANT-LoanReceoveryLoans'
+        meta(charset='utf-8')
+        meta(name="viewport", content="initial-scale=1.0, user-scalable=no")
+        link(rel="stylesheet", href="/stylesheets/jquery.mobile-1.3.0-beta.1.min.css")
+        link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+        link(rel='stylesheet', href='/stylesheets/iklantStyle.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+        script(type='text/javascript', src='/javascripts/jquery-1.7.1.min.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile.custom.js')
+        script(type='text/javascript', src='/javascripts/jquery-ui.js')
+        script(type='text/javascript', src='/javascripts/searchRescheduledResult.js')
+        script(type='text/javascript', src='/javascripts/common.js')
+    body(id="pageID")
+        div(data-role='page', data-theme='b', id="loginDetailsDiv")
+            div(data-role="header", data-theme="a", class="ui-bar ui-grid-a", data-overlay-theme="c",data-position="fixed")
+                div(class="ui-block-a")
+                    img(id='groupIcon', style="margin:5px 10px 0 0; text-align:right;",src='/images/iklant.png')
+                div(class="ui-block-b",align="right",style="padding:25px 50px 0 0;")
+                    a(href='/mfi/api/1.0/client/ci/loadRescheduledGroups', rel="external",data-icon='home', data-role='button', title=' Menu', data-inline='true') Back
+                    a(href='/mfi/api/1.0/client/ci/menu', rel="external",data-icon='home', data-role='button', title=' Menu', data-inline='true') Home
+                    a(href='/mfi/api/1.0/client/ci/logout',  rel="external",data-icon='back', data-role='button', title=' Logout ', data-inline="true") Logout
+            p(id="errorLabel",align="center") #{errorLabel}
+            form(id='reschduledLoanFormID')
+                div(data-role="content")
+                    div(data-role="horizontal",class="ui-bar ui-grid-a")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                                label(for='groupname',id='labelid') Group Name : #{searchResult[0].M_GROUP_ID}
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain")
+                                label(for='groupname',id='labelid') Account Num : #{searchResult[0].GROUP_ACC_NUMBER}
+                div(id="divId")
+                    table(id="tableid")
+                        tr
+                            th S No.
+                            th Member Name
+                            th Total Outstanding
+                            th Total Overdue
+                            th Paid Amount
+                            th Date Of Last Payment
+                        - for(var i=0; i<searchResult.length;i++){
+                            tr
+                                td #{i+1}
+                                td #{searchResult[i].M_MEMBER_NAME_1}
+                                td #{parseInt(searchResult[i].AC_CURRENT_BALANCE,10)}
+                                    input(type="hidden", id = "currentBalanceId"+i, name = "currentBalance"+i, value="#{parseInt(searchResult[i].AC_CURRENT_BALANCE,10)}")
+                                td #{parseInt(searchResult[i].AC_AMOUNT_OVERDUE,10)}
+                                    input(type="hidden", id = "overdueAmountId"+i, name = "overdueAmount"+i, value="#{parseInt(searchResult[i].AC_AMOUNT_OVERDUE,10)}")
+                                td
+                                    input(type="text", id = "paidAmountId"+i, name = "paidAmount"+i,onkeyup="numeric(this)", onfocusout="editedClientAmount(#{i})")
+                                    input(type="hidden", id = "clientGlobalNumId"+i, name = "clientGlobalNum"+i, value="#{searchResult[i].AC_ACCOUNT_NUMBER}")
+                                td
+                                    input(type="text", id = "lastPaymentId"+i, name = "lastPayment"+i, value="", onchange="editedClientPaymentDate(#{i})")
+                                input(type="hidden", id = "daysInArrearsId"+i, name = "daysInArrears"+i, value="#{searchResult[i].AC_DPD}")
+                                input(type="hidden", id = "loanStatusId"+i, name = "loanStatus"+i, value="#{searchResult[i].AC_ACCOUNT_STATUS}")
+
+
+                        - }
+                    div(data-role="fieldcontain", id="submitDivId")
+                        a(href='JavaScript:submitForm()',  rel="external",data-theme="b",data-role='button', title=' Submit ', data-inline="true", data-mini="true") Update Client Details
+                    input(type="hidden", id="clientLengthId",name="clientLength",value = "#{searchResult.length}")
+                    input(type="hidden",id="groupAccNum",name="groupAccNum",value="#{searchResult[0].GROUP_ACC_NUMBER}")
+                    input(type="hidden", id="clientGlobalNumIdArray",name="clientGlobalNumArray",value = "")
+                    input(type="hidden", id="lastPaymentArrayId",name="lastPaymentArray",value = "")
+                    input(type="hidden", id="paidAmountArrayId",name="paidAmountArray",value = "")
+                    input(type="hidden", id="currentBalanceArrayId",name="currentBalanceArray",value = "")
+                    input(type="hidden", id="amountOverdueArrayId",name="amountOverdueArray",value = "")
+                    input(type="hidden", id="daysInArrearsArrayId",name="daysInArrearsArray",value = "")
+                    input(type="hidden", id="loanStatusArrayId",name="loanStatusArray",value = "")
+
+

@@ -1,0 +1,117 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'IKLANT-PreliminaryVerificationForm'
+
+block scripts
+    include ../headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+    script(type='text/javascript', src='/javascripts/preliminaryVerificationUpload.js')
+    script(type='text/javascript', src='/javascripts/preliminaryVerification.js')
+    script(type='text/javascript', src='/javascripts/validation.js')
+
+block content
+    form(id="BMFormId", enctype="multipart/form-data", data-ajax="false")
+        div(data-role='page', data-theme='b')
+            +header("Group Preliminary Verification",["backHref","logout"],contextPath + '/client/ci/groups')
+            div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b")
+                input(type='hidden', name='groupId', id='groupIdID', value=prosGroup.getGroup_id())
+                h3 Group Details
+                p(id ='errorField',data-theme="e",align='center',class='error-message global-font-details') #{alertMsg}
+                div(data-role="content", id="groupdetails", data-theme="c", data-overlay-theme="c", data-inline="true")
+                    div(data-role="fieldcontain", data-mini="true")
+                        label(for="groupName", data-inline="true") Group Name *
+                        input(type="text", name="groupName", id="groupName", value=prosGroup.getGroup_name() , readonly='readonly')
+                    div(data-role="fieldcontain")
+                        label(for="centerName") Center Name
+                        input(type="text", name="centerName", id="centerName", value=prosGroup.getCenter_name(), readonly='readonly', required='true')
+                    div(data-role="fieldcontain")
+                        label(for="branchName") Branch Name
+                        input(type="text", name="branchName", id="branchName", value=office.getOfficeName(), readonly='readonly', required='true')
+                        input(type='hidden', name='branchNameHidden', id='branchNameHidden', value="")
+                    div(data-role="fieldcontain")
+                        label(for="createdDatePicker") Group Formed Date *
+                        input(type="text", name="createdDatePicker", id="createdDatePicker", value=prosGroup.getGroup_created_date(), required='true', readonly='readonly')
+                    div(data-role="fieldcontain")
+                        label(for="loanTypeId") Loan Type *
+                        input(type="text", name="loanTypeName", id="loanTypeId", value=prosGroup.getLoan_type(), required='true', readonly='readonly', data-mini="true")
+                div(data-role="collapsible", id="minutes", data-theme="b", data-overlay-theme="b", data-inline="true")
+                    h3 Upload Document
+                    div(data-role="fieldcontain", data-mini="true")
+                        label(for="documentTypeId", data-inline="true") Document Type
+                        select(name='documentType', id='documentTypeId', data-theme='b', data-icon='bank', data-inline='true',data-mini="true", data-native-menu="false")
+                            option(value='0') Select
+                            - for( var i = 0; i < docTypeIdArray.length; i++ ) {
+                                option(value=docTypeIdArray[i]) #{docTypeNameArray[i]}
+                            - }
+                        br
+                        br
+                        input(type='checkbox', name='isMultipleImage', id='isMultipleImageID', data-inline="true")
+                        label(for='isMultipleImageID',id='isMultipleImageID') Multiple Image
+                        input(type="file", name="multipleUploadDocument" , id="multipleUploadDocumentId" , multiple="multiple",style="display:none")
+                        input(type="file", name="singleUploadDocument" , id="singleUploadDocumentId")
+                        input(type="hidden", name="isMultipleDocument" , id="isMultipleDocumentId" , value="false")
+                        a(href='#',rel="external", data-icon='check', data-role='button', title=' Save ', data-inline='true' , id="uploadImageId") Upload Image
+
+                div(data-role="collapsible", id="minutes", data-theme="b", data-overlay-theme="b", data-inline="true")
+                    h3 Capture Image
+                    div(data-role="fieldcontain", data-mini="true")
+                        a(href='#',rel="external", data-icon='check', data-role='button',  title='Capture Image', data-inline='true' , id="captureImageId", onclick="JavaScript:showCapture();") Capture Image
+                div(data-role="collapsible", id="minutes", data-theme="b", data-overlay-theme="b", data-inline="true")
+                    h3 Minutes Verification
+                    div(data-role="fieldcontain", data-mini="true")
+                        label(for="lastActiveDate", data-inline="true") Last Active From *
+                        input(type="text", name="lastActiveDate", id="lastActiveDate", value="", required='true', readonly="readonly")
+                        input(type='checkbox', name='savingsdiscussedCheck', id='savingsdiscussedCheck', data-inline="true")
+                        label(for='savingsdiscussedCheck') Savings Discussed
+                        input(type='hidden', name='savingsDiscussed', id='savingsDiscussed', value="false")
+                    div(data-role="fieldcontain", data-mini="true")
+                        input(type='checkbox', name='completeAttendanceCheck', id='completeAttendanceCheck',data-inline="true")
+                        label(for='completeAttendanceCheck') Complete Attendance
+                        input(type='hidden', name='completeAttendance', id='completeAttendance', value="false")
+                div(data-role="collapsible", id="bankaccount", data-theme="b", data-overlay-theme="a")
+                    h3 Bank Account Verification
+                    div(data-role="fieldcontain")
+                        input(type='checkbox', name='bankAccountCheck', id='bankAccountCheck', data-inline="true")
+                        label(for='bankAccountCheck') Bank Account
+                        input(type='hidden', name='bankAccountHidden', id='bankAccountHidden', value="false")
+                    div(data-role='fieldcontain', id="bankDetails")
+                        div(data-role='fieldcontain', id="bankName")
+                            label(for='bankNameSelect') Bank Name *
+                            input(type='text', name='bankNameSelect', id='bankNameSelect',maxlength="50",autocomplete="off", value="",onkeyup='forNamesValidation(this)')
+                        div(data-role="fieldcontain",id='AccNo')
+                            label(for="accountNumber") Account Number *
+                            input(type="text", name="accountNumber",autocomplete="off",maxlength="20", id="accountNumber", value="", required='true',onkeyup='forAlphaNumeric(this)')
+                        div(data-role="fieldcontain",id='AccCr')
+                            label(for="accountCreatedDate") Account Created Date *
+                            input(type="text", name="accountCreatedDate", id="accountCreatedDate", value="", required='true', readonly="readonly")
+                        div(data-role="fieldcontain")
+                            label(for='creditTransaction') Deposits
+                            input(type="number", name="creditTransaction",autocomplete="off", id="creditTransaction", min="0", max="99", value="", required='true')
+                        div(data-role="fieldcontain")
+                            label(for='debitTransaction') Withdrawals
+                            input(type="number", name="debitTransaction",autocomplete="off", id="debitTransaction", min="0", max="99", value="", required='true')
+
+                //div(data-role="collapsible", id="internalloan3", data-theme="e", data-overlay-theme="a", data-inline="true")
+                    h3 Internal Loan Verification
+                    div(data-role="fieldcontain")
+                        input(type='checkbox', name='anyInternalLoansCheck', id='anyInternalLoansCheck', data-inline="true")
+                        label(for='anyInternalLoansCheck') Any Internal Loans
+                        input(type='hidden', name='anyInternalLoansHidden', id='anyInternalLoansHidden', value="false")
+                    div(data-role="fieldcontain", id="internalLoanDetails")
+                        div(data-role="fieldcontain")
+                            a(href='#internalloan', data-icon='plus', data-role='button', title=' Add ', data-rel='popup', data-position-to='window', data-transition='pop', data-inline='true', data-mini='true', id="internalLoanAdd") Add
+                    p(id ='errorFieldInternalLoan',data-theme="e",align='center',class='error-message global-font-details')
+                    div(data-role='content')
+                        div(class='content-primary')
+                            div(id='addClientDivId')
+
+
+            div(data-role="fieldcontain", data-mini="true")
+                a(href='#',rel="external",data-role='button', data-theme='b', title='Submit Preliminary Verification Details', data-inline='true' , id="saveGroupId") Submit Preliminary Verification Details
+                a(href=contextPath + '/client/ci/groups', rel="external",data-icon='back', data-role='button', title=' Back', data-inline='true') Back
+                input(type='hidden', name='clientNames', id='clientNamesId')
+                input(type='hidden', name='overdues', id='overduesId')
+                input(type='hidden', name='deleteclientNamehidden', id='deletecnameid', value="")
+            div(class="ui-loader-background")

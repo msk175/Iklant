@@ -1,0 +1,109 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'IKLANT-FundManagement'
+
+block scripts
+
+    link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/jquery-ui.js')
+    include ../headerJqueryMobile-1
+    script(type='text/javascript', src="/javascripts/accounting/fundManagement.js")
+
+block content
+    form(id='accountsMenuFormID')
+        div(data-role='page', data-theme='b')
+            +header("Fund Management",["menu","backHref","logout"],contextPath+ '/client/ci/accounts/accountsMenu',[])
+            div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b")
+                h3 Fund Allocation
+                p(id="errorLabel",align ="center",style="color:red;font-weight:bold;")
+                p(id="errorLabelId",align ="center",style="color:green;font-weight:bold;") #{statusMessage}
+                div(data-role="horizontal",class="ui-bar ui-grid-c")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                        label(for="ClientGlobalAccNum",class="label") Fund
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain",data-mini="true")
+                            select(name='fundName', id='fundId',onchange='retrieveFundDetails(this)',data-icon='grid',data-theme="d", data-overlay-theme="a",  data-mini="true",data-inline="true",data-native-menu="true")
+                                option(value='0') Select Fund
+                                - for(var i=0;i<fundListArray.length;i++) {
+                                    - if(selectedFundId == fundListArray[i].fundId)  {
+                                        option(value='#{fundListArray[i].fundId}',selected='selected') #{fundListArray[i].fundName}
+                                    - }
+                                    - else {
+                                        option(value='#{fundListArray[i].fundId}') #{fundListArray[i].fundName}
+                                    - }
+                                - }
+                div(id="fundDetails")
+                    - if(ledgerClosingBalance != false) {
+                        div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-c")
+                            div(class='ui-block-a',id="disbursementlabel")
+                                div(data-role="fieldcontain")
+                                label(for="CBLabelID",class="label")  Fund Outstanding
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain",id="disbursementfield")
+                                label(id="CBLabelID")  #{ledgerClosingBalance}
+                            div(class='ui-block-c',id="disbursementlabel")
+                                div(data-role="fieldcontain")
+                                label(for="BDLabelID",class="label")  Book Debt Outstanding
+                            div(class='ui-block-d')
+                                div(data-role="fieldcontain",id="disbursementfield")
+                                label(id="BDLabelID")  #{bookDebtOutstanding}
+                        div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-c")
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain")
+                                label(for="officeId",class="label") Office
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain")
+                                    select(name='officeId',  id='officeId',onchange='hideAllocateAmountDetails()', data-icon='grid',data-inline='true',data-mini="true")
+                                        option(value='0') Select Office
+                                        - for(var i=0;i<officeListArray.length;i++) {
+                                            option(value='#{officeListArray[i].officeId}') #{officeListArray[i].officeName}
+                                        - }
+                            div(class='ui-block-c')
+                                div(data-role="fieldcontain")
+                                label(for="dateId",class="label") Date
+                            div(class='ui-block-d')
+                                div(data-role="fieldcontain")
+                                    input(type="text", name="dateName", id="dateId",readonly="readonly",autocomplete="off")
+                                    input(type="hidden", name="loanCustomDetailId", id="loanCustomDetailId",readonly="readonly",autocomplete="off")
+                                    input(type="hidden", name="accountId", id="accountId",readonly="readonly",autocomplete="off")
+                                    input(type="hidden", name="selectedAccountsIdArray", id="selectedAccountsIdArray",readonly="readonly",autocomplete="off")
+                    - }
+                div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-c",id="allocateAmount")
+                    div(class='ui-block-a',id="disbursementlabel")
+                        div(data-role="fieldcontain")
+                        label(for="unallocatedAmountId",class="label") Unallocated Amount
+                    div(class='ui-block-b',id="disbursementlabel")
+                        div(data-role="fieldcontain")
+                        label(id="unallocatedAmountId", style='color:black')
+                        input(type='hidden', name='unallocatedAmtName', id='unallocatedAmtId',value='0',autocomplete="off",onkeyup='forNumbers(this)')
+                    div(class='ui-block-c')
+                        div(data-role="fieldcontain")
+                        label(for='amount',class='label') Allocate Amount
+                    div(class='ui-block-d')
+                        div(data-role="fieldcontain")
+                            input(type='text', name='amount',readonly="readonly", id='amount',value='0',autocomplete="off",onkeyup='forNumbers(this)')
+                div(data-role="horizontal",class="ui-bar ui-grid-b")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain", data-inline="true",align="left")
+                            a(href='JavaScript:submitFundAllocation()',  rel="external",data-role='button', title=' Submit Preclosure Details ', data-inline="true",data-mini="true", id='allocateFundSubmitId') Allocate Fund
+                            a(href='JavaScript:submitIndividualPreclosure()',  rel="external",data-role='button', title=' Submit Preclosure Details ', data-inline="true",data-mini="true", id='exportReportId') Export Book Debt As Excel
+                div(data-role="horizontal",class="ui-bar ui-grid-c",id="paginationDiv")
+                    div(class='ui-block-a')
+                        a(href='#', data-icon='arrow-l',data-iconpos="left", data-role='button',id='clientListPrevId',data-inline='true', data-mini='true') Prev
+                    div(class='ui-block-b')
+                        a(href='#', data-icon='check', data-role='button',id='clientListPageNoId',data-inline='true', data-mini='true')
+                    div(class='ui-block-c',style="float:right")
+                        a(href='#', data-icon='arrow-r',data-iconpos="right",data-role='button',id='clientListNextId',data-inline='true', data-mini='true') Next
+                div(data-role="content",id="divId",style = "overflow: auto;")
+            div(data-role="popup", id="preclosureConfirmationId",data-theme="a",align='center') Confirmation!
+                div(data-role="collapsible", data-collapsed="false",data-theme="b", data-content-theme="b")
+                    div
+                        label(id="popupId")
+                    div(align="center",id="ynButtonDivId")
+                        a(href='#showId',data-icon='check',data-role='button',id='yesClosureId',data-inline='true', data-mini='true') Yes
+                        a(href='#showId', data-icon='delete', data-role='button',id='noClosureId',data-inline='true', data-mini='true') No
+            div(class="ui-loader-background")

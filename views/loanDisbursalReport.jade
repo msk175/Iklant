@@ -1,0 +1,172 @@
+!!! 5
+html(lang = "en")
+    head
+        title= 'IKLANT-Dashboard'
+        meta(charset='utf-8')
+        meta(name="viewport", content="initial-scale=1.0, user-scalable=no")
+        link(rel="stylesheet", href="/stylesheets/jquery.mobile-1.3.0-beta.1.min.css")
+        link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+        link(rel='stylesheet', href='/stylesheets/iklantStyle.css')
+        script(type='text/javascript', src='/javascripts/jquery.mobile.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile.custom.js')
+        script(type='text/javascript', src='/javascripts/jquery-1.8.3.min.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile-1.3.0-beta.1.min.js')
+        script(type='text/javascript', src='/javascripts/jquery-ui.js')
+        script(type='text/javascript', src='/javascripts/loanDisbursalReport.js')
+        script(type='text/javascript', src='/javascripts/common.js')
+    body(id="pageID")
+        form(id="loanDisbursalReportFormId")
+            div(data-role='page', data-theme='b', id="loginDetailsDiv")
+                div(data-role="header", data-theme="a", class="ui-bar ui-grid-a", data-overlay-theme="c")
+                    div(class="ui-block-a")
+                        img(id='groupIcon',src='/images/iklant.png')
+                    div(class="ui-block-b",align="right",style="padding:25px 50px 0 0;")
+                        a(href=contextPath + '/client/ci/menu', rel="external",data-icon='grid', data-role='button', title='Back', data-inline='true') Menu
+                        a(href=contextPath + '/client/ci/logout',  rel="external",data-icon='back', data-role='button', title=' Logout ', data-inline="true") Logout
+                div(data-role="navbar")
+                    ul(id="custom-nav-list")
+                        li
+                            a(rel="external", data-role="tab") Loan Disbursal Report
+                div(data-role="content")
+                    div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b")
+                        h3 Report Details
+                        p(align="left",style="color:red;font-weigth:bold",id="errorStartDateId")
+                        p(align="left",style="color:red;font-weigth:bold",id="errorEndDateId")
+                        p(align="left",style="color:red;font-weigth:bold",id="errorCompareDateId")
+                        div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-c")
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain")
+                                label(for="startDateId") Start Date
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain")
+                                    input(type="text", name="startDate", id="startDateId",readonly = "readonly", value=reportHolder.getStartDate(), required='true')
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain")
+                                label(for="endDateId") End Date
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain")
+                                    input(type="text", name="endDate", id="endDateId",readonly = "readonly", value=reportHolder.getEndDate(), required='true')
+                        div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-c")
+                            div(class='ui-block-a')
+                                div(data-role='fieldcontain')
+                                label(for="officeId",class="labelStyle") Office
+                            div(class='ui-block-b')
+                                div(data-role='fieldcontain',id="officeDivId")
+                                    select(name='office', id='officeId', data-theme='b',data-native-menu='true')
+                                        option(value='-1') All
+                                        -for(i=0;i<reportHolder.getOffices().length;i++){
+                                            - if(reportHolder.getOfficeId() == reportHolder.getOffices()[i].getId()) {
+                                                option(value=reportHolder.getOffices()[i].getId(), selected="selected") #{reportHolder.getOffices()[i].getName()}
+                                            - }
+                                            - else {
+                                                option(value=reportHolder.getOffices()[i].getId()) #{reportHolder.getOffices()[i].getName()}
+                                            - }
+                                        - }
+                            div(class='ui-block-a')
+                                div(data-role='fieldcontain')
+                                label(for="loanOfficerId",class="labelStyle") Loan Officer
+                            div(class='ui-block-b')
+                                div(data-role='fieldcontain',id="loanOfficerDivId")
+                                    select(name='loanOfficer', id='loanOfficerId', data-theme='b', data-native-menu='true')
+                                        option(value='-1') All
+                                        -for(i=0;i<reportHolder.getLoanOfficers().length;i++){
+                                            - if(reportHolder.getLoanOfficerId() == reportHolder.getLoanOfficers()[i].getPersonnelId()) {
+                                                option(value=reportHolder.getLoanOfficers()[i].getPersonnelId(), selected="selected") #{reportHolder.getLoanOfficers()[i].getDisplayName()}
+                                            - }
+                                            - else {
+                                                option(value=reportHolder.getLoanOfficers()[i].getPersonnelId()) #{reportHolder.getLoanOfficers()[i].getDisplayName()}
+                                            - }
+                                        - }
+                        div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-c")
+                            div(class='ui-block-a')
+                                div(data-role='fieldcontain')
+                                label(for="productCategoryId",class="labelStyle") Product Category
+                            div(class='ui-block-b')
+                                div(data-role='fieldcontain',id="productCategoryDivId")
+                                    select(name='productCategory', id='productCategoryId', data-theme='b',data-native-menu='true')
+                                        option(value='-1') All
+                                        -for(i=0;i<reportHolder.getPrdCategories().length;i++){
+                                            - if(reportHolder.getCategoryId() == reportHolder.getPrdCategories()[i].getPrdCatId()) {
+                                                option(value=reportHolder.getPrdCategories()[i].getPrdCatId(), selected="selected") #{reportHolder.getPrdCategories()[i].getPrdCatName()}
+                                            - }
+                                            - else {
+                                                option(value=reportHolder.getPrdCategories()[i].getPrdCatId()) #{reportHolder.getPrdCategories()[i].getPrdCatName()}
+                                            - }
+                                        - }
+                        div(data-role="fieldcontain")
+                            a(href='#',  rel="external",data-theme="b",data-icon='check', id="submit", data-role='button', data-inline="true") Submit
+                            a(href=contextPath + '/client/ci/menu',  rel="external",data-theme="b",data-icon='back',id="back", data-role='button', data-inline="true") Back
+                        -var officeIds = new Array();
+                        -var officeNames = new Array();
+                        -for(var i=0;i<reportHolder.getOffices().length;i++){
+                            -officeIds[i] = reportHolder.getOffices()[i].getId();
+                            -officeNames[i] = reportHolder.getOffices()[i].getName();
+                        -}
+                        input(type='hidden', name='officeIds', id='officeIdsId', value=officeIds)
+                        input(type='hidden', name='officeNames', id='officeNamesId', value=officeNames)
+
+                        -var prdCategoryIds = new Array();
+                        -var prdCategoryNames = new Array();
+                        -for(var i=0;i<reportHolder.getPrdCategories().length;i++){
+                            -prdCategoryIds[i] = reportHolder.getPrdCategories()[i].getPrdCatId();
+                            -prdCategoryNames[i] = reportHolder.getPrdCategories()[i].getPrdCatName();
+                        -}
+                        input(type='hidden', name='prdCategoryIds', id='prdCategoryIdsId', value=prdCategoryIds)
+                        input(type='hidden', name='prdCategoryNames', id='prdCategoryNamesId', value=prdCategoryNames)
+
+                        -var loanOfficerIds = new Array();
+                        -var loanOfficerNames = new Array();
+                        -for(var i=0;i<reportHolder.getLoanOfficers().length;i++){
+                            -loanOfficerIds[i] = reportHolder.getLoanOfficers()[i].getPersonnelId();
+                            -loanOfficerNames[i] = reportHolder.getLoanOfficers()[i].getDisplayName();
+                        -}
+                        input(type='hidden', name='loanOfficerIds', id='loanOfficerIdsId', value=loanOfficerIds)
+                        input(type='hidden', name='loanOfficerNames', id='loanOfficerNamesId', value=loanOfficerNames)
+                        -if(isReportLoaded == 1){
+                            div(id="LoanDisbursalSummaryId")
+                                table(id="LoanDisbursalSummaryTableId")
+                                    thead
+                                        tr
+                                            th(style ="text-align:center") No Of Loans
+                                            th(style ="text-align:center") Total Amount
+                                            th(style ="text-align:center") Detail
+                                    tbody
+                                        tr
+                                            td(style ="text-align:center") #{loanDisbursalSummary.getNoOfLoans()}
+                                            td(style ="text-align:center") #{loanDisbursalSummary.getTotalLoanAmount()}
+                                            td(style ="text-align:center")
+                                                a(href='#',  rel="external",data-theme="b",data-icon='check', id="detailId", data-role='button',data-mini='true', data-inline="true") Detail
+                            div(id="LoanDisbursalDetailId",style="display:none")
+                                -if(loanDisbursalDetList.length >10){
+                                    div(data-role="horizontal",class="ui-bar ui-grid-b")
+                                        div(class='ui-block-a',align="left")
+                                            a(href='#', data-icon='check', data-role='button',id='LoanDisbursalDetailPrevId', ,data-inline='true', data-mini='true') Prev
+                                        div(class='ui-block-b',align="center")
+                                            a(href='#', data-icon='check', data-role='button',id='LoanDisbursalDetailPageNoId', ,data-inline='true', data-mini='true')
+                                        div(class='ui-block-c',align="right")
+                                            a(href='#', data-icon='check', data-role='button',id='LoanDisbursalDetailNextId', ,data-inline='true', data-mini='true') Next
+                                -}
+                                table(id="LoanDisbursalDetailTableId")
+                                    thead
+                                        tr
+                                            th(style ="text-align:center") S No
+                                            th(style ="text-align:center") Group Name
+                                            th(style ="text-align:center") Loan Number
+                                            th(style ="text-align:center") Loan Account #
+                                            th(style ="text-align:center") Disbursal Date
+                                            th(style ="text-align:center") Loan Amount
+                                    tbody
+                                        - for( var i = 0; i < loanDisbursalDetList.length; i++ ) {
+                                            tr(class="showhide")
+                                                td(align="center") #{i+1}
+                                                td(align="center") #{loanDisbursalDetList[i].getGroupName()}
+                                                td(align="center") #{loanDisbursalDetList[i].getLoanNumber()}
+                                                td(align="center") #{loanDisbursalDetList[i].getLoanAccount()}
+                                                td(align="center") #{loanDisbursalDetList[i].getDisbursalDate()}
+                                                td(align="center") #{loanDisbursalDetList[i].getLoanAmount()}
+                                        -}
+                        -}
+                div(class="ui-loader-background")

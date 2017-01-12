@@ -1,0 +1,64 @@
+extends ../layout
+include ../header
+block title
+    title= 'LD Groups'
+block scripts
+    include ../headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/LDCallTracking.js')
+
+block content
+    div(data-role='page', data-theme='b', id="loginDetailsDiv")
+        +header("LD Call Tracking",["menu","backJavascript","logout"],'operationBack',[])
+        div(data-role="fieldcontain")
+            p(id="errorLabel",align="center",style="color:red;font-weight:bold")
+        form(id='BMFormId')
+            div(data-role="collapsible", id="minutes", data-overlay-theme="a", data-inline="true" , data-collapsed="false", data-content-theme="b")
+                h3 #{result[0].center_name} &nbsp; #{result[0].group_name}
+                div(data-role='content')
+                    div(data-role="fieldcontain")
+                        input(type="hidden", name="resultValue", id="resultId",value="#{JSON.stringify(result)}")
+                        input(type="hidden", name="selectedIndex", id="selectedIndexId",value="")
+                        input(type="hidden", name="clientId", id="clientIdId")
+                        input(type="hidden", name="groupId", id="groupIdId")
+                        input(type="hidden", name="accountId", id="accountIdId")
+                        input(type="hidden", name="officeId", id="officeIdId", value ="#{result[0].office_id}")
+                        input(type="hidden", name="callTrackingId", id="callTrackingIdId", value ="0")
+                        div(style = "overflow: auto;")
+                            table
+                                tr
+                                    th(style ="text-align:center") S No
+                                    th(style ="text-align:center") Client Acc Number
+                                    th(style ="text-align:center") Client Name
+                                    th(style ="text-align:center") Mobile No
+                                    th(style ="text-align:center") Call Status
+                                    th(style="text-align:center") Notified To RM
+                                    th(style ="text-align:center") RM Remarks
+                                    th(style="text-align:center") Notified To BM
+                                    th(style ="text-align:center") BM Remarks
+                                - for(var j=0;j<result.length;j++) {
+                                    tr
+                                        td(style ="text-align:center") #{j+1}
+                                        td(style ="text-align:center") #{result[j].global_account_num}
+                                        td(style ="text-align:center") #{result[j].display_name}
+                                        td(style ="text-align:center")
+                                            div(data-role="fieldcontain", data-inline="true",style="width:100%")
+                                                a(href='JavaScript:ShowPopup(#{j},#{result[j].phone_number})',id="popupLinkId"+j,data-icon='refresh', data-role='button', data-rel="popup", data-position-to='window', data-inline='true', data-mini='true') #{result[j].phone_number}
+                                                -if(result[j].alternate_contact_no != "")
+                                                    a(href='JavaScript:ShowPopup(#{j},#{result[j].alternate_contact_no})',id="alternateNoId"+j,data-icon='refresh', data-role='button', data-rel="popup", data-position-to='window', data-inline='true', data-mini='true') #{result[j].alternate_contact_no}
+                                        td(style ="text-align:center")
+                                            -if(result[j].ld_status == "Call Tracking Completed")
+                                                label(for="ldStatusId"+j,id="ldStatusLabelId"+j,style="color:red") #{result[j].ld_status}(#{result[j].lookup_value})
+                                            -else
+                                                label(for="ldStatusId"+j,id="ldStatusLabelId"+j) #{result[j].ld_status}(#{result[j].lookup_value})
+                                        td(style ="text-align:center")
+                                            -if(result[j].rm_queue!=null){
+                                                img(src="/images/FieldVerification.png", height="50px", width="50px")
+                                            -}
+                                        td(style ="text-align:center") #{result[j].rm_remarks}
+                                        td(style ="text-align:center")
+                                            -if(result[j].bm_queue!=null){
+                                                img(src="/images/FieldVerification.png", height="50px", width="50px")
+                                            -}
+                                        td(style ="text-align:center") #{result[j].bm_remarks}
+                                -}

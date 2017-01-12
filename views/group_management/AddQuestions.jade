@@ -1,0 +1,119 @@
+!!! 5
+html(lang = "en")
+    head
+        title= 'IKLANT-AddCCAQuestions'
+        meta(charset='utf-8')
+        meta(name='viewport',content='width=device-width, initial-scale=1')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+        link(rel='stylesheet', href='/stylesheets/dialogStyle.css')
+        script(type='text/javascript', src='/javascripts/jquery-1.7.1.min.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile.custom.js')
+        script(type='text/javascript', src='/javascripts/validation.js')
+        script(type='text/javascript', src='/javascripts/Creditreport.js')
+        script(type='text/javascript', src='/javascripts/ccaquestionarie.js')
+        script(type='text/javascript', src='/javascripts/common.js')
+    body(id="pageID")
+        form(id='BMFormId')
+            div(data-role='page', data-theme='a')
+                div(data-role="header", data-theme="a", class="ui-bar ui-grid-a")
+                    div(class="ui-block-a")
+                        div(data-role='controlgroup', data-type='horizontal', data-mini='true')
+                            img(id='groupIcon', src='/images/iklant.png')
+                            h3(for="value", style="margin:8px 0 0 10px;") Add Questions
+                    div(class="ui-block-b", align="right")
+                        a(href=contextPath + '/client/ci/logout',  rel="external",data-icon='back', data-role='button', title=' Logout ', data-inline="true") Logout
+                div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="a")
+                    h3 CCA QUESTIONARIE
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                                label(for='addQId') Add Questions
+                                input(type='radio', name='QName', id='addQId', data-inline="true",value="1")
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain")
+                                label(for='editQId') Edit Questions
+                                input(type='radio', name='QName', id='editQId', data-inline="true",value="2")
+                    div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="a", id="addQDiv")
+                        h3 Add
+                        div(data-role="content", id="questionarieid", data-theme="a", data-overlay-theme="a", data-inline="true")
+                            div(data-role="fieldcontain")
+                                label(for="question") Question Text
+                                input(type="text", name="question", id="question", value="", required='true',onkeyup='forRemoveSpecialCharcters(this)')
+                            div(data-role="fieldcontain")
+                                label(for="display") Display Text
+                                input(type="text", name="displaytext", id="display", value="", required='true',onkeyup='forRemoveSpecialCharcters(this)')
+                            div(data-role="fieldcontain")
+                                label(for="weightageId") Weightage
+                                input(type="text", name="weightage", id="weightageId", value="", required='true',onkeyup='forNumbers(this)')
+                            div(data-role="fieldcontain",id='questid')
+                                a(href='#answerpopup', data-icon='plus', data-role='button', title=' Add ', data-rel='popup', data-position-to='window', data-transition='pop', data-inline='true', data-mini='true') Add Answers
+
+                                div(data-role='fieldcontain',id = "choicesMarksHidden")
+                                    div(id='addClientDivId',data-mini="true")
+                                div(data-role='fieldcontain')
+                                    input(type="hidden", name="answerArray", id="answerArrayId", value="", required='true')
+                                div(data-role='fieldcontain')
+                                    input(type="hidden", name="marksArray", id="marksArrayId", value="", required='true')
+                        div(data-role="fieldcontain", data-mini="true" )
+                            a(href='#',rel="external", onclick = 'JavaScript:saveQuestion();', data-icon='check', data-role='button', data-theme='b', title=' Save ', data-inline='true' , id="SaveButtonId") Submit
+                            //a(href='#',rel="external",  data-role='button', data-icon="delete",data-theme='b', title=' needclarification ', data-inline='true' , id="resetAllAdd") Reset
+                            a(href=contextPath + '/client/ci/menu', rel="external",data-icon='back', data-role='button', title=' Back', data-inline='true') Back
+                    div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="a", id="editQDiv")
+                        h3 Edit
+                        div(data-role="content", id="questionarieidedit", data-theme="a", data-overlay-theme="a", data-inline="true")
+                            div(data-role='fieldcontain',align='left')
+                                label(for="questionsEditId") Questions
+                                select(name='questionsEditName',onchange="JavaScript:questionsOnchange()",rel = "external", data-mini="true" ,data-inline="true",autofocus="autofocus", id='questionsEditId', data-theme='a', data-icon='arrow-d', data-native-menu="false")
+                                    option(value='0',selected='selected') Select
+                                        -for(i=0;i<QuestionsId.length;i++){
+                                            -if(selectedQuestionId==QuestionsId[i])
+                                                option(value=QuestionsId[i],selected='selected') #{QuestionsNDNames[i]}
+                                            -else
+                                                option(value = QuestionsId[i]) #{QuestionsNDNames[i]}
+                                        -}
+                            div(data-role="fieldcontain")
+                                label(for="questioneditid") Question Text
+                                input(type="text", name="questionName", id="questioneditid", value="#{questionsObj.getQuestion()}", required='true',onkeyup='forRemoveSpecialCharcters(this)')
+                            div(data-role="fieldcontain")
+                                label(for="displayeditid") Display Text
+                                input(type="text", name="displaytextName", id="displayeditid", value="#{questionsObj.getDisplaytext()}", required='true',onkeyup='forRemoveSpecialCharcters(this)')
+                            div(data-role="fieldcontain")
+                                label(for="weightageEditId") Weightage
+                                input(type="text", name="weightageName", id="weightageEditId", value="#{questionsObj.getWeightage()}", required='true',onkeyup='forNumbers(this)')
+                            -for(i=0;i<questionsObj.getChoiceName().length;i++){
+                                div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                                    div(class='ui-block-a')
+                                        div(data-role="fieldcontain")
+                                            label(for="answerId"+i) Answer
+                                            input(type="text" ,name="answerName", id="answerId"+i, value="#{questionsObj.getChoiceName()[i]}", required='true',onkeyup='forRemoveSpecialCharcters(this)')
+                                    div(class='ui-block-b')
+                                        div(data-role="fieldcontain")
+                                            label(for="markId"+i) Mark
+                                            input(type="text", name="markName",class="markClass", id="markId"+i, value="#{questionsObj.getMarks()[i]}", required='true',onkeyup='forNumbers(this)')
+                                    input(type="hidden" ,name="choiceName", id="choiceId"+i, value="#{questionsObj.getChoiceId()[i]}", required='true')
+                            -}
+                            input(type="hidden", name="questionsLengthHidden", id="questionsLengthIdHidden", value=questionsObj.getChoiceName().length, required='true')
+                            input(type="hidden", name="choiceNameHidden", id="choiceIdHidden", value="", required='true')
+                            input(type="hidden", name="questionNameHidden", id="answerIdHidden", value="", required='true')
+                            input(type="hidden", name="marksNameHidden", id="marksIdHidden", value="", required='true')
+                        div(data-role="fieldcontain", data-mini="true" )
+                            a(href='#',rel="external", onclick = 'JavaScript:saveQuestion();', data-icon='check', data-role='button', data-theme='b', title=' Save ', data-inline='true' , id="SaveButtonId") Submit
+                            //a(href='#',rel="external",  data-role='button', data-icon="delete",data-theme='b', title=' needclarification ', data-inline='true' , id="resetAllEdit") Reset
+                            a(href=contextPath + '/client/ci/menu', rel="external",data-icon='back', data-role='button', title=' Back', data-inline='true') Back
+                    div(data-role="popup", id="answerpopup", data-theme="a", data-overlay-theme="b", class="ui-content")
+                        h3(align="center") Add Answers
+                        p(id='successMessage',align="center",style="color:green")
+                        div(data-role="fieldcontain", data-mini="true")
+                            label(for="answerid", data-inline="true") Answer*
+                            input(type="text", name="answer", id="answerid", value="",onkeyup='forRemoveSpecialCharcters(this)')
+                        div(data-role="fieldcontain", data-inline="true")
+                            label(for="markid", data-inline="true") Mark*
+                            input(type="text", name="markid", id="markid", value="",onkeyup='forNumbers(this)')
+
+                        div(data-role="fieldcontain", data-inline="true")
+                            a(href='#questid',  rel="external",data-icon='plus', data-role='button', title=' Add ', data-inline="true", id='addChoices') Save
+                            a(href='#questionarieid', id="questionarieIdCancel",rel="external",data-icon='delete', data-role='button', title='Back', data-inline="true") Back
+                div(class="ui-loader-background")

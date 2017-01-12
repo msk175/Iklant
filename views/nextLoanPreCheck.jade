@@ -1,0 +1,39 @@
+extends ./layout
+include ./header
+
+block title
+    title= 'Group Details'
+
+block scripts
+    include ./headerJqueryMobileBeta-3
+    //include ./headerAdditionals
+    link(rel='stylesheet', href='/stylesheets/loanSanctionCustom.css')
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/validation.js')
+    script(type='text/javascript', src='/javascripts/nextLoanPreCheck.js')
+
+
+block content
+        form(id='BMFormId')
+            div(data-role='page', data-theme='b')
+                +header("Next loan pre check",["welcomeNote","menu","logout"])
+                include ./GroupManagementLayout
+                div(data-role='content',id='groupContent')
+                    div(class='content-primary')
+                        ul(data-role='listview', data-split-icon='gear', data-split-theme='c', data-filter="true", data-filter-theme='c',  data-filter-placeholder='Search for a group')
+                            p(id='successMessage',class='success-message global-font-details',align='center') #{statusMessage}
+                                - for( var i = 0; i < groupsName.length; i++ ) {
+                                    li
+                                        a(href="JavaScript:getClientListForSecondLoanProcess('#{groupsId[i]}','#{accountNumbers[i]}','#{mifosCustomerId[i]}',#{loanCount[i]},#{clientCount[i]})", rel="external")
+                                            img(src='/images/edit.png', width='60', height='60', style='margin:8px 10px 10px 20px;')
+                                            -if(groupsName[i] != null)
+                                                h3(style='color:#DB94E4') #{groupsName[i]}
+                                            -else
+                                                h3(style='color:#DB94E4') Created in Mifos
+                                            label(for='groupsId' , id='labelGroupsId'+i) #{listGroupsGlobalNumberArray[i]} | FieldOfficer : #{fieldOfficerName[i]}
+                                -}
+                    input(type="hidden", name="groupId", id="groupId")
+                    input(type="hidden", name="accountNo", id="accountNo")
+                    input(type="hidden", name="customerId", id="customerId")
+                    input(type="hidden", name="currentLoanCount", id="currentLoanCount")
+                    input(type="hidden", name="clientCount", id="clientCount")

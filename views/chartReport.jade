@@ -1,0 +1,71 @@
+!!! 5
+html(lang = "en")
+    head
+        meta(http-equiv="content-type", content="text/html;charset=UTF-8" )
+        link(rel="stylesheet", href="/stylesheets/basic.css")
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+        link(rel='stylesheet', href='/stylesheets/dialogStyle.css')
+        script(type='text/javascript', src='/javascripts/jquery-1.7.1.min.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile.js')
+        script(type='text/javascript', src='/javascripts/enhance.js')
+        script(type="text/javascript")
+            enhance({
+                loadScripts: [
+                    {
+                        src: '/javascripts/excanvas.js', iecondition: 'all'
+                    },
+                    '/javascripts/jquery.js',
+                    '/javascripts/visualize.jQuery.js',
+                    '/javascripts/example.js'
+                ],
+                loadStyles: [
+                    '/stylesheets/visualize.css',
+                    '/stylesheets/visualize-light.css'
+                ]
+            });
+    body
+        form(id='reportformid')
+            div(data-role='page', data-theme='a')
+                div(data-role="fieldcontain")
+                    input(type='hidden', name='cl', id='cls', value= "")
+                    input(type='hidden', name='statusIdArray', id='statusIdArray', value= "")
+                    input(type='hidden', name='temp', id='temp', value= "")
+
+                div(data-role="header", data-theme="a", class="ui-bar ui-grid-a")
+                    div(class="ui-block-a")
+                        div(data-role='controlgroup', data-type='horizontal', data-mini='true')
+                            h3 GPS TRACKING SYSTEM - Report Management
+                    div(class="ui-block-b", align="right")
+                        a(href=contextPath + '/client/ci/menu', rel="external",data-icon='grid', data-role='button', title=' Menu', data-inline='true') Menu
+                        a(href=contextPath + '/client/ci/logout',  rel="external",data-icon='back', data-role='button', title=' Logout ', data-inline="true") Logout
+                div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="a",id="reportMenu")
+                    h3 Report View
+                    div(data-role='content',id="tableviewdiv")
+                        table(data-role="table",id="tableviewdiv1")
+                            caption Approved and Rejected Groups
+                            thead
+                                tr
+                                    td
+                                    th Vijay Prakash
+                                    th Bala Krishnan
+                                    th Gopal
+                                    th Nandhini
+                                    th Gokul
+                            tbody
+                                tr
+                                    th NO Of Sanctioned Groups
+                                    td 17
+                                    td 23
+                                    td 53
+                                    td 47
+                                    td 42
+                                tr
+                                    th NO Of Rejected Groups
+                                    td 8
+                                    td 9
+                                    td 12
+                                    td 6
+                                    td 13
+                div(class="ui-loader-background")

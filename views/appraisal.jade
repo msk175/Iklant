@@ -1,0 +1,31 @@
+extends ./layout
+include ./header
+
+block title
+    title= 'Appraisal'
+
+block scripts
+    include ./headerJqueryMobile-1
+    script(type='text/javascript', src='/javascripts/cca1.js')
+    script(type='text/javascript', src='/javascripts/validation.js')
+
+block content
+    form(id='BMFormId')
+        input(type='hidden', name='statusIdName', id='initialStatusId', value="#{}")
+        div(data-role='page', data-theme='b')
+            +header("Client Appraisal",["welcomeNote","menu","logout"])
+            include ./GroupManagementLayout
+            div(data-role='content')
+                input(type='hidden', name='alertMessageHidden', id='alertMessageHidden', value="#{}")
+                div(class='content-primary')
+                    ul(data-role='listview', data-split-icon='gear', data-split-theme='c', data-filter="true", data-filter-theme='c',  data-filter-placeholder='Search for a group')
+                        p(id='successmessage',align='center',class="success-message global-font-details")    #{errorMsg}
+                        - for(var i=0;i<groupsName.length;i++) {
+                            li
+                                a(href="JavaScript:appraisalGroupClickSubmission('#{groupsId[i]}');")
+                                    img(id="image"+groupsName[i],src='/images/edit.png', width='60', height='60', style='margin:8px 10px 10px 20px;')
+                                    h3 #{groupsName[i]}
+                                    label(for='groupsId' , id='labelGroupsId'+i) #{listGroupsGlobalNumberArray[i]} | FieldOfficer : #{fieldOfficerName[i]}
+                        -}
+            input(type="hidden", name="groupId", id="groupId")
+            div(class="ui-loader-background")

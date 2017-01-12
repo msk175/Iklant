@@ -1,0 +1,80 @@
+extends ../layout
+include ../header
+block title
+    title= 'LD Groups'
+block scripts
+    include ../headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/LDCallTracking.js')
+block content
+    div(data-role='page', data-theme='b', id="loginDetailsDiv")
+        +header("LD Call Tracking",["menu","backJavascript","logout"],'operationBack',[])
+        div(data-role="fieldcontain")
+            p(id="errorLabel",align="center",style="color:red;font-weight:bold")
+        form(id='BMFormId')
+            div(data-role="collapsible", id="minutes", data-overlay-theme="a", data-inline="true" , data-collapsed="false", data-content-theme="b")
+                h3 #{result[0].center_name} &nbsp; #{result[0].group_name}
+                div(data-role='content')
+                    div(data-role="fieldcontain")
+                        input(type="hidden", name="resultValue", id="resultId",value="#{JSON.stringify(result)}")
+                        input(type="hidden", name="officeId", id="officeIdId", value ="#{result[0].office_id}")
+                        - if(roleId == 1) {
+                            div(style = "overflow: auto;")
+                                table
+                                    tr
+                                        th(style ="text-align:center") S No
+                                        th(style ="text-align:center") Client Name
+                                        th(style ="text-align:center") Loan Amount
+                                        th(style ="text-align:center") Client Mismatch Remarks
+                                        th(style ="text-align:center") Amount Mismatch Remarks
+                                        th(style ="text-align:center") Remarks
+                                        th(style ="text-align:center") Action
+                                    - for(var i=0;i<result.length;i++) {
+                                        tr
+                                            td(style ="text-align:center") #{i+1}
+                                            td(style ="text-align:center") #{result[i].client_name}
+                                            td(style ="text-align:center") #{result[i].loan_amount}
+                                            td(style ="text-align:center") #{result[i].client_mismatch}
+                                            td(style ="text-align:center") #{result[i].amount_mismatch}
+                                            td(style ="text-align:center")
+                                                input(type="text", name="rmRemarks"+i, id="rmRemarksId"+i,value ="")
+                                            td(style ="text-align:center")
+                                                a(href='#', rel="external",data-icon='refresh', data-role='button', title=' Add ', data-inline="true",id="submitId"+i,data-mini="true",onclick='JavaScript:submitRMForm(#{i});') Submit
+                                                p(id="processNotificationId"+i,style="color:red;font-weight:bold")
+
+                                    -}
+                        - }
+                        - else {
+                            div(style = "overflow: auto;")
+                                table
+                                    tr
+                                        th(style ="text-align:center") S No
+                                        th(style ="text-align:center") Client Name
+                                        th(style ="text-align:center") Call Status
+                                        th(style ="text-align:center") EMI Amount
+                                        th(style ="text-align:center") EMI Mismatch Remarks
+                                        th(style ="text-align:center") Interet Rate
+                                        th(style ="text-align:center") Interet Rate Mismatch Remarks
+                                        th(style ="text-align:center") Tenure
+                                        th(style ="text-align:center") Tenure Mismatch Remarks
+                                        th(style ="text-align:center") Remarks
+                                        th(style ="text-align:center") Action
+
+                                    - for(var i=0;i<result.length;i++) {
+                                        tr
+                                            td(style ="text-align:center") #{i+1}
+                                            td(style ="text-align:center") #{result[i].client_name}
+                                            td(style ="text-align:center") #{result[i].call_status}
+                                            td(style ="text-align:center") #{result[i].emi_amount}
+                                            td(style ="text-align:center") #{result[i].emi_mismatch}
+                                            td(style ="text-align:center") #{result[i].interest_rate}
+                                            td(style ="text-align:center") #{result[i].interest_mismatch}
+                                            td(style ="text-align:center") #{result[i].tenure_period}
+                                            td(style ="text-align:center") #{result[i].tenure_mismatch}
+                                            td(style ="text-align:center")
+                                                input(type="text", name="bmRemarks"+i, id="bmRemarksId"+i,value ="")
+                                            td(style ="text-align:center")
+                                                a(href='#', rel="external",data-icon='refresh', data-role='button', title=' Add ', data-inline="true",id="submitId"+i,data-mini="true",onclick='JavaScript:submitBMForm(#{i});') Submit
+                                                p(id="processNotificationId"+i,style="color:red;font-weight:bold")
+                                    - }
+                        - }

@@ -1,0 +1,134 @@
+!!! 5
+html(lang = "en")
+	head
+		title= 'IKLANT-GroupCreation'
+		meta(charset='utf-8')
+		meta(name='viewport',content='width=device-width, initial-scale=1')
+		meta(http-equiv='Cache-Control', content='no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0')
+		meta(http-equiv='Pragma', content='no-cache')
+		meta(http-equiv='Expires', content='-1')
+		link(rel='stylesheet', href='/stylesheets/jquery.mobile-1.3.0-beta.1.min.css')
+		link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+		link(rel='stylesheet', href='/stylesheets/jquery.mobile.css')
+		link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+		link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+		link(rel='stylesheet', href='/stylesheets/dialogStyle.css')
+		script(type='text/javascript', src='/javascripts/jquery-1.8.2.js')
+		script(type='text/javascript', src='/javascripts/jquery-ui.js')
+		//script(type='text/javascript', src='/javascripts/jquery-1.7.1.min.js')
+		script(type='text/javascript', src='/javascripts/jquery.mobile.js')
+		script(type='text/javascript', src='/javascripts/jquery.mobile.custom.js')
+		script(type='text/javascript', src="/javascripts/Mobile/newGroupMobile.js")
+		script(type='text/javascript', src='/javascripts/validation.js')
+	body
+		form(id="BMFormId")
+			div(data-role='page', data-theme='b')
+				div(data-role="header", data-theme="a", class="ui-bar ui-grid-a")
+					div(class="ui-block-a")
+						img(id='groupIcon', src='/images/iklantMobile.png')
+					div(class="ui-block-b", align="right")
+						a(href=contextPath+ '/client/ci/menu', rel="external",data-icon='grid', data-role='button',data-mini='true',title=' Menu', data-inline='true') Menu
+						a(href=contextPath+ '/client/ci/logout',  rel="external",data-icon='back', data-role='button',data-mini="true", title=' Logout ', data-inline="true") Logout			
+				div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b")
+					h3 Group Details
+					p(id ='errorField',data-theme="e",align='center') 
+					div(data-role="content", id="groupdetails", data-theme="c", data-overlay-theme="c", data-inline="true", id="groupDetailsDiv")
+						div(data-role="fieldcontain", data-mini="true",id='field1')
+							label(for="groupName", data-inline="true") Group Name *
+							input(type="text", name="groupName",maxlength="30",autocomplete="off", id="groupName",readonly="readonly",value="#{nextGroupName}")
+							input(type='hidden', name='groupNameArrayHidden', id='groupNameArrayHidden', value="#{groupNames}")	
+						div(data-role="fieldcontain",id='field2')
+							label(for="centerName") Center Name *
+							input(type="text", name="centerName",maxlength="50", id="centerName",autocomplete="off", required='true')
+						div(data-role="fieldcontain")
+							input(type='hidden', name='branchNameHidden', id='branchNameHiddenId' , value = officeId)
+                        div(data-role="fieldcontain")
+                            label(for="areaName") Area Name *
+                            select(name='areaName', id='areaName', data-theme='b', data-icon='bank', data-inline='true', data-native-menu="false")
+                                option(value='0') Select
+                                -for(var i=0;i<areaCodes.length; i++) {
+                                    option(value=areaCodes[i]) #{areaNames[i]}
+                                - }
+                        div(data-role="fieldcontain",id='field3')
+							label(for="createdDatePicker") Group Formed Date *
+							input(type="text", name="createdDatePicker", id="createdDatePicker", value="", required='true', readonly="readonly")
+							div(data-role="fieldcontain")
+								label(for="loanType") Loan Type *
+								select(name='loanType',data-theme="b", id='loanType',data-inline='true', data-icon='grid', data-mini='true', data-native-menu="false")
+									option(value='0') Select
+									-for(var i=0;i<loanTypeIdArray.length; i++) {
+										option(value=loanTypeIdArray[i]) #{loanTypeArray[i]}
+									- }
+						div(id='field4')
+							div(data-role="fieldcontain" )
+								label(for='week') Week(S) 
+								input(type='radio', name='meetingschedule', id='week', data-inline="true",value="1")
+								input(type='hidden', name='meetingscheduleWeekHidden', id='meetingscheduleWeekHidden', value="")
+							div(data-role="fieldcontain")
+								label(for='month') Month(S)
+								input(type='radio', name='meetingschedule', id='month', data-inline="true",value="2")
+								input(type='hidden', name='meetingscheduleMonthHidden', id='meetingscheduleMonthHidden', value="")
+						div(data-role="fieldcontain" , id ='field5')
+							label(for="recurevery") Recur Every
+							input(type="text", name="recurevery", id="recurevery",autocomplete="off",maxlength="1", value= '' , required='true')
+						div(data-role="fieldcontain" , id='field6')
+							label(for="daylist") Week(s) on
+							select(name='daylist', id='daylist', data-theme='b', data-icon='grid',data-mini='true', data-inline='true', data-native-menu="false")
+								option(value='0',selected='selected') --select--
+								option(value='1') Monday
+								option(value='2') Tuesday
+								option(value='3') Wednesday
+								option(value='4') Thursday
+								option(value='5') Friday
+								option(value='6') Saturday
+								option(value='7') Sunday
+							input(type="hidden", name="dayorder", id="dayorder", value= '' , required='true')
+						div(data-role="fieldcontain" , id='field7')
+							label(for="location") Location Of Meeting*
+							input(type="text", name="location",autocomplete="off",maxlength="50", id="location", value= '' , required='true')
+						div(data-role="fieldcontain" , id='field8')
+							label(for="day") Day
+							input(type="text", name="day",autocomplete="off",maxlength="2", id="day", value= '' , required='true')
+						div(data-role="fieldcontain" , id='field9')
+							label(for="onemonth") of every
+							input(type="text", name="onemonth",autocomplete="off", id="onemonth", value= "1" , readonly="readonly")	
+							label(for="hid")    month(s)
+							input(type="hidden", name="hid", id="hid", value= '' , required='true')	
+						div(data-role="fieldcontain" , id='field10')
+							label(for="locationmonth") Location Of Meeting*
+							input(type="text", name="locationmonth",autocomplete="off",maxlength="50", id="locationmonth", value= '' , required='true')
+						
+						//div(data-role="fieldcontain",id="field14")
+							label(for="totalClientsId") Total Number of Clients*
+							input(type="text", name="totalClients",id="totalClientsId",autocomplete="off", required='true',onkeyup='numeric(this)')
+						div(data-role="fieldcontain", id="field11")
+							a(href='#internalloan', data-icon='plus', data-role='button',id='addClient', title=' Add ', data-rel='popup', data-position-to='window', data-transition='pop', data-inline='true', data-mini='true') Add
+							div(data-role='content' , id="abc")
+								div(class='content-primary')
+									div(id='addClientDivId')
+							div(data-role="popup", id="internalloan", data-theme="b", data-overlay-theme="b", class="ui-content")
+								h3(align="center") Member details
+								p(id="errorLabel",align="center")
+								div(data-role="fieldcontain", data-mini="true")
+									label(for="clientName", data-inline="true") FirstName*
+									input(type="text", name="clientName",maxlength="30",autocomplete="off", id="clientName", value="")
+								div(data-role="fieldcontain", data-mini="true")
+									label(for="clientLastNameId", data-inline="true") LastName*
+									input(type="text", name="clientLastName",maxlength="30",autocomplete="off", id="clientLastNameId", value="")
+								div(data-role="fieldcontain", data-inline="true")
+									a(href='#internalloan3',  rel="external",data-icon='check', data-role='button', title=' Add ', data-inline="true", id='saveClient') Save
+									a(href='#internalloan', rel="external",data-icon='back', data-role='button', title=' Back', data-inline="true") Back
+						div(data-role="fieldcontain", id="field12")
+							a(href='#',  rel="external", data-role='button', title=' Add ',data-theme="b", data-inline="true",data-mini="true", id='AddGroup') Create Group	
+						div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-a")
+							div(class='ui-block-a',align="left")
+								div(data-role='fieldcontain')
+									a(href='#' ,id='previous',data-role='button' ,data-icon='arrow-l' ,data-theme='b',data-mini="true",data-inline='true' ,data-shadow='true' ,data-iconshadow='true') Previous
+							div(class='ui-block-b',align="right")
+								div(data-role='fieldcontain')
+									a(href='#' ,id='next',data-role='button' ,data-icon='arrow-r',data-iconpos="right" ,data-theme='b',data-mini="true",data-inline='true' ,data-shadow='true' ,data-iconshadow='true') Next
+						
+						
+				input(type='hidden', name='clientNames', id='clientNamesId')
+				input(type='hidden', name='clientLastNames', id='clientLastNamesId')
+				input(type='hidden', name='overdues', id='overduesId')

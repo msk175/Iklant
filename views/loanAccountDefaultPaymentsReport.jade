@@ -1,0 +1,209 @@
+extends ./layout
+include ./header
+
+block title
+    title= 'IKLANT-LoanAccountDefaultPayments'
+
+block scripts
+    link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+    include ./headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/jquery-ui.js')
+    script(type='text/javascript', src='/javascripts/trailBalance.js')
+    script(type="text/javascript", src="/javascripts/reportmgmt.js")
+    script(type="text/javascript", src="/javascripts/jquery.dataTables.js")
+
+block content
+    form(id='loanAccountDefaultPaymentsReport')
+        input(type='hidden', name='selectedDocName', id='selectedDocName', value="#{fileLocation}")
+        input(type='hidden', name='reportPageName', id='reportPageName', value="loanAccountDefaultPaymentsReport")
+        input(type='hidden', name='report_download_flag', id='report_download_flag', value="#{download_report}")
+        input(type='hidden', name='reportType', id='reportType')
+        div(data-role='page', data-theme='b', id="loginDetailsDiv")
+            -var groupsReport = constantsObj.getGroupsReports()
+            +header("",["backHref","menu","logout"],contextPath + '/client/ci/reportsMenuByCategory/'+groupsReport)
+            div(data-role="navbar",id="navid")
+                ul(id="custom-nav-list")
+                    li
+                        a(rel="external", data-role="tab" , id="table-li-1",class="ui-btn-active") Loan Account Default Payments
+            div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b",id='loanAccountDefaultPaymentsReportDiv')
+                h3 Select Dates to view Loan Account Default Payments
+                p(id="errorField",class='error-message global-font-details',align="center")
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a")
+                    div(class='ui-block-a',style="width:10%")
+                        div(data-role="fieldcontain")
+                        label(id="report_label_top") To Date
+                    div(class='ui-block-b',style="width:15%")
+                        div(data-role="fieldcontain")
+                            input(type="text", class="toDate",name="todateValue", id="todateValue",readonly = "readonly", value="#{endDate}", required='true')
+                    - if(roleId == constantsObj.getSMHroleId() || roleId == constantsObj.getNaiveroleId()|| roleId == constantsObj.getAMHroleId()) {
+                    div(class='ui-block-b',style="width:10%")
+                        div(data-role="fieldcontain")
+                        label(id="report_label_top") Office
+                    div(class='ui-block-c',style="width:15%")
+                        div(data-role="fieldcontain")
+                        select(name='listoffice', id='listoffice', data-theme='b', data-icon='grid', data-inline='true', data-mini='true',onchange="loadFO()")
+                            option(value='-1') All
+                            -for(i=0;i<officeIdArray.length;i++){
+                                -if(officeValue == officeIdArray[i]){
+                                    option(value=officeIdArray[i],selected="") #{officeNameArray[i]}
+                                -}else{
+                                    option(value=officeIdArray[i]) #{officeNameArray[i]}
+                                -}
+                            -}
+                    -}
+                    div(class='ui-block-c',style="width:15%")
+                        div(data-role="fieldcontain")
+                        label(id="report_label_top") Product Category
+                    div(class='ui-block-d',style="width:10%")
+                        div(data-role="fieldcontain")
+                        select(name='prdCategoryValue', id='prdCategoryValue', data-theme='b', data-icon='grid', data-inline='true', data-mini='true')
+                            option(value='-1') All
+                            -for(i=0;i<prdCategoryNameArray.length;i++){
+                                -if(prd_category_value == prdCategoryIdArray[i]){
+                                    option(value=prdCategoryIdArray[i],selected="") #{prdCategoryNameArray[i]}
+                                -}else{
+                                    option(value=prdCategoryIdArray[i]) #{prdCategoryNameArray[i]}
+                                -}
+                            -}
+                    div(class='ui-block-d',style="width:10%")
+                        div(data-role="fieldcontain")
+                        label(id="report_label_top") Loan Product
+                    div(class='ui-block-e',style="width:15%")
+                        div(data-role="fieldcontain")
+                        select(name='loanPrdValue', id='loanPrdValue', data-theme='b', data-icon='grid', data-inline='true', data-mini='true')
+                            option(value='-1') All
+                            -for(i=0;i<prdOfferingNameArray.length;i++){
+                                -if(loan_product_value == prdOfferingIdArray[i]){
+                                    option(value=prdOfferingIdArray[i],selected="") #{prdOfferingNameArray[i]}
+                                -}else{
+                                    option(value=prdOfferingIdArray[i]) #{prdOfferingNameArray[i]}
+                                -}
+                            -}
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a")
+                    div(class='ui-block-a',style="width:9%")
+                        div(data-role="fieldcontain")
+                        label(id="report_label_top") Field Officer
+                    div(class='ui-block-b',style="width:11%")
+                        div(data-role="fieldcontain")
+                        select(name='fieldOffValue', id='loanOfficerId', data-theme='b', data-icon='grid', data-inline='true', data-mini='true')
+                            option(value='-1') All
+                            -for(i=0;i<personnelNameArray.length;i++){
+                                -if(personnel_value == personnelIdArray[i]){
+                                    option(value=personnelIdArray[i],selected="") #{personnelNameArray[i]}
+                                -}else{
+                                    option(value=personnelIdArray[i]) #{personnelNameArray[i]}
+                                -}
+                            -}
+                    div(class='ui-block-b',style="width:15%")
+                        div(data-role="fieldcontain")
+                        label(id="report_label_align") Customer
+                    div(class='ui-block-c',style="width:25%")
+                        div(data-role="fieldcontain")
+                            input(type="text", name="customerValue", id="customerValue", value="#{customerVal}", required='true',onkeyup='forNamesValidation(this)')
+                    div(class='ui-block-d',style="width:15%")
+                        div(data-role="fieldcontain")
+                        label(id="report_label_align") Account No
+                    div(class='ui-block-d',style="width:25%")
+                        div(data-role="fieldcontain")
+                            input(type="text", name="accountNoValue", id="accountNoValue", value="#{accountNo}", required='true',onkeyup='forNumbers(this)')
+                    div(class='ui-block-e',style="width:15%")
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-bar ui-grid-c")
+                    div(class='ui-block-a',align="center")
+                        div(data-role="fieldcontain", data-mini="true")
+                            a(href="JavaScript:generateReportPageAccountDefaultPayments('loanAccountDefaultPaymentsReport','Summary')",id="loanAccountDefaultPayments_report_download",rel="external", data-role='button', title=' Download ', data-inline="true",data-mini="true") View Summary
+                    div(class='ui-block-b',align="center")
+                        div(data-role="fieldcontain", data-mini="true")
+                            a(href="JavaScript:generateReportPageAccountDefaultPayments('loanAccountDefaultPaymentsReport','Detailed')",id="loanAccountDefaultPayments_report_download",rel="external", data-role='button', title=' Download ', data-inline="true",data-mini="true") View Detailed Report
+                    div(class='ui-block-c',align="center")
+                        div(data-role="fieldcontain", data-mini="true")
+                            a(href='#',id="loanAccountDefaultPayments_report_download",rel="external",data-role='button', title=' Download ', data-inline="true",data-mini="true",onclick="JavaScript:generateReportPageAccountDefaultPayments('loanAccountDefaultPaymentsReport','Download')") Export To Excel
+            -if(result != null){
+            div(id="loanAccDefaultPaymentsReportTableId",style = "overflow: auto;",class=(result.length>10)?'container '+detailed:detailed)
+                div(data-role="navbar",id="navid")
+                    ul(id="custom-nav-list")
+                        li
+                            a(rel="external", data-role="tab" , id="table-li-1",class="ui-btn-active") Loan Account Default Payment
+                table(id="fixedHeader_detailedsummary", CLASS="DISPLAY", cellspacing="0", width="100%")
+                    thead
+                        tr
+                            th S.No
+                            th Office
+                            th Customer
+                            th Field Officer
+                            th Loan Product
+                            th Product Category
+                            th Global Account No
+                            th Total Installments
+                            th No.of Installments Done
+                            th No.of Regular Payments
+                            th No.of Delayed Payments
+                    -if(result.length != 0){
+                    - var index = 0
+                    - for(var i=0;i<result.length;i++) {
+                        -if(result[i].account_id != null){
+                        tbody
+                            tr(class="showhide")
+                                td(class='center-text') #{i+1}
+                                td #{result[i].office}
+                                td #{result[i].customer}
+                                td #{result[i].field_officer}
+                                td #{result[i].loan_product}
+                                td #{result[i].category_name}
+                                td #{result[i].global_account_num}
+                                td(class='center-text') #{result[i].total_installments}
+                                td(class='center-text') #{result[i].no_of_installments_done}
+                                td(class='center-text') #{result[i].no_of_regular_payments}
+                                td(class='center-text') #{result[i].no_of_delayed_payments}
+                            - index++
+                        -}
+                    - }
+                    -}else{
+                        tbody
+                            tr
+                                td(align="center",colspan=9) No Records
+                    -}
+            div(style = "overflow: auto;",class=(result.length>10)?'container '+summary:summary)
+                div(data-role="navbar",id="navid")
+                    ul(id="custom-nav-list")
+                        li
+                            a(rel="external", data-role="tab" , id="table-li-1",class="ui-btn-active") Loan Accounts Default Payment Report
+                table(id="fixedHeader_summary_full", CLASS="DISPLAY", cellspacing="0", width="100%")
+                    thead
+                        tr
+                            th S. No
+                            th Office
+                            th Field Officer
+                            th Total Customers
+                            th Total Regular Payments
+                            th Total Delayed Payments
+                    - count = 1;
+                    -if(result.length != 0){
+                    - for(var i=0;i<result.length;i++) {
+                        -if(result[i].account_id == null && result[i].office == null){
+                            tbody
+                                tr
+                                    td(colspan='3',class='text-right-align',style='color:#3c1b39') Total
+                                    td(class='text-right-align',style='color:#3c1b39') #{result[i].total_accounts}
+                                    td(class='text-right-align',style='color:#3c1b39') #{result[i].total_no_of_regular_payments}
+                                    td(class='text-right-align',style='color:#3c1b39') #{result[i].total_no_of_delayed_payments}
+                        -} else if (result[i].account_id == null && result[i].office != null && result[i].personnel_id != null) {
+                            tbody
+                                tr
+                                    td #{count}
+                                    td #{result[i].office}
+                                    td #{result[i].field_officer}
+                                    td(class='center-text') #{result[i].total_accounts}
+                                    td(class='center-text') #{result[i].total_no_of_regular_payments}
+                                    td(class='center-text') #{result[i].total_no_of_delayed_payments}
+                            - count++
+                        -}
+                    - }
+                    -}else{
+                        tbody
+                            tr
+                                td(align="center",colspan=9) No Records
+                    -}
+            -}
+            div(class="ui-loader-background")

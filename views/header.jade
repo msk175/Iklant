@@ -1,0 +1,51 @@
+//- title: title that is found in the header eg., Loan Sanction
+    infoArray: The array of buttons that must be visible in the header
+                possible values: welcomeNote, menu, logout, backJavascript, backHref
+    backLink: If the backJavascript is used, then it has the method name
+              If the backHref is used, then it has the link of the anchor tag
+    backParams: For backJavascript, it has the array of parameters for the array eg., [param1, param2, ..]
+
+mixin header(title,infoArray,backLink,backParams)
+    div(data-role="header", data-theme="a")
+        div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+            div(class="ui-block-a")
+                div(data-role='controlgroup', data-type='horizontal', data-mini='true')
+                    img(id='groupIcon', src='/images/iklant.png')
+                    h3(for="value", style="margin:8px 0 0 10px;")= title
+            div(class="ui-block-b",align="right",style="padding:25px 50px 0 0;")
+                -var mtdParameter = '';
+                -for(var i=0; i<infoArray.length; i++){
+                    -if(infoArray[i] == 'welcomeNote'){
+                        h3(align='right') Welcome #{userName}
+                    -}
+                    -if(infoArray[i] == 'changePassword'){
+                        a(href=contextPath + '/client/ci/changePassword',  rel="external",data-icon='info',
+                            data-role='button', title=' Change Password ', data-inline="true",id='change-pwd') Change Password
+                    -}
+                    -if(infoArray[i] == 'menu'){
+                        a(href=contextPath + '/client/ci/menu', rel="external",data-icon='grid', data-role='button',
+                            title=' Menu', data-inline='true', id ='menu') Menu
+                    -}
+                    -if(infoArray[i] == 'logout'){
+                        a(href=contextPath + '/client/ci/logout',  rel="external",data-icon='back', data-role='button',
+                            title=' Logout ', data-inline="true", id='logout') Logout
+                    -}
+                    -if(infoArray[i] == 'backJavascript'){
+                        -for(var j=0; j<backParams.length; j++){
+                            -if(j>0){
+                                -mtdParameter+=',';
+                            -}
+                            -mtdParameter+=backParams[j];
+                        -}
+
+                        a(href='JavaScript:'+ backLink+ '('+ mtdParameter+ ')',
+                                rel="external", data-theme="a",data-icon='arrow-l', data-role='button',
+                                title=' Back', data-inline="true", id='back') Back
+                    -}
+
+                    -if(infoArray[i] == 'backHref'){
+
+                        a(href=backLink,rel="external", data-theme="a",data-icon='arrow-l', data-role='button',
+                        title=' Back', data-inline="true") Back
+                    -}
+                -}

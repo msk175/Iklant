@@ -1,0 +1,125 @@
+extends ./layout
+include ./header
+
+block title
+    title= 'IKLANT-Search NPA'
+
+block scripts
+    link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+    include ./headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/jquery.multiselect.css')
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/jquery-ui.js')
+    script(type='text/javascript', src='/javascripts/jquery.multiselect.js')
+    script(type='text/javascript', src='/javascripts/searchnpa.js')
+
+block content
+    form(id='assignROFormId',enctype="multipart/form-data")
+        div(data-role='page', data-theme='b', id="gridplus")
+            +header("Search NPA",["menu","logout"],"",[])
+            div(data-role="navbar")
+                ul
+                    li
+                        a(href=contextPath + '/client/ci/NPALRGroups/assignROLoad', rel="external", data-role="tab" , id="assignRONavBarId") Assign Recovery Officer
+                    li
+                        a(href=contextPath + '/client/ci/searchnpa",rel="external', data-role="tab",class="ui-btn-active") Search NPA
+            div(data-role="content",id="assignRODivId")
+            p(id ='errorField',data-theme="e",align='center',class='error-message global-font-details')
+                div(data-role='horizontal', id="menu", class="ui-bar ui-grid-d")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                            select(name='branches', onchange='JavaScript:onchangeSearchCriteriaBranch()', data-theme="b", id='branches',data-inline='true', data-icon='arrow-d', data-mini='true',data-native-menu="true")
+                                option(value='0') Select Branch
+                                option(value='-1') All
+                                -for(var i=0;i<officeIdArray.length;i++) {
+                                    option(value=officeIdArray[i]) #{officeNameArray[i]}
+                                -}
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain")
+                            select(name='recoveryOfficers', onchange='JavaScript:onchangeSearchCriteriaFO()', data-theme="b", id='recoveryOfficers',data-inline='true', data-icon='arrow-d', data-mini='true',data-native-menu="true")
+                                option(value='0') Select FO
+                                option(value='-1') All
+                                -for(var i=0;i<recoveryOfficerId.length;i++) {
+                                    option(value=recoveryOfficerId[i]) #{recoveryOfficerName[i]}
+                                -}
+                    div(class='ui-block-c')
+                        div(data-role="fieldcontain")
+                            select(name='capabilityPercentage', onchange='JavaScript:onchangeSearchCriteriaCP()',data-theme="b", id='capabilityPercentage',data-inline='true', data-icon='arrow-d', data-mini='true', data-native-menu="true")
+                                option(value='0') Capability Percentage
+                                option(value='-1') All
+                                option(value='100') 100 % - On Current
+                                option(value='95') 95 % - will pay within 15 Days
+                                option(value='80') 80 % - will pay within 30 days
+                                option(value='60') 60 % - will pay within 45 days
+                                option(value='40') 40 % - will pay within 60 days
+                                option(value='20') 20 % - will pay within 75 days
+                                option(value='10') 10 % - will pay within 90 days
+                                option(value='5') 5 % - will pay beyond 90 days
+                                option(value='1') 0 % - issues / conflicts
+                    div(class='ui-block-d')
+                        div(data-role="fieldcontain")
+                            select(name='isLeaderTraceableID', onchange='JavaScript:onchangeSearchCriteriaLeaderTraceable()', data-theme="b", id='isLeaderTraceableID',data-inline='true', data-icon='arrow-d', data-mini='true',data-native-menu="true")
+                                option(value = '0') Is Leader Traceable
+                                option(value = '-1') All
+                                option(value = '1') Yes
+                                option(value = '2') No
+                    div(class='ui-block-e')
+                        div(data-role="fieldcontain")
+                            select(name='reasonForNPA', onchange='JavaScript:onchangeSearchCriteriaReason()',id='reasonForNPA', data-role="none",data-icon='grid',multiple="multiple")
+                                -for(var i=0;i<npaReasonIdArray.length;i++) {
+                                    option(value=npaReasonIdArray[i]) #{npaReasonArray[i]}
+                                -}
+                div(data-role='horizontal', id="menu", class="ui-bar ui-grid-c")
+                    div(class='ui-block-a')
+                        label(for="overdueDurationFrom", data-inline="true",class='label') Overdue Duration From
+                        input(type="text", name="overdueDurationFrom",autocomplete="off", id="overdueDurationFrom", onfocusout = 'onFocusoutSearchCriteriaOverDueDuration()',maxlength="3",onkeyup='forNumbers(this)')
+                    div(class='ui-block-b')
+                        label(for="overdueDurationTo", data-inline="true",class='label') To
+                        input(type="text", name="overdueDurationTo",autocomplete="off", id="overdueDurationTo", onfocusout = 'onFocusoutSearchCriteriaOverDueDuration()',maxlength="3",onkeyup='forNumbers(this)')
+                    div(class='ui-block-c')
+                        label(for="amountFrom", data-inline="true",class='label') Amount From
+                        input(type="text", name="amountFrom",autocomplete="off", id="amountFrom", onfocusout = 'onFocusoutSearchCriteriaAmount()',maxlength="6",onkeyup='forNumbers(this)')
+                    div(class='ui-block-d')
+                        label(for="amountTo", data-inline="true",class='label') To
+                        input(type="text", name="amountTo",autocomplete="off", id="amountTo", onfocusout = 'onFocusoutSearchCriteriaAmount()',maxlength="6",onkeyup='forNumbers(this)')
+                div(style = "overflow: auto;")
+                    -if(accountIdArray.length > 10){
+                        div(data-role="horizontal",class="ui-bar ui-grid-b")
+                            div(class='ui-block-a',align="left")
+                                a(href='#', data-role='button',id='NPAGroupLoansPrevId', data-inline='true', data-mini='true',data-icon='arrow-l',data-iconpos="left") Prev
+                            div(class='ui-block-b',align="center")
+                                a(href='#', data-role='button',id='NPAGroupLoansPageNoId', data-inline='true', data-mini='true') Records 1 - 10 of #{accountIdArray.length}
+                            div(class='ui-block-c',align="right")
+                                a(href='#', data-role='button',id='NPAGroupLoansNextId', data-inline='true', data-mini='true', data-icon='arrow-r',data-iconpos="right") Next
+                    -}
+                    table(id="npaLoansTableId")
+                        tr
+                            th(id = 'sno', class='center-text') S.NO
+                            th(class='center-text') Group Name
+                            th(class='center-text') Overdue
+                            th(class='center-text') Days in Arrears
+                            th(class='center-text') Expected Completion Date
+                            th(class='center-text') Download
+                            th(class='center-text') Docs
+                            th(id = 'ro', class='center-text') Recovery Officer
+                            -for(var i=0;i<accountIdArray.length;i++) {
+                                tr(class="showhide",id='tablerow')
+                                    td(class='center-text')    #{i+1}
+                                    td(class='center-text')
+                                        a(href="JavaScript:showGroupDetails('#{accountIdArray[i]}')", data-inline='true', data-mini='true') #{customerNameArray[i]}
+                                    td(class='center-text') #{overDueAmountArray[i]}
+                                    td(class='center-text') #{daysInArrearsArray[i]}
+                                    td(class='center-text') #{expectedCompletionDateArray[i]}
+                                    td(class='center-text')
+                                        a(href="JavaScript:downloadFiles('#{i}','#{accountIdArray[i]}')", data-role='button', data-inline='true', data-mini='true') Download
+                                    td(style ="vertical-align:middle")
+                                        select(name='downloadDocsName',rel = 'external', onchange = 'JavaScript:downloadDocs(this.value)', data-mini='true' ,id="downloadedDocs"+i,data-inline="true",autofocus="autofocus", data-theme='b', data-icon='arrow-d', data-native-menu="true")
+                                            option(value="0") Select
+                                    td(class='center-text') #{recoveryOfficerNameArray[i]}
+                            -}
+                    input(type="hidden", name="allBranches", id="allBranches", value='#{officeIdArray}')
+                    input(type="hidden", name="allRecoveryOfficers", id="allRecoveryOfficers", value='#{recoveryOfficerId}')
+                    input(type="hidden", name="allCapabilityPercentage", id="allCapabilityPercentage", value='95,80,60,40,20,10,5,0')
+                    input(type="hidden", name="allIsLeaderTraceable", id="allIsLeaderTraceable", value="0,1")
+                    input(type="hidden", name="selectedDocName",id="selectedDocId")
+            div(class="ui-loader-background")

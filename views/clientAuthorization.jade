@@ -1,0 +1,59 @@
+extends ./layout
+include ./header
+block title
+   title= 'IKLANT-KYCUpdating'
+block scripts
+   include ./headerJqueryMobile-1
+   link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+   script(type='text/javascript', src='/javascripts/validation.js')
+block content
+   form(id='BMFormId')
+      div(data-role='page', data-theme='b')
+         +header("KYC Updating",["welcomeNote", "menu", "logout"])
+         input(type='hidden', name='alertMessageHidden', id='alertMessageHidden', value="#{}")
+         include ./GroupManagementLayout
+         div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a",style='width:100%')
+            -if(officeId == 1){
+               div(class='ui-block-a',style="width:49%",align='right')
+                  div(data-role='fieldcontain')
+                  label(id="report_label_top",class='label') Select Office
+               div(class='ui-block-b',style="width:2%")
+               div(class='ui-block-b',style="width:49%")
+                  div(data-role='fieldcontain')
+                     select(name='listofficeforRM', id='listofficeforRM', data-theme='b', data-icon='bank', data-inline='true', data-mini='true')
+                        option(value='0') Select Office
+                        -for(i=0;i<officeIdArray.length;i++){
+                           -if(officeValue == officeIdArray[i]){
+                              option(value=officeIdArray[i], selected='selected') #{officeNameArray[i]}
+                           -}
+                           -else{
+                              option(value=officeIdArray[i]) #{officeNameArray[i]}
+                           -}
+                        - }
+            -}
+         div
+             - if(groupNameArray.length != 0) {
+                 table
+                     tr
+                         th S.No
+                         th Group Code
+                         th Group Name
+                         th Client Name
+                         th Remarks By DEO
+                         th Action
+                     -for(var i=0;i<groupNameArray.length; i++) {
+                        tr
+                            td(style ="text-align:center") #{i+1}
+                            td(style ="text-align:center") #{groupNameArray[i]}
+                            td(style ="text-align:center") #{listGroupsGlobalNumberArray[i]}
+                            td(style ="text-align:center") #{groupsName[i]}
+                            td(style ="text-align:center") #{remarksForRMApprovalArray[i]}
+                            td(style ="text-align:center")
+                                a(href="JavaScript:showKYCFormsForRMReview('"+groupsId[i]+"')",id='needImageClaritySaveId', rel="external", data-role='button',data-mini="true", title='Review and Approve the Client', data-theme="b", data-inline="true") Review
+                     - }
+             - }
+             - else {
+                p(align="center",class='error-message global-font-details') No clients to authorize
+             - }
+            input(type='hidden', name='currentOperationId', id='currentOperationId', value="35")
+

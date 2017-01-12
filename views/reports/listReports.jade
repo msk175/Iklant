@@ -1,0 +1,67 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'Iklant-Reports Management'
+block scripts
+    include ../headerJqueryMobile-1
+    script(type="text/javascript", src="/javascripts/reportmgmt.js")
+block content
+    div(data-role='page', data-theme='b')
+        +header("",["menu","backHref","logout"],contextPath + "/client/ci/loadReportsMenu",[])
+        div(data-role="collapsible", data-collapsed="false",  data-content-theme="b",id="reportMenu")
+            - if(categoryId == constantsObj.getFinancialReports()) {
+                h3 Financial
+                -for(var i=0;i<reportId.length;i++){
+                    div(data-role="fieldcontain", data-mini="true")
+                        a(href=contextPath + '/client/ci/loadReport/#{categoryId}/#{storedProcedureName[i]}/#{reportId[i]}/#{reportName[i]}',id="#{reportName[i]}",rel="external",data-theme='a', title='#{reportName[i]}', data-inline='true',style = "font-family:Arial Black") #{reportName[i]} Report
+                -}
+            - }
+            - else if(categoryId == constantsObj.getManagementReports()) {
+                h3 Management
+                -for(var i=0;i<reportId.length;i++){
+                    div(data-role="fieldcontain", data-mini="true")
+                        a(href=contextPath + '/client/ci/loadReport/#{categoryId}/#{storedProcedureName[i]}/#{reportId[i]}/#{reportName[i]}',id="#{reportName[i]}",rel="external",data-theme='a', title='#{reportName[i]}', data-inline='true',style = "font-family:Arial Black") #{reportName[i]} Report
+                -}
+            -}
+            - else if(categoryId == constantsObj.getOperationalReports()) {
+                h3 Operational
+                -for(var i=0;i<reportId.length;i++){
+                    div(data-role="fieldcontain", data-mini="true")
+                        -if(reportName[i] == 'Disbursement and Outstanding'){
+                            a(href=contextPath + '/client/ci/loadReport/#{categoryId}/#{storedProcedureName[i]}/#{reportId[i]}/#{reportName[i]}',id="#{reportName[i]}",rel="external",data-theme='a', title='#{reportName[i]}', data-inline='true',style = "font-family:Arial Black") #{reportName[i]} Report
+                            label - (Shows only active barrowers details)
+                        -}
+                        -else
+                            a(href=contextPath + '/client/ci/loadReport/#{categoryId}/#{storedProcedureName[i]}/#{reportId[i]}/#{reportName[i]}',id="#{reportName[i]}",rel="external",data-theme='a', title='#{reportName[i]}', data-inline='true',style = "font-family:Arial Black") #{reportName[i]} Report
+                -}
+            - }
+            - else if(categoryId == constantsObj.getOperationalMonthlyReports()) {
+                h3 Operational Monthly Reports
+                -for(var i=0;i<reportId.length;i++){
+                    div(data-role="fieldcontain", data-mini="true")
+                        a(href=contextPath + '/client/ci/loadReport/#{categoryId}/#{storedProcedureName[i]}/#{reportId[i]}/#{reportName[i]}',id="#{reportName[i]}",rel="external",data-theme='a', title='#{reportName[i]}', data-inline='true',style = "font-family:Arial Black") #{reportName[i]} Report
+                -}
+            -}
+            - else if(categoryId == constantsObj.getGroupsReports()) {
+                h3 Groups
+                -for(var i=0;i<reportId.length;i++){
+                    div(data-role="fieldcontain", data-mini="true")
+                        a(href=contextPath + '/client/ci/loadReport/#{categoryId}/#{storedProcedureName[i]}/#{reportId[i]}/#{reportName[i]}',id="#{reportName[i]}",rel="external",data-theme='a', title='#{reportName[i]}', data-inline='true',style = "font-family:Arial Black") #{reportName[i]} Report
+                -}
+            - }
+            - else if(categoryId == constantsObj.getGroupMembersReports()) {
+                h3 Group Members
+                h5(class='error-message') Note: Group Members Report only for Operational Purpose and not for Financial Purpose.
+                -for(var i=0;i<reportId.length;i++){
+                    div(data-role="fieldcontain", data-mini="true")
+                        a(href=contextPath + '/client/ci/loadReport/#{categoryId}/#{storedProcedureName[i]}/#{reportId[i]}/#{reportName[i]}',id="#{reportName[i]}",rel="external",data-theme='a', title='#{reportName[i]}', data-inline='true',style = "font-family:Arial Black") #{reportName[i]} Report
+                -}
+            - }
+            - else if(categoryId == constantsObj.getPortfolioReports()) {
+                h3 Portfolio
+                -for(var i=0;i<reportId.length;i++){
+                    div(data-role="fieldcontain", data-mini="true")
+                        a(href=contextPath + '/client/ci/loadReport/#{categoryId}/#{storedProcedureName[i]}/#{reportId[i]}/#{reportName[i]}',id="#{reportName[i]}",rel="external",data-theme='a', title='#{reportName[i]}', data-inline='true',style = "font-family:Arial Black") #{reportName[i]} Report
+                -}
+            -}

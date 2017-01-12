@@ -1,0 +1,221 @@
+extends ./layout
+include ./header
+
+block title
+    title= 'IKLANT- Loan Product Wise Principal Outstanding'
+
+block scripts
+    link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+    include ./headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/jquery-ui.js')
+    script(type="text/javascript", src="/javascripts/reportmgmt.js")
+    script(type="text/javascript", src="/javascripts/jquery.dataTables.js")
+
+block content
+    form(id='loanProductWisePrincipalOutstanding')
+        div(data-role='page', data-theme='b')
+            input(type='hidden', name='reportPageName', id='reportPageName', value="loanProductWisePrincipalOutstanding")
+            input(type='hidden', name='report_download_flag', id='report_download_flag', value="#{download_report}")
+            input(type='hidden', name='selectedDocName', id='selectedDocName', value="#{fileLocation}")
+            input(type='hidden', name='reportType', id='reportType')
+            input(type='hidden', name='reportId', id='reportId',value='#{reportId}')
+            -var portfolioReport = constantsObj.getPortfolioReports()
+            +header("",["backHref","menu","logout"],contextPath + '/client/ci/reportsMenuByCategory/'+portfolioReport)
+            div(data-role="navbar",id="navid")
+                ul(id="custom-nav-list")
+                    li
+                        a(rel="external", data-role="tab" , id="table-li-1",class="ui-btn-active") Loan Product Wise Principal Outstanding
+            div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b",id='demandCollectionDiv')
+                h3 Select Dates to view Loan Product Wise Principal Outstanding
+                p(id="errorField",align="center",class='error-message global-font-details')
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a")
+                    div(class='ui-block-a',style="width:9%")
+                        div(data-role="fieldcontain")
+                        label(id="report_label_top") To Date
+                    div(class='ui-block-b',style="width:18%")
+                        div(data-role="fieldcontain")
+                            input(type="text", name="todate", id="todate", value=endDate,readonly = "readonly", required='true',class='toDate')
+                    - if(roleId == constantsObj.getSMHroleId() || roleId == constantsObj.getNaiveroleId()|| roleId == constantsObj.getAMHroleId()) {
+                        div(class='ui-block-c',style="width:9%")
+                            div(data-role="fieldcontain")
+                            label(id="report_label_top") Office
+                        div(class='ui-block-c',style="width:18%")
+                            div(data-role='fieldcontain')
+                                select(name='listoffice', id='listoffice', data-theme='b', data-icon='grid', data-inline='true', data-mini='true',onchange='loadFO()')
+                                    option(value='-1') All
+                                    -for(i=0;i<officeIdArray.length;i++){
+                                        -if(officeValue == officeIdArray[i]){
+                                            option(value=officeIdArray[i],selected="selected") #{officeNameArray[i]}
+                                        -}
+                                        -else{
+                                            option(value=officeIdArray[i]) #{officeNameArray[i]}
+                                        -}
+                                    - }
+                    -}
+                    div(class='ui-block-d',style="width:13%")
+                        div(data-role="fieldcontain")
+                        label(id="report_label_top") Product Category
+                    div(class='ui-block-e',style="width:12%")
+                        div(data-role="fieldcontain")
+                        select(name='category', id='category', data-theme='b', data-icon='grid', data-inline='true', data-mini='true')
+                            option(value='-1') All
+                            -for(i=0;i<prdCategoryNameArray.length;i++){
+                                -if(prd_category_value == prdCategoryIdArray[i]){
+                                    option(value=prdCategoryIdArray[i],selected="") #{prdCategoryNameArray[i]}
+                                -}else{
+                                    option(value=prdCategoryIdArray[i]) #{prdCategoryNameArray[i]}
+                                -}
+                            -}
+                    div(class='ui-block-e',style="width:10%")
+                        div(data-role="fieldcontain")
+                        label(id="report_label_top") Loan Product
+                    div(class='ui-block-e',style="width:11%")
+                        div(data-role="fieldcontain")
+                        select(name='loan_product', id='loan_product', data-theme='b', data-icon='grid', data-inline='true', data-mini='true')
+                            option(value='-1') All
+                            -for(i=0;i<prdOfferingNameArray.length;i++){
+                                -if(loan_product_value == prdOfferingIdArray[i]){
+                                    option(value=prdOfferingIdArray[i],selected="") #{prdOfferingNameArray[i]}
+                                -}else{
+                                    option(value=prdOfferingIdArray[i]) #{prdOfferingNameArray[i]}
+                                -}
+                            -}
+
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a")
+                    div(class='ui-block-b',style="width:9%")
+                        div(data-role="fieldcontain")
+                        label(id="report_label_top") Field Officer
+                    div(class='ui-block-c',style="width:18%")
+                        div(data-role="fieldcontain")
+                        select(name='loanOfficer', id='loanOfficerId', data-theme='b', data-icon='grid', data-inline='true', data-mini='true')
+                            option(value='-1') All
+                            -for(i=0;i<personnelNameArray.length;i++){
+                                -if(personnel_value == personnelIdArray[i]){
+                                    option(value=personnelIdArray[i],selected="") #{personnelNameArray[i]}
+                                -}else{
+                                    option(value=personnelIdArray[i]) #{personnelNameArray[i]}
+                                -}
+                            -}
+                    div(class='ui-block-c',style="width:7%")
+                        div(data-role="fieldcontain")
+                        label(id="report_label_align") Customer
+                    div(class='ui-block-d',style="width:21%")
+                        div(data-role="fieldcontain")
+                            input(type="text", name="customer", id="customer", required='true', value=customerVal,onkeyup='forNamesValidation(this)')
+                    div(class='ui-block-e',style="width:8%")
+                        div(data-role="fieldcontain")
+                        label(id="report_label_align") Account No
+                    div(class='ui-block-e',style="width:19%")
+                        div(data-role="fieldcontain")
+                            input(type="text", name="account", id="account", required='true', value=accountNo,onkeyup='forNumbers(this)')
+                    div(class='ui-block-e',style="width:15%")
+                        div(data-role="fieldcontain",align="left")
+                            input(type='checkbox', name='includePrevOperation',id='includePrevOperation',checked=(includePrevOperation==="on" ? "checked" : undefined),data-mini='true',value=includePrevOperation)
+                            label(for='includePrevOperation') Include OS = 0
+                div(data-role="horizontal", data-inline="true",data-theme="b",id="show",class="ui-grid-a",style='width:100%;')
+                    div(class='ui-block-a',style='width:33%;')
+                        div(data-role="fieldcontain",align="right")
+                            a(href='JavaScript:generatePrincipalOutstandingReport("loanProductWisePrincipalOutstanding","Summary")',  rel="external",data-theme="b",data-role='button',data-mini='true', data-inline="true") View Summary
+                    div(class='ui-block-b',style='width:34%;')
+                        div(data-role="fieldcontain",align="center")
+                            a(href='JavaScript:generatePrincipalOutstandingReport("loanProductWisePrincipalOutstanding","Detailed")',  rel="external",data-theme="b",data-role='button',data-mini='true', data-inline="true") View Detailed Report
+                    div(class='ui-block-c',style='width:33%;')
+                        div(data-role="fieldcontain")
+                            a(href='#', data-role='button',id='downloadExcel', data-inline='true', data-mini='true',onclick='generatePrincipalOutstandingReport("loanProductWisePrincipalOutstanding","Download")') Export To Excel
+            - if(result){
+                - if(result.length>0){
+                    div(style = "overflow: auto;",class=(result.length>10)?'container '+detailed:detailed)
+                        div(data-role="navbar",id="navid")
+                            ul(id="custom-nav-list")
+                                li
+                                    a(rel="external", data-role="tab" , id="table-li-1",class="ui-btn-active") Loan Product Outstanding Summary Report
+                        table(id="fixedHeader_detailedsummary", CLASS="DISPLAY", cellspacing="0", width="100%")
+                            thead
+                                tr
+                                    th S. No
+                                    th Office
+                                    th Field Officer
+                                    th Prd. Category
+                                    th Loan Product
+                                    th Customer
+                                    th Global Ac. No
+                                    th Product
+                                    th Principal
+                                    th Interest
+                                    th Pincipal Paid
+                                    th Interest Paid
+                                    th Pincipal Outstanding
+                            - count = 1;
+                            - for(var i=0;i<result.length;i++) {
+                                -if(result[i].office_id && result[i].account_id && result[i].product){
+                                    tbody
+                                        tr(class="showhide")
+                                            td(class='center-text') #{count}
+                                            td #{result[i].office}
+                                            td #{result[i].loan_officer}
+                                            td #{result[i].product_category}
+                                            td #{result[i].loan_product}
+                                            td #{result[i].group_name}
+                                            td #{result[i].account_num}
+                                            td(class='text-right-align') #{result[i].product}
+                                            td(class='text-right-align') #{result[i].principal}
+                                            td(class='text-right-align') #{result[i].interest}
+                                            td(class='text-right-align') #{result[i].principal_paid}
+                                            td(class='text-right-align') #{result[i].interest_paid}
+                                            td(class='text-right-align') #{result[i].prin_outstanding}
+                                    -count++;
+                                -}
+                            - }
+                div(class=summary)
+                    div(data-role="navbar",id="navid")
+                        ul(id="custom-nav-list")
+                            li
+                                a(rel="external", data-role="tab" , id="table-li-1",class="ui-btn-active") Loan Product Outstanding Summary Report
+                    table(id="fixedHeader_summary_full", CLASS="DISPLAY", cellspacing="0", width="100%")
+                        thead
+                            tr
+                                th S.No
+                                th Loan Product
+                                th Tot.Principal
+                                th Tot.Interest
+                                th Tot.Prin.Paid
+                                th Tot.Int.Paid
+                                th Tot.Prin.Outstanding
+                        - count = 1;
+                        - for(var i=0;i<result.length;i++) {
+                            -if(!result[i].account_id && !result[i].office_id && !result[i].personnel_id && result[i].product){
+                                tbody
+                                    tr
+                                        td(class='center-text') #{count}
+                                        td(class='center-text') #{result[i].product}
+                                        td(class='text-right-align') #{result[i].totalPrincipal}
+                                        td(class='text-right-align') #{result[i].totalInterest}
+                                        td(class='text-right-align') #{result[i].totalPrincipalPaid}
+                                        td(class='text-right-align') #{result[i].totalInterestPaid}
+                                        td(class='text-right-align') #{result[i].prinOutstanding}
+                                - count++
+                            -}
+                        -}
+                        - for(var i=0;i<result.length;i++) {
+                            -if(!result[i].office_id && !result[i].product){
+                                tbody
+                                    tr
+                                        td(colspan='2') Total
+                                        td(class='text-right-align') #{result[i].totalPrincipal}
+                                        td(class='text-right-align') #{result[i].totalInterest}
+                                        td(class='text-right-align') #{result[i].totalPrincipalPaid}
+                                        td(class='text-right-align') #{result[i].totalInterestPaid}
+                                        td(class='text-right-align') #{result[i].prinOutstanding}
+                            -}
+                        -}
+                -}
+                -else{
+                    tbody
+                        tr
+                            div(align='center')
+                                span(style='font-weight:bold') No records to display
+                -}
+            - }
+            div(class="ui-loader-background")

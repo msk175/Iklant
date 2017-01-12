@@ -1,0 +1,36 @@
+div(data-role="navbar", class="ui-bar no-padding", data-grid="d")
+    ul
+        -for(var i=0;i< operationNameArray.length;i++) {
+            -if(i==currentOperationIndex) {
+                li
+                    a(href="JavaScript:operationSubmitFromBM('#{operationIdArray[i]}');", rel="external",id = '#{operationNameArray[i]}', data-role="tab", class="ui-btn-active") #{operationNameArray[i]}
+            -}
+            -else {
+                - if(typeof menu != 'undefined'){
+                    -if(menu == 'new'){
+                        li
+                            a(href="JavaScript:operationSubmitFromBM('#{operationIdArray[i]}');", rel="external", id = '#{operationNameArray[i]}', data-role="tab") #{operationNameArray[i]}
+                    -}
+                    - else{
+                        li
+                            a(href="JavaScript:operationSubmitFromBM('#{operationIdArray[i]}');", rel="external", id = '#{operationNameArray[i]}', data-role="tab") #{operationNameArray[i]}
+                    -}
+                -}
+                -else{
+                    - if(typeof roleId != 'undefined' && typeof constantsObj != 'undefined'){
+                        -if(roleId == constantsObj.getFOroleId()){
+                            -if(operationIdArray[i] != constantsObj.getLoanSanctionOperationId()){
+                                li
+                                    a(href="JavaScript:operationSubmitFromBM('#{operationIdArray[i]}');", rel="external", id = '#{operationNameArray[i]}', data-role="tab") #{operationNameArray[i]}
+                            -}
+                        -}else {
+                            li
+                                a(href="JavaScript:operationSubmitFromBM('#{operationIdArray[i]}');", rel="external",id = '#{operationNameArray[i]}', data-role="tab") #{operationNameArray[i]}
+                        -}
+                    -}else {
+                        li
+                            a(href="JavaScript:operationSubmitFromBM('#{operationIdArray[i]}');", rel="external",id = '#{operationNameArray[i]}', data-role="tab") #{operationNameArray[i]}
+                    -}
+                -}
+            -}
+        -}

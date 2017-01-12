@@ -1,0 +1,88 @@
+extends ./layout
+include ./header
+
+block title
+    title= 'IKLANT-Manage Roles'
+
+block scripts
+    link(rel='stylesheet', href='/stylesheets/jquery.mobile.css')
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/jquery.mobile.js')
+    script(type='text/javascript', src='/javascripts/manageRoles.js')
+    script(type='text/javascript', src='/javascripts/validation.js')
+
+block content
+    form(id='BMFormId')
+        div(data-role='page', data-theme='b')
+            +header("Role Management",["welcomeNote","menu","logout"])
+            include ./GroupManagementLayout
+            p(id='errorMessageIdManageRoles',align="center",class='error-message global-font-details')
+                //div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                            a(href='', rel="external",data-theme="b",data-icon='plus', data-role='button', title='Add Role', data-inline="true",id="addRId", data-mini='true') Add Role
+
+            //div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="a", id="addRDiv")
+                h3 Add
+                div(data-role="content", data-theme="a", data-overlay-theme="a", data-inline="true")
+                    p(id='errorMessageId',align="center",style="color:red")
+                    div(data-role='fieldcontain',align='left')
+                        label(for="roleNameId") Role Name
+                        input(type='text', name='roleName',autocomplete="off", maxlength="30",id='roleNameId', data-inline="true",value="")
+                    div(data-role='fieldcontain',align='left')
+                        label(for="roleDescId") Role Description
+                        input(type='text', name='roleDescName',autocomplete="off",maxlength="100", id='roleDescId', data-inline="true",value="")
+                h3 Assign Operation
+                div(data-role='content', data-theme="a", data-overlay-theme="a", data-inline="true")
+                    div(data-role="fieldcontain")
+                        -for(i=0;i<manageRolesObj.getOperation_id().length;i++){
+                            input(type='checkbox', name='roleCheckboxName', id='roleId'+i, data-inline="true",value=manageRolesObj.getOperation_id()[i])
+                            label(for='roleId'+i,id='roleName') #{manageRolesObj.getOperation_name()[i]}
+                        -}
+                        div(data-role="fieldcontain")
+                        a(href='JavaScript:manageRolesSave()',  rel="external",data-theme="b",data-icon='check', data-role='button', title=' Save ', data-inline="true", data-mini='true') Save
+                        a(href='JavaScript:resetFields()',  rel="external",data-theme="b",data-icon='refresh', data-role='button', title=' Reset ', data-inline="true", data-mini='true') Reset
+                        a(href="", id='backRId', rel="external",data-theme="b",data-icon='back', data-role='button', title='Back', data-inline="true", data-mini='true') Back
+            div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b", id="editRDiv")
+                h3 Edit
+                div(data-role="content", data-theme="b", data-overlay-theme="a", data-inline="true")
+                    p(id='errorMessageId',align="center",class='error-message global-font-details')
+                    div(data-role='fieldcontain',align='left')
+                        label(for="roleNameIdEdit") Role Name
+                        input(type='text', name='roleNameEdit',autocomplete="off", maxlength="100",id='roleNameIdEdit', data-inline="true",value="",onkeyup='forNamesValidation(this)')
+                    div(data-role='fieldcontain',align='left')
+                        label(for="roleDescIdEdit") Role Description
+                        input(type='text', name='roleDescNameEdit',autocomplete="off",maxlength="100", id='roleDescIdEdit', data-inline="true",value="",onkeyup='forNamesValidation(this)')
+                        input(type='hidden', name='roleIdEdit',autocomplete="off", id='roleIdEdit', data-inline="true",value="")
+                        input(type="hidden",name="checkedValuesHiddenName",id="checkedValuesHiddenId")
+                        input(type="hidden",name="operationValuesHiddenName",id="operationValuesHiddenId")
+                        input(type="hidden",id="operationIdLengthHidden",value=manageRolesObj.getOperation_id().length)
+                h3 Assign Operation
+                div(data-role='content', data-theme="b", data-overlay-theme="a", data-inline="true")
+                    div(data-role="fieldcontain", id='editRolePrevilegeCheckBoxDiv')
+                        //-for(i=0;i<manageRolesObj.getOperation_id().length;i++){
+                            //input(type='checkbox', name='roleCheckboxNameEdit', id='roleIdCheckEdit'+i, onclick='JavaScript:clickOperation(this)', data-inline="true",value=manageRolesObj.getOperation_id()[i])
+                            //label(for='roleIdCheckEdit'+i,id='roleName') #{manageRolesObj.getOperation_name()[i]}
+                        //-}
+                div(data-role="fieldcontain")
+                    a(href='JavaScript:manageRolesUpdate()',  rel="external",data-theme="b",data-icon='check', data-role='button', title='Update', data-inline="true", data-mini='true') Update
+                    a(href="JavaScript:operationSubmitFromBM('#{constantsObj.getManageRolesOperationId()}');", id='backREId', rel="external",data-theme="b",data-icon='back', data-role='button', title='Back', data-inline="true", data-mini='true') Back
+            div(data-role='content',id="tableviewdivRole",style = "overflow: auto;")
+                table(data-role="table", id="movie-table", class="ui-responsive", data-mode="columntoggle",border='1')
+                    thead
+                        tr
+                            th(data-priority="5") SNO
+                            th(data-priority="5") Role Name
+                            th(data-priority="5") Role Description
+                            th(data-priority="5",style ="text-align:center") Action
+
+                        -for(i=0;i< roleIdArray.length;i++){
+                            tr
+                                td(style ="text-align:center") #{i+1}
+                                td #{roleNameArray[i]}
+                                td #{roleDescriptionArray[i]}
+                                td(style ="text-align:center")
+                                    a(href="JavaScript:populateRoleDetails('#{roleIdArray[i]}');",rel="external",data-theme="b",data-mini="true",data-icon='gear', data-role='button', title='Edit', data-inline="true") Edit
+                                    //-a(href="JavaScript:deleteRole('#{roleIdArray[i]}');",  rel="external",data-theme="b",data-mini="true",data-icon='delete', data-role='button', title='Delete', data-inline="true") Delete
+                        - }
+            div(class="ui-loader-background")

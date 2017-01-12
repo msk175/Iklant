@@ -1,0 +1,274 @@
+extends ./layout
+include ./header
+
+block title
+    title= 'IKLANT-NPALoansRecovery'
+
+block scripts
+    link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+    include ./headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/jquery.multiselect.css')
+    script(type='text/javascript', src='/javascripts/jquery-ui.js')
+    script(type='text/javascript', src='/javascripts/jquery.multiselect.js')
+    script(type='text/javascript', src='/javascripts/groupsDetailsForRecoveryReadOnly.js')
+
+block content
+    form(id='recoveryFormID',enctype="multipart/form-data")
+        div(data-role='page', data-theme='b')
+            +header("NPA Loans Recovery",["menu","backHref","logout"],contextPath + '/client/ci/searchnpa',[])
+            div(data-role="navbar", data-theme='b')
+                ul
+                    li
+                        a(href="#") Group Details For Recovery
+            p(id ='errorField',data-theme="e",align='center') #{alertMsg}
+            div(data-role="content")
+                div(data-role="horizontal",class="ui-bar ui-grid-d")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                            label(for='groupname',id='labelid') Group Name
+                    div(class='ui-block-b',align='left')
+                        div(data-role="fieldcontain")
+                            label(for='groupname') #{accountDetailsArray.getGroupName()}
+                div(data-role="horizontal",class="ui-bar ui-grid-d")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                            label(for='groupname',id='labelid') Address
+                    div(class='ui-block-b',align='left')
+                        div(data-role="fieldcontain")
+                            label(for='groupname') #{accountDetailsArray.getAddress()}
+                div(data-role="horizontal",class="ui-bar ui-grid-d")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                            label(for='groupname',id='labelid') Loan Officer
+                    div(class='ui-block-b',align='left')
+                        div(data-role="fieldcontain")
+                            label(for='groupname') #{accountDetailsArray.getLoanOfficer()}
+                div(data-role="horizontal",class="ui-bar ui-grid-d")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                            label(for='groupname',id='labelid') Demanded Amount
+                    div(class='ui-block-b',align='left')
+                        div(data-role="fieldcontain")
+                            label(for='groupname') #{accountDetailsArray.getAmountDemanded()}
+
+                div(data-role="horizontal",class="ui-bar ui-grid-d")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                            label(for='groupname',id='labelid') Paid Amount
+                    div(class='ui-block-b',align='left')
+                        div(data-role="fieldcontain")
+                            label(for='groupname') #{accountDetailsArray.getAmountPaid()}
+                div(data-role="horizontal",class="ui-bar ui-grid-d")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                            label(for='groupname',id='labelid') Overdue Amount
+                    div(class='ui-block-b',align='left')
+                        div(data-role="fieldcontain")
+                            label(for='groupname') #{accountDetailsArray.getAmountOverdue()}
+                div(data-role="horizontal",class="ui-bar ui-grid-d")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                        label(for='groupname',id='labelid') Individual Details
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain")
+                            a(href="JavaScript:showClientList('#{accountDetailsArray.getAccountId()}');",id="custommainTab",data-theme="b",data-rel="popup",data-transition="slide",data-position-to="window",data-mini="true")
+                                img(id='groupIcon', style="margin:5px 10px 0 0; text-align:right;",width="40px",height="40px",src='/images/member.png')
+                //div(data-role="horizontal",class="ui-bar ui-grid-d")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                        label(for='groupname',id='labelid') Add Todo
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain")
+                            a(href='#addTodoPopupId', data-icon='plus', data-role='button',id='addTodoId', title='Add', data-rel='popup', data-position-to='window', data-transition='pop', data-inline='true', data-mini='true') Add
+                div(data-role='content')
+                    div(class='content-primary')
+                        div(id='addTodoDivId')
+                div(data-role="collapsible", data-theme="b")
+                    h3 Download Document
+                    div(class="ui-bar ui-grid-a")
+                        div(class="ui-block-a")
+                            div(data-role="fieldcontain")
+                                input(type="radio", data-mini="true", name="radioGrClSelect", id="groupDocRadioId", value="1",checked="checked")
+                                label(for="groupDocRadioId") Group
+                        div(class="ui-block-b")
+                            div(data-role="fieldcontain")
+                                input(type="radio", data-mini="true",name="radioGrClSelect", id="clientDocRadioId", value="2")
+                                label(for="clientDocRadioId") Client
+                    div(data-role="fieldcontain", data-mini="true")
+                        div(class="ui-bar ui-grid-b",id="clientNameDivId")
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain")
+                                    label(for='clientNameLabel',id='labelid') Client Name
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain")
+                                    select(name='clientName',rel = 'external',onchange='', data-mini='true' ,id="clientNamesId",data-inline="true",autofocus="autofocus", data-theme='b', data-icon='arrow-d', data-native-menu="true")
+                                        option(value="0") Select
+                        div(class="ui-bar ui-grid-b")
+                            div(class="ui-block-a")
+                                a(href="JavaScript:downloadFiles('#{accountDetailsArray.getAccountId()}')",rel="external", data-icon='arrow-d', data-role='button', title=' Save ', data-inline='true' , id="downloadDocumentId",data-mini="true") Download Docs
+                            div(class="ui-block-b",id="selectDocDivId")
+                                select(name='downloadDocsName',rel = 'external', onchange = 'JavaScript:downloadDocs(this.value)', data-mini='true' ,id="downloadDocsId",data-inline="true",autofocus="autofocus", data-theme='b', data-icon='arrow-d', data-native-menu="true")
+                                    option(value="0") Select
+                div(data-role="collapsible",id="individualDetails", data-collapsed="false",style = "overflow: auto;")
+                    h3 Queries to Group Members
+                    div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-d",id="groupLeaderTraceable")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                            label(for='groupname',id='labelid') Is group leader traceable?
+                        div(class='ui-block-b',style="width:340px")
+                            div(class='ui-block-a',id="radio",style="width:115px")
+                                div(data-role="fieldcontain")
+                                    input(type="radio", data-mini="true", name="gltraceable", id="glYesId", value="1",disabled="true")
+                                    label(for="glYesId") Yes
+                            div(class='ui-block-b',id="radio",style="width:115px")
+                                div(data-role="fieldcontain")
+                                    input(type="radio", data-mini="true",name="gltraceable", id="glNoId", value="0",disabled="true")
+                                    label(for="glNoId") No
+                    div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-d",id="subLeaderTraceable")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                            label(for='groupname',id='labelid') Is group sub leader traceable?
+                        div(class='ui-block-b',style="width:340px")
+                            div(class='ui-block-a',id="radio",style="width:115px")
+                                div(data-role="fieldcontain")
+                                    input(type="radio", data-mini="true", name="sltraceable", id="slYesId", value="1",disabled="true")
+                                    label(for="slYesId") Yes
+                            div(class='ui-block-b',id="radio",style="width:115px")
+                                div(data-role="fieldcontain")
+                                    input(type="radio", data-mini="true",name="sltraceable", id="slNoId", value="0",disabled="true")
+                                    label(for="slNoId") No
+                    div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-d",id="membersTraceable")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                            label(for='groupname',id='labelid') Is any group member traceable?
+                        div(class='ui-block-b',style="width:340px")
+                            div(class='ui-block-a',id="radio",style="width:115px")
+                                div(data-role="fieldcontain")
+                                    input(type="radio", data-mini="true", name="gmtraceable", id="gmYesId", value="1",disabled="true")
+                                    label(for="gmYesId") Yes
+                            div(class='ui-block-b',id="radio",style="width:115px")
+                                div(data-role="fieldcontain")
+                                    input(type="radio", data-mini="true",name="gmtraceable", id="gmNoId", value="0",disabled="true")
+                                    label(for="gmNoId") No
+
+                    div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-d",id="amountnotupdated")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                            label(for='groupname',id='labelid') Paid amount not update by Loan Officer?
+                        div(class='ui-block-b',style="width:340px")
+                            div(class='ui-block-a',id="radio",style="width:115px")
+                                div(data-role="fieldcontain")
+                                    input(type="radio", data-mini="true", name="amtnotupdated", id="amtYesId", value="1",disabled="true")
+                                    label(for="amtYesId") Yes
+                            div(class='ui-block-b',id="radio",style="width:115px")
+                                div(data-role="fieldcontain")
+                                    input(type="radio", data-mini="true",name="amtnotupdated", id="amtNoId", value="0",disabled="true")
+                                    label(for="amtNoId") No
+                    div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-d",id="reasonDiv")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                                label(for='reason',id='labelid') Reason For Not Paid?
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain",style="width:340px")
+                                select(name='reasonName', id='reason', data-role="none",data-icon='grid',multiple="multiple",disabled="true")
+                                    -for(var i=0;i<recoveryReasonId.length;i++){
+                                        option(value="#{recoveryReasonId[i]}") #{recoveryReasonDescription[i]}
+                                    -}
+                        div(class='ui-block-d')
+                            input(type="hidden")
+                        div(class='ui-block-e')
+                            div(data-role="fieldcontain",id="otherReasonDivId")
+                                label(for='otherReason',id='labelid') Others
+                                input(type="text", data-mini="true", name="otherReasonName",autocomplete="false", id="otherReasonId",readonly="readonly",)
+                    div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-d",id="capableDiv")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                            label(for='groupname',id='labelid') Capable to pay or not?
+                        div(class='ui-block-b',style="width:340px")
+                            div(class='ui-block-a',id="radio",style="width:115px")
+                                div(data-role="fieldcontain")
+                                    input(type="radio", data-mini="true", name="capable", id="capableYesId", value="1",disabled="true")
+                                    label(for="capableYesId") Yes
+                            div(class='ui-block-b',id="radio",style="width:115px")
+                                div(data-role="fieldcontain")
+                                    input(type="radio", data-mini="true",name="capable", id="capableNoId", value="0",disabled="true")
+                                    label(for="capableNoId") No
+                    div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-d",id="expecteddateDiv")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                            label(for="approvalDateId",id="labelid")  Expected Completion Date
+                        div(class='ui-block-b',style="width:340px")
+                            div(data-role="fieldcontain")
+                                input(type="text", name="approvalDate", id="approvalDateId",readonly="readonly",autocomplete="off",value="")
+                    div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-d",id="percentageDiv")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                            label(for='percentageId',id='labelid') Capability percentage(%)
+                        div(class='ui-block-b',style="width:340px")
+                            div(data-role="fieldcontain")
+                                select(name='percentageId', data-theme="b",onchange='', id='percentageId',data-inline='true', data-icon='arrow-d', data-mini='true', data-native-menu="true",disabled='true')
+                                    option(value='0') Capability Percentage
+                                    option(value='100') 100 % - On Current
+                                    option(value='95') 95 % - will pay within 15 Days
+                                    option(value='80') 80 % - will pay within 30 days
+                                    option(value='60') 60 % - will pay within 45 days
+                                    option(value='40') 40 % - will pay within 60 days
+                                    option(value='20') 20 % - will pay within 75 days
+                                    option(value='10') 10 % - will pay within 90 days
+                                    option(value='5') 5 % - will pay beyond 90 days
+                                    option(value='1') 0 % - issues / conflicts
+                    div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-d",id="remarks")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                            label(for='remarksId',id='labelid') Remarks for not capable
+                        div(class='ui-block-b',style="width:340px")
+                            div(data-role="fieldcontain")
+                                input(type="text", data-mini="true", name="remarksId", id="remarksId",maxlength="40",autocomplete="false", value="",readonly="readonly",onkeyup='forRemoveSpecialCharcters(this)')
+                    div(data-role="fieldcontain",id="message")
+                        label(for='messageId',style="color:red;font-weight:bold;",id="info")
+                    input(type="hidden", data-mini="true", name="statusId", id="statusId", value="")
+                    input(type="hidden", data-mini="true", name="questionNO1Id", id="questionNO1Id", value="")
+                    input(type="hidden", data-mini="true", name="questionNO2Id", id="questionNO2Id", value="")
+                    input(type="hidden", data-mini="true", name="questionNO3Id", id="questionNO3Id", value="")
+                    input(type="hidden", data-mini="true", name="questionNO4Id", id="questionNO4Id", value="")
+                    input(type="hidden", data-mini="true", name="questionNO5Id", id="questionNO5Id", value="")
+                    input(type="hidden", data-mini="true", name="loanstatus", id="loanstatus", value="#{accountDetailsArray.getStatusFlag()}")
+                    input(type="hidden", data-mini="true", name="answerNO1Id", id="answerNO1Id", value="#{accountDetailsArray.getAnswerIdArray()[0]}")
+                    input(type="hidden", data-mini="true", name="answerNO2Id", id="answerNO2Id", value="#{accountDetailsArray.getAnswerIdArray()[1]}")
+                    input(type="hidden", data-mini="true", name="answerNO3Id", id="answerNO3Id", value="#{accountDetailsArray.getAnswerIdArray()[2]}")
+                    input(type="hidden", data-mini="true", name="answerNO4Id", id="answerNO4Id", value="#{accountDetailsArray.getAnswerIdArray()[3]}")
+                    input(type="hidden", data-mini="true", name="answerNO5Id", id="answerNO5Id", value="#{accountDetailsArray.getAnswerIdArray()[4]}")
+                    input(type="hidden", data-mini="true", name="reasonsMultiselect", id="reasonsMultiselect", value="#{accountDetailsArray.getReasonsIdArray()}")
+                    input(type="hidden", data-mini="true", name="capabilityPercentage", id="capabilityPercentage", value="#{accountDetailsArray.getAnswerIdArray()[5]}")
+                    input(type="hidden", data-mini="true", name="expectedNextPayment", id="expectedNextPayment", value="#{accountDetailsArray.getAnswerIdArray()[6]}")
+                    input(type="hidden", data-mini="true", name="reasonForNotCapable", id="reasonForNotCapable", value="#{accountDetailsArray.getOtherReasons()}")
+                    input(type="hidden", data-mini="true", name="generalRemarks", id="generalRemarks", value="#{accountDetailsArray.getRemarks()}")
+                    input(type="hidden", data-mini="true", name="todoActivity", id="todoActivity", value="")
+                    input(type="hidden", data-mini="true", name="todoDueDate", id="todoDueDate", value="")
+                    input(type="hidden", data-mini="true", name="todoDueTime", id="todoDueTime", value="")
+            div(data-role="popup",id="recentActivityPopup",data-corners="true",data-theme="b",data-shadow="true",style="width:400px;")
+                a(href="#",data-rel="back",data-role="button",data-theme="a",data-icon="delete",data-iconpos="notext",class="ui-btn-right") Close
+                div(data-role="navbar")
+                    ul(id="custom-nav-list")
+                        li
+                            a(href="", rel="external", data-role="tab" , id="") Client Residence Details
+                div(data-role="fieldcontain")
+                    label(for="groupid",id="labelid") Group Name : #{accountDetailsArray.getGroupName()}
+                    label(id="groupid")
+                div(data-role="horizontal",class="ui-bar ui-grid-c")
+                    div(class='ui-block-a')
+                        a(href='#', data-icon='arrow-l',data-iconpos="left", data-role='button',id='clientListPrevId',data-inline='true', data-mini='true') Prev
+                    div(class='ui-block-b')
+                        a(href='#', data-icon='check', data-role='button',id='clientListPageNoId',data-inline='true', data-mini='true')
+                    div(class='ui-block-c',style="float:right")
+                        a(href='#', data-icon='arrow-r',data-iconpos="right",data-role='button',id='clientListNextId',data-inline='true', data-mini='true') Next
+                div(data-role="content",id="clientListDivId",style = "overflow: auto;")
+            input(type="hidden",name="accountIdName",id="accountIdID",value="#{accountDetailsArray.getAccountId()}")
+            input(type="hidden",name="selectedDocName",id="selectedDocId")
+
+            div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-b")
+                div(class='ui-block-b',align="center")
+                    a(href=contextPath + '/client/ci/menu',data-role='button',data-icon="home",data-inline='true', data-mini='true') Home
+                div(class='ui-block-c',align="right")
+                    a(href=contextPath + '/client/ci/searchnpa', rel="external",data-icon='back', data-role='button', title=' Back', data-inline='true', data-mini='true') Back
+            div(class="ui-loader-background")

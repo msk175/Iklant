@@ -1,0 +1,157 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'IKLANT-DayBook'
+
+block scripts
+    link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+    include ../headerJqueryMobileBeta-3
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/jquery-ui.js')
+    script(type='text/javascript', src='/javascripts/DayBook.js')
+
+block content
+    form(id="dayBookFormId")
+        div(data-role='page', data-theme='b')
+            +header("",["menu","backHref","logout"],contextPath+ '/client/ci/accounts/accountsMenu',[])
+            div(data-role="navbar")
+                ul(id="custom-nav-list")
+                    li
+                        a(href="#", rel="external", data-role="tab" , id="custom-li-1") Day Book
+            div(data-role="navbar")
+                ul(id="custom-nav-list")
+                    li
+                        a(href=contextPath + "/client/ci/daybook/dayBookLoadInit", rel="external", data-role="tab" , id="custom-li-1",class="ui-btn-active") Current Day Book
+                    - if(DayBookDetail.getRoleId() == constantsObj.getAccountsExecutiveRoleId()){
+                        li
+                            a(href=contextPath + "/client/ci/daybook/showUnfreezeDaysList", rel="external", data-role="tab") Unfreezed Days
+                    - }
+                    - if(DayBookDetail.getRoleId() == constantsObj.getBMroleId())	{
+                        li
+                            a(href=contextPath + "/client/ci/daybook/showUnfreezeDaysList", rel="external", data-role="tab") Freez Days
+                        li
+                            a(href=contextPath + "/client/ci/daybook/showFreezUnfreezeDay", rel="external", data-role="tab") Unfreez Days
+                    - }
+            div(data-role="collapsible", id="minutes", data-overlay-theme="a", data-inline="true" , data-collapsed="false",data-content-theme="b",width="100%")
+                h3 Day Book
+                div(id="errorDiv")
+                -if(ClosingBalance != null){
+                    -if(DayBookDetail.getRoleId() == 1){
+                        div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-d")
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain")
+                                label(for="officeId",class="label") Office
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain")
+                                    select(name='office', id='officeId',data-inline="true",data-mini="true", data-icon='grid',data-theme="b", data-overlay-theme="d", data-native-menu="true")
+                                        -for(var i=0;i<officeList.length;i++){
+                                            if(DayBookDetail.getOfficeId() == officeList[i].getId())
+                                                option(value=officeList[i].getId(), selected="selected") #{officeList[i].getName()}
+                                            else
+                                                option(value=officeList[i].getId()) #{officeList[i].getName()}
+                                        -}
+                    -}
+                    div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-d")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                            label(for='closingBalance',class="label") Date of Transaction
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain")
+                                input(type="text", name="dateofTransaction", id="dateofTransactionId", value="#{DayBookDetail.getTransactionDateStr()}", readonly='readonly', required='true')
+                    div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-d")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                            label(for="closingBalanceAmount",class="label") Closing Balance
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain")
+                                label(for='closingBalanceAmount',id='closingBalanceAmount') #{ClosingBalance}
+                    div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-e")
+                        -if(DayBookDetail.getRoleId() == constantsObj.getAccountsExecutiveRoleId())	{
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain")
+                                    a(href='#', rel="external", data-role="button", data-inline='true',id="verifyId",data-mini="true") Verify a Day
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain")
+                                    a(href='#', rel="external", data-role="button", data-inline='true',id="submitId",data-mini="true") Submit
+                        -}
+                        -else if(DayBookDetail.getRoleId() == constantsObj.getBMroleId())	{
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain")
+                                    a(href='#', rel="external", data-role="button", data-inline='true',id="verifyId",data-mini="true") Verify a Day
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain")
+                                    a(href='#', rel="external", data-role="button", data-inline='true',id="submitId",data-mini="true") Close a Day
+                            div(class='ui-block-c')
+                                div(data-role="fieldcontain")
+                                    a(href='#', rel="external", data-role="button", data-inline='true',id="rejectId",data-mini="true") Reject a Day
+                        -}
+                        -else {
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain")
+                                    a(href='#', rel="external", data-role="button", data-inline='true',id="verifyId",data-mini="true") Verify a Day
+                        -}
+
+                    -if(inflowDetails.length>0 || outflowDetails.length>0){
+                        div(data-role="content",id="inoutFlowDetailId")
+                            div(data-role="navbar",style="background-color:#D0D0D0")
+                                ul(id="custom-nav-main")
+                                    li
+                                        a(rel="external", data-role="tab", id="custom-li-InflowTab",class="ui-btn-active ") Inflow
+                                    li
+                                        a(rel="external", data-role="tab", id="custom-li-OutflowTab") Outflow
+                                div(data-role="content",id="inflow",style = "overflow: auto;")
+                                    -if(inflowDetails.length>0){
+                                        table(id="tableId")
+                                            thead
+                                                th Description
+                                                th Type
+                                                th Amount
+                                            tbody
+                                                -for(var i=0; i<inflowDetails.length;i++){
+                                                    tr
+                                                        td #{inflowDetails[i].getDescription()}
+                                                        td #{inflowDetails[i].getTransactionType()}
+                                                        td #{inflowDetails[i].getTransactionAmount()}
+                                                -}
+                                    -}
+                                    -else{
+                                        h3(align='center') No records found
+                                    -}
+                                div(data-role="content",id="outflow",style = "overflow: auto;")
+                                    -if(outflowDetails.length>0){
+                                        table(id="tableId")
+                                            thead
+                                                th Description
+                                                th Type
+                                                th Amount
+                                            tbody
+                                                -for(var i=0; i<outflowDetails.length;i++){
+                                                    tr
+                                                        td #{outflowDetails[i].getDescription()}
+                                                        td #{outflowDetails[i].getTransactionType()}
+                                                        td #{outflowDetails[i].getTransactionAmount()}
+                                                -}
+                                    -}
+                                    -else{
+                                        h3(align='center') No records found
+                                    -}
+                    -}
+                    -else{
+                        div(data-role="content",id="inoutFlowDetailId",style = "overflow: auto;")
+                            h3(align='center') No records found
+                    -}
+                -}
+                input(type="hidden",id="transactionDateId",name="transactionDate",value="#{DayBookDetail.getTransactionDateStr()}")
+                input(type="hidden",id="roleIdId",name="roleId",value="#{DayBookDetail.getRoleId()}")
+                input(type="hidden",id="currentDateStrId",name="currentDateStr",value="#{DayBookDetail.getCurrentDateStr()}")
+                input(type="hidden",id="displayDateId",name="displayDate",value="#{DayBookDetail.getDisplayDate()}")
+                input(type="hidden",id="lastClosingDateStrId",name="lastClosingDateStr",value="#{DayBookDetail.getLastClosingDateStr()}")
+                input(type="hidden",id="errorsId",name="errors",value="#{dayBookErrors}")
+                input(type="hidden",id="VerifiedDayMsgId",name="VerifiedDayMsg",value="#{VerifiedDayMsg}")
+                div(id="123")
+                div(data-role="popup",id="verifiedDayAlertMsgId", class="ui-content", style="width:250px")
+                    p(align="center") #{VerifiedDayMsg}
+                    div(align="center")
+                        a(href='#123',id="closeId", data-role='button', data-inline="true") OK
+            div(class="ui-loader-background")

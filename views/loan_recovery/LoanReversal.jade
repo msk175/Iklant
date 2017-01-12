@@ -1,0 +1,119 @@
+doctype
+html(lang = "en")
+    head
+        title= 'IKLANT-LoanReversal'
+        meta(charset='utf-8')
+        meta(name="viewport", content="initial-scale=1.0, user-scalable=no")
+        link(rel="stylesheet", href='/stylesheets/jquery.mobile-1.3.0-beta.1.min.css')
+        link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+        link(rel='stylesheet', href='/stylesheets/iklantStyle.css')
+        link(rel='stylesheet', href='/stylesheets/loan-recovery-style.css')
+        script(type='text/javascript', src='/javascripts/jquery-1.8.3.min.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile-1.3.0-beta.1.min.js')
+        script(type='text/javascript', src='/javascripts/jquery-ui.js')
+        script(type='text/javascript', src='/javascripts/loan_recovery/loanReversal.js')
+        script(type='text/javascript', src='/javascripts/common.js')
+    body
+        form(id='reverseForm')
+            div(data-role='page', data-theme='b', id="loginDetailsDiv")
+                div(data-role="header", data-theme="a", class="ui-bar ui-grid-a", data-overlay-theme="c")
+                    div(class="ui-block-a")
+                        img(id='groupIcon', style="margin:5px 10px 0 0; text-align:right;",src='/images/iklant.png')
+                    div(class="ui-block-b",align="right")
+                        a(href='JavaScript:backFormSubmission("#{reverseLoanHolder.getGlobalAccNumber()}")',  rel="external",data-icon='arrow-l', data-role='button', title=' Back ', data-inline="true", id='cancel') Back
+                        a(href=contextPath + '/client/ci/logout',  rel="external",data-icon='back', data-role='button', title=' Logout ', data-inline="true") Logout
+                div(data-role="navbar")
+                    ul(id="custom-nav-list")
+                        li
+                            a(href="JavaScript:operationSubmitFromBM('');", rel="external", data-role="tab" , id="custom-li-1") Reverse Loan - #{reverseLoanHolder.getCustomerName()} - #{reverseLoanHolder.getGlobalAccNumber()}
+                //div(data-role="collapsible", data-overlay-theme="a", data-inline="true" , data-collapsed="false",data-content-theme="b")
+                p(id="errorLabel",align ="center")
+                div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-c")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                            label(for="amounttoAdjustedId",id="labelid") Group Name
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain")
+                            label(for="adjustedAmountId") #{reverseLoanHolder.getCustomerName()}
+                            input(type="hidden", name="globalAccountNum", id="globalAccNumber",value="#{reverseLoanHolder.getGlobalAccNumber()}", data-mini="true",data-inline="true")
+                            input(type='hidden', name='accountId', id='accountIdHiddenId', value="#{accountId}")
+                            input(type='hidden', name='accountTypeId', id='accountTypeIdHiddenId', value="#{accountTypeId}")
+                div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-c")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                            label(for="amounttoAdjustedId",id="labelid") Loan Officer Name
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain")
+                            label(for="adjustedAmountId") #{reverseLoanHolder.getLoanOfficerName()}
+                div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-c")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                            label(for="amounttoAdjustedId",id="labelid") Amount Disbursed
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain")
+                            label(for="adjustedAmountId") #{reverseLoanHolder.getDisbursalAmount()}
+                div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-c")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                            label(for="amounttoAdjustedId",id="labelid") Disbursal Date
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain")
+                            label(for="adjustedAmountId") #{reverseLoanHolder.getDisbursalDate()}
+                div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-c")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                            label(for="amounttoAdjustedId",id="labelid") No of Payments Made
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain")
+                            label(for="adjustedAmountId") #{reverseLoanHolder.getNoOfPayments()}
+                div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-c")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                            label(for="amounttoAdjustedId",id="labelid") Amount Paid
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain")
+                            label(for="adjustedAmountId") #{reverseLoanHolder.getAmountPaid()}
+                div(data-role="collapsible",data-overlay-theme="a", data-inline="true" , data-collapsed="false",data-content-theme="b")
+                    h3 Payments Made
+                    div(data-role="content" , style="overflow: auto;" , class="ui-content" , role="main")
+                        table(border='0')
+                            tbody
+                            - for( var i =0; i < reverseLoanHolder.getPaymentDate().length; i++ ) {
+                                - if(i==0){
+                                    tr
+                                        th S.No
+                                        th Date Paid
+                                        th Amount
+                                - }
+                                tr
+                                    td #{i+1}
+                                    td #{reverseLoanHolder.getPaymentDate()[i]}
+                                    td #{reverseLoanHolder.getPaymentAmount()[i]}
+                            - }
+                    div(data-role="horizontal",class="ui-bar ui-grid-d")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                                label(for="notesId",id="labelid") Notes*
+                        div(class='ui-block-c')
+                            div(data-role="fieldcontain",style="align:left")
+                                textarea(name="notes", id="notesId",style="width:500px; height:20px;",onkeyup='forRemoveSpecialCharcters(this)')
+                    div(data-role="horizontal",class="ui-bar ui-grid-a")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain", data-inline="true")
+                                a(href='JavaScript:submitReversal()',  rel="external",data-role='button', title=' Reverse ', data-inline="true", data-mini="true",  id='save') Reverse Loan
+                div(data-role="footer",class="ui-bar ui-grid-a",data-theme="d")
+                    div(class='ui-block-a',align="right")
+                        a(href=contextPath + '/client/ci/menu', rel="external",data-icon='home',data-theme="b", data-role='button', title=' Home', data-inline='true') Home
+                    div(class='ui-block-b',align="right")
+                        a(href='JavaScript:backFormSubmission("#{reverseLoanHolder.getGlobalAccNumber()}")',data-theme="b",  rel="external",data-icon='back', data-role='button', title=' Back ', data-inline="true", id='cancel') Back
+                div(data-role="popup", id="reverseConfirmationId",data-theme="a",align='center') Confirmation!
+                    div(data-role="collapsible", data-collapsed="false",data-theme="b", data-content-theme="b")
+                        div
+                            label(id="labelid") Are you sure to Reverse Loan - #{reverseLoanHolder.getCustomerName()} - #{reverseLoanHolder.getGlobalAccNumber()} ?
+                        div(align="center",id="ynButtonDivId")
+                            a(href='#showId',data-icon='check',data-role='button',id='yesReverseId',data-inline='true', data-mini='true') Yes
+                            a(href='#showId', data-icon='delete', data-role='button',id='noReverseId',data-inline='true', data-mini='true') No
+                div(class="ui-loader-background")

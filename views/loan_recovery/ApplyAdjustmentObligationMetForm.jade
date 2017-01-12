@@ -1,0 +1,48 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'Iklant-Adjustment'
+
+block scripts
+    include ../headerJqueryMobile-1
+    script(type='text/javascript', src='/javascripts/loan_recovery/ApplyAdjustmentObligationMet.js')
+
+block content
+    form(id="applyAdjustmentFormObligationMetId")
+        div(data-role='page', data-theme='b', id="loginDetailsDiv")
+            +header("",["menu","backJavascript","logout"],'backFormSubmission',[])
+            div(data-role="navbar")
+                ul(id="custom-nav-list")
+                    li
+                        a(href="JavaScript:operationSubmitFromBM('');", rel="external", data-role="tab" , id="custom-li-1") Adjustment
+            div(data-role="collapsible",data-overlay-theme="a", data-inline="true" , data-collapsed="false",data-content-theme="b")
+                h3 Apply Adjustment - #{loanAdjustment.getGlobalAccountNum()}
+                div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-c")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                            label(for="amounttoAdjustedLabelId") Amount to be adjusted
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain")
+                            label(for="amounttoAdjusted") #{loanAdjustment.getAmount()}
+                div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-c")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                            label(for="adjustmentNoteLabelId") Notes
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain")
+                            label(for="adjustmentNote") #{loanAdjustment.getAdjustmentNote()}
+                div(data-role="fieldcontain", data-inline="true")
+                    a(href='JavaScript:doApplyAdjustmentObligationMetFormSubmission()',  rel="external", data-role='button', title=' Revert Payment ', data-inline="true", id='save',data-mini="true") Revert Payment
+            div(data-role="footer",class="ui-bar ui-grid-a",data-theme="d")
+                div(class='ui-block-a',align="right")
+                    a(href=contextPath + '/client/ci/menu', rel="external",data-icon='home',data-theme="b", data-role='button', title=' Home', data-inline='true') Home
+                div(class='ui-block-b',align="right")
+                    a(href='JavaScript:backFormSubmission()', rel="external",data-icon='back',data-theme="b", data-role='button', title=' Back', data-inline="true") Back
+                input(type='hidden', name='amount', id='amountId', value="#{loanAdjustment.getAmount()}")
+                input(type='hidden', name='adjustmentNote', id='adjustmentNoteId', value="#{loanAdjustment.getAdjustmentNote()}")
+                input(type='hidden', name='globalAccountNum', id='globalAccountNumId', value="#{loanAdjustment.getGlobalAccountNum()}")
+                input(type='hidden', name='paymentId', id='paymentIdId', value="#{loanAdjustment.getPaymentId()}")
+                input(type="hidden",id="flagId",name="flag",value="1")
+                input(type='hidden', name='voucherNumber', id='voucherNumberHiddenId', value="#{loanAdjustment.getVoucherNumber()}")
+            div(class="ui-loader-background")

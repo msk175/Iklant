@@ -1,0 +1,110 @@
+!!! 5
+html(lang = "en")
+    head
+        title= 'IKLANT-PreliminaryVerificationUploadForm'
+        meta(charset='utf-8')
+        meta(name='viewport',content='width=device-width, initial-scale=1')
+        link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+        link(rel='stylesheet', href='/stylesheets/dialogStyle.css')
+        script(type='text/javascript', src='/javascripts/jquery-1.8.2.js')
+        script(type='text/javascript', src='/javascripts/jquery-ui.js')
+        script(type='text/javascript', src='/javascripts/jquery-1.7.1.min.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile.custom.js')
+        script(type='text/javascript', src='/javascripts/preliminaryVerificationUpload.js')
+        script(type='text/javascript', src='/javascripts/preliminaryVerification.js')
+        script(type='text/javascript', src='/javascripts/validation.js')
+        script(type='text/javascript', src='/javascripts/common.js')
+        script(type='text/javascript')
+            var video, canvas, msg;
+            var scaleFactor = 1;
+            var load = function () {
+                video  = document.getElementById('video');
+                canvas = document.getElementById('canvas');
+                msg    = document.getElementById('error');
+                var d=document.getElementById('docTypeId');
+                var groupId=document.getElementById('groupIdID').value;
+                if( navigator.getUserMedia ) {
+                    video.onclick = function () {
+                        var w = video.videoWidth * scaleFactor;
+                        var h = video.videoHeight * scaleFactor;
+                        var context = canvas.getContext("2d");
+                        canvas.width  = w;
+                        canvas.height = h;
+                        context.drawImage(video, 0, 0, w, h);
+                        var image = {"demo" : {
+                        "type"  : "device",
+                        "image" : canvas.toDataURL("image/png")
+                        }};
+                        var image1 = canvas.toDataURL("image/png");
+                        var docType = d.options[d.selectedIndex].value;
+                        if(docType!=0){
+                        document.write('<img src="' + image1 + '" />');
+                        var imageObj = JSON.stringify( image );
+
+                        //alert(clientName);
+
+
+                        document.write("<form method='post' action=contextPath + '/client/ci/storePreliminaryVerificationCapturedImage'");
+                        document.write('<img src="' + image1 + '" />');
+                        document.write("<input type='hidden' name='imageBase64Value' id='imageBase64ValueId' value='' >");
+                        document.write("<input type='hidden' name='groupIdValue' id='groupIdValueId' value='' >");
+                        document.write("<input type='hidden' name='docTypeValue' id='docTypeValueId' value='' >");
+                        document.write("<br>");
+                        document.write("<label for='fileName'>File Name</label>");
+                        document.write("<input type='text' name='fileName' id='fileNameId' required='required'/>");
+                        document.write("<br><br><input type='submit' value='Store Image'>");
+                        document.write("</form>");
+
+                        document.getElementById('imageBase64ValueId').value = image1;
+                        document.getElementById('groupIdValueId').value = groupId;
+                        document.getElementById('docTypeValueId').value = docType;
+                        }
+                        else{
+                            alert("Select Document Type");
+                        }
+                        ws.send( JSON.stringify( image ) );
+                    };
+                    var success = function ( stream ) {
+                        video.src = stream;
+                    };
+                    var error = function ( err ) {
+                        msg.innerHTML = "Error: " + err.code;
+                    };
+                    navigator.getUserMedia('video', success, error);
+                }
+                else
+                {
+                    msg.innerHTML = "Native web camera not supported";
+                }
+            };
+            window.addEventListener('DOMContentLoaded', load, false);
+    body
+        form(id='BMFormId')
+            div(data-role='page', data-theme='a')
+                div(data-role="header", data-theme="a", class="ui-bar ui-grid-e")
+                    div(class="ui-block-a")
+                        img(id='groupIcon', src='/images/iklant.png')
+                        h2(for="value", style="margin:20px 10px 0 0;") KYC Upload
+                div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="a")
+                    h3 KYC Upload
+                    //p(id ='errorField',data-theme="e",align='center') #{errorMsg}
+                    div(data-role="content", data-theme="a", data-overlay-theme="a", data-inline="true")
+                        div(data-role='fieldcontain',align='left')
+                            label(for="docTypeId") Document Type
+                            select(name='docType',rel = "external",autofocus="autofocus", id='docTypeId', data-theme='a', data-icon='arrow-d',data-inline="true",data-mini="true", data-native-menu="false")
+                                option(value='0') Select
+                                -for(var i=0;i< docTypeIdArray.length;i++) {
+                                    option(value=docTypeIdArray[i]) #{docTypeNameArray[i]}
+                                -}
+                        div(data-role='fieldcontain',align='left')
+                            video(id="video" ,width="100%" ,height="100%" , autoplay)
+                            p(id="error") Click on the video to send a snapshot to the receiving screen
+                            canvas(id="canvas")
+                        //a(href='JavaScript:kycSave(#{groupId})',  rel="external",data-icon='plus', data-role='button', title=' Add ', data-inline="true", id='kycUploadSaveButton') Submit
+                        a(href=contextPath + '/client/ci/groups', rel="external",data-icon='arrow-l', data-role='button', title=' Back', data-inline='true' , id="backButtonId") Back
+                        input(type='text', name='groupIdName', id='groupIdID', value=groupId)
+                div(class="ui-loader-background")

@@ -1,0 +1,45 @@
+doctype
+html(lang = "en")
+    head
+        title= 'IKLANT-Change User Name'
+        meta(charset='utf-8')
+        meta(name='viewport',content='width=device-width, initial-scale=1')
+        meta(http-equiv='Cache-Control', content='no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0')
+        meta(http-equiv='Pragma', content='no-cache')
+        meta(http-equiv='Expires', content='-1')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+        link(rel='stylesheet', href='/stylesheets/dialogStyle.css')
+        script(type='text/javascript', src='/javascripts/jquery-1.7.1.min.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile.custom.js')
+        script(type='text/javascript')
+            function submitForm(){
+                //alert("Alert");
+                document.getElementById("errorMessageId").innerText = "";
+                $.mobile.showPageLoadingMsg();
+                document.getElementById("changeUserNameFormID").method='POST';
+                document.getElementById("changeUserNameFormID").action=localStorage.contextPath+"/client/ci/generatePassword";
+                document.getElementById("changeUserNameFormID").submit();
+            }
+    body
+        div(data-role='page', data-theme='b', id="loginDetailsDiv")
+            div(data-role="header", data-theme="a", class="ui-bar ui-grid-a", data-overlay-theme="c")
+                div(class="ui-block-a")
+                    img(id='groupIcon', src='/images/iklant.png')
+                    h3(for="value", style="margin:20px 20px 0 0; text-align:right;")
+                div(class="ui-block-b", align="right",style="padding:25px 50px 0 0;")
+                    h3(align="right") Welcome
+                    a(href=contextPath + '/client/ci/logout',  rel="external",data-icon='back', data-role='button', title=' Logout ', data-inline="true") Logout
+            div(id="changeUserNameDiv",class="ui-bar ui-bar-c ui-corner-all", data-theme="a", data-overlay-theme="a", align="center")
+                form(id="changeUserNameFormID", align="center", method="post",action="")
+                    p(id='errorMessageId',align="center",style="color:red;font-weight: bold;") #{errorMessage}
+                    div(data-role="fieldcontain", data-mini="true")
+                        label(for="userName", data-inline="true", id="label") User Name
+                        input(type="text", name="userName", id="userName", value="",required='required')
+                    div(data-role="fieldcontain", data-mini="true")
+                        label(for="newUserName", data-inline="true", id="label") New User Name
+                        input(type="text", name="newUserName", id="newUserName", value="",required='required')
+                    a(href='JavaScript:submitForm()',  rel="external",data-theme="b",data-icon='check', data-role='button', title=' Submit ', data-inline="true", data-mini='true') Submit
+

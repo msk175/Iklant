@@ -1,0 +1,220 @@
+doctype
+html(lang = "en")
+    head
+        title= 'IKLANT-General Ledger Summary'
+        meta(charset='utf-8')
+        meta(name='viewport',content='width=device-width, initial-scale=1')
+        link(rel="stylesheet", href="/stylesheets/jquery.mobile-1.3.0-beta.1.min.css")
+        link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+        link(rel='stylesheet', href='/stylesheets/tablereport.css')
+        link(rel='stylesheet', href='/stylesheets/dialogStyle.css')
+        script(type='text/javascript', src='/javascripts/jquery-1.8.3.min.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile-1.3.0-beta.1.min.js')
+        script(type='text/javascript', src='/javascripts/jquery-ui.js')
+        script(type="text/javascript",src="/javascripts/jsapi.txt")
+        script(type='text/javascript', src='/javascripts/reportmgmt.js')
+        script(type="text/javascript", src="/javascripts/jquery.dataTables.js")
+        script(type='text/javascript', src='/javascripts/common.js')
+    body(style="overflow-x:hidden")
+        form(id='generalLedgerSummary')
+            div(data-role='page', data-theme='b')
+                input(type='hidden', name='reportPageName', id='reportPageName', value="generalLedgerSummary")
+                input(type='hidden', name='report_download_flag', id='report_download_flag', value="#{download_report}")
+                input(type='hidden', name='selectedDocName', id='selectedDocName', value="#{fileLocation}")
+                input(type='hidden', name='reportType', id='reportType')
+                input(type='hidden', name='reportName', id='reportName', value="financialReports")
+                input(type='hidden', name='finYearIdArray', id='finYearIdArray', value="#{FinancialYearLoadHolder.getFinancialYearIdArray()}")
+                input(type='hidden', name='startDateArray', id='startDateArray', value="#{FinancialYearLoadHolder.getFinancialYearStartDateArray()}")
+                input(type='hidden', name='endDateArray', id='endDateArray', value="#{FinancialYearLoadHolder.getFinancialYearEndDateArray()}")
+                div(data-role="header", data-theme="a", class="ui-bar ui-grid-a", data-overlay-theme="c")
+                    div(class="ui-block-a")
+                        img(id='groupIcon', style="margin:5px 10px 0 0; text-align:right;",src='/images/iklant.png')
+                    div(class="ui-block-b",align="right")
+                        h3(align="right",style="margin:20px 10px 0 0")
+                        a(href=contextPath + '/client/ci/reportsMenuByCategory/#{constantsObj.getFinancialReports()}', rel="external",data-icon='arrow-l', data-role='button', title='Back', data-inline='true') Back
+                        a(href=contextPath + '/client/ci/menu', rel="external",data-icon='home', data-role='button', title='Home', data-inline='true') Home
+                        a(href=contextPath + '/client/ci/logout',  rel="external",data-icon='back', data-role='button', title=' Logout ', data-inline="true") Logout
+                div(data-role="navbar",id="navid")
+                    ul(id="custom-nav-list")
+                        li
+                            a(rel="external", data-role="tab" , id="table-li-1",class="ui-btn-active") General Ledger Summary
+                div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b")
+                    h3 Select Dates to view General Ledger Summary
+                    p(id="errorField",align="center")
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a",style='width:100%;')
+                        div(class='ui-block-a',style='width:15%')
+                            div(data-role="fieldcontain")
+                            label(id="report_label_top") Financial Year
+                        div(class='ui-block-b',style='width:18%')
+                            div(data-role="fieldcontain")
+                                select(name='finYearId', id='finYearId', data-theme='b', data-icon='grid', data-inline='true', data-mini='true')
+                                    -for(i=0;i<finResult.length;i++){
+                                        -if(finResult[i].financialyear_id === finYearId){
+                                            option(value=finResult[i].financialyear_id,selected='selected') #{finResult[i].financialyear_id}
+                                        -}
+                                        -else{
+                                            option(value=finResult[i].financialyear_id) #{finResult[i].financialyear_id}
+                                        -}
+                                    - }
+                        div(class='ui-block-c',style='width:10%;')
+                            div(data-role='fieldcontain')
+                            label(id="report_label_top") From Date
+                        div(class='ui-block-d',style='width:20%;')
+                            div(data-role='fieldcontain')
+                                input(type="text", name="fromdate", id="fromdate",readonly = "readonly", value=startDate, required='true',class='finFromDate')
+                        div(class='ui-block-e',style='width:10%;')
+                            div(data-role='fieldcontain')
+                            label(id="report_label_top") To Date
+                        div(class='ui-block-e',style='width:20%;')
+                            div(data-role='fieldcontain')
+                                input(type="text", name="todate", id="todate", value=endDate,readonly = "readonly", required='true',class='finToDate')
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a",style='width:100%;')
+                        //- if(roleId == constantsObj.getSMHroleId()) {
+                            div(class='ui-block-a',style='width:15%;')
+                                div(data-role="fieldcontain")
+                                label(id="report_label_top") Office
+                            div(class='ui-block-b',style='width:18%;')
+                                div(data-role="fieldcontain")
+                                    select(name='listoffice', id='listoffice', data-theme='b', data-icon='grid', data-inline='true', data-mini='true')
+                                        option(value='-1') All
+                                        -for(i=0;i<officeIdArray.length;i++){
+                                            -if(officeValue == officeIdArray[i]){
+                                                option(value=officeIdArray[i],selected="selected") #{officeNameArray[i]}
+                                            -}
+                                            -else{
+                                                option(value=officeIdArray[i]) #{officeNameArray[i]}
+                                            -}
+                                        - }
+                            - }
+                        div(class='ui-block-c',style='width:10%;')
+                            div(data-role="fieldcontain")
+                            label(id="report_label_top") Ledger
+                        div(class='ui-block-d',style='width:30%;')
+                            div(data-role="fieldcontain")
+                                select(name='ledger_id', id='ledger_id', data-theme='b', data-icon='grid', data-inline='true', data-mini='true', onchange='generateGroupLedger();')
+                                    -var glValueArray = new Array();
+                                    -for(i=0;i<ledgerResult.length;i++){
+                                        -if(ledgerValue == ledgerResult[i].glcode_value){
+                                            option(value=ledgerResult[i].glcode_value,selected='selected') #{ledgerResult[i].coa_name} [#{ledgerResult[i].glcode_value}]
+                                        -}
+                                        -else{
+                                            option(value=ledgerResult[i].glcode_value) #{ledgerResult[i].coa_name} [#{ledgerResult[i].glcode_value}]
+                                        -}
+                                        -glValueArray[i] = ledgerResult[i].glcode_value
+                                    - }
+                                input(type="hidden",name="ledgerNameGL", id="ledgerNameGL")
+                        div(class='ui-block-e',style='width:14%;')
+                            div(data-role="fieldcontain",align="left")
+                                input(type='checkbox', name='accOperation',id='accOperation',checked=(accOperation==="on" ? "checked" : undefined),data-mini='true',onclick='checkUnCheck("accOperation")',value=accOperation)
+                                label(for='accOperation') Accounting Trxns
+                        div(class='ui-block-e',style='width:2%;')
+                        div(class='ui-block-e',style='width:12%;',align='right')
+                            div(data-role="fieldcontain",align="right")
+                                input(type='checkbox', name='mfiOperation',id='mfiOperation',checked=(mfiOperation==="on" ? "checked" : undefined),data-mini='true',onclick='checkUnCheck("mfiOperation")',value=mfiOperation)
+                                label(for='mfiOperation') MFI Trxns
+                    div(data-role="horizontal", data-inline="true",data-theme="b",id="show",class="ui-grid-a",style='width:100%;')
+                        div(class='ui-block-a',style='width:33%;')
+                            div(data-role="fieldcontain",align="right")
+                                a(href='JavaScript:generateGLReport("Summary")',  rel="external",data-theme="b",data-role='button',data-mini='true', data-inline="true") View Summary
+                        div(class='ui-block-b',style='width:34%;')
+                            div(data-role="fieldcontain",align="center")
+                                a(href='JavaScript:generateGLReport("Detailed")',  rel="external",data-theme="b",data-role='button',data-mini='true', data-inline="true") View Detailed Report
+                        div(class='ui-block-c',style='width:33%;')
+                            div(data-role="fieldcontain",align="left")
+                                a(href='#', data-role='button',id='downloadExcel', data-inline='true', data-mini='true',onclick='generateGLReport("Download")') Export To Excel
+                -if(result){
+                    -if(result.length>0){
+                        div(data-role="horizontal", data-inline="true",data-theme="b",id="show",class="ui-grid-a",style='width:100%;')
+                            div(class='ui-block-a',style='width:33%;')
+                                div(data-role="fieldcontain",align="right")
+                                    a(rel="external",data-theme="b",data-mini='true', data-inline="true") Opening Balance : #{result[0].openingBalance}
+                            div(class='ui-block-b',style='width:34%;')
+                                div(data-role="fieldcontain",align="center")
+                                    a( rel="external",data-theme="b",data-mini='true', data-inline="true") Total Debit and Credit : #{result[0].totalDebit}  and  #{result[0].totalCredit}
+                            div(class='ui-block-c',style='width:33%;')
+                                div(data-role="fieldcontain",align="left")
+                                    a(id='downloadExcel', data-inline='true', data-mini='true',onclick='generateGLReport("Download")') Closing Balance  : #{result[0].closingBalance}
+                        div(style = "overflow: auto;",class=(result.length>5)?'container '+detailed:detailed)
+                            div(data-role="navbar",id="navid")
+                                ul(id="custom-nav-list")
+                                    li
+                                        a(rel="external", data-role="tab" , id="table-li-1",class="ui-btn-active") General Ledger Detailed Report
+                            table(id="fixedHeader_detailedsummary", CLASS="DISPLAY", cellspacing="0", width="100%")
+                                thead
+                                    tr
+                                        th S.No
+                                        th Office
+                                        th Payment Date
+                                        th Transaction Type
+                                        th Cheque/Receipt No.
+                                        th Narration
+                                        th Ledger
+                                        th Debit
+                                        th Credit
+                                        th Voucher No.
+                                - count = 1;
+                                - for(var i=0;i<result.length;i++) {
+                                    -if(result[i].office_id && result[i].id){
+                                    tbody
+                                        tr(class="showhide")
+                                            td(align='center') #{count}
+                                            td #{result[i].office}
+                                            td #{result[i].payment_date}
+                                            td(align='right') #{result[i].transaction_type}
+                                            td #{result[i].cheque_or_receipt_num}
+                                            td #{result[i].narration}
+                                            td #{result[i].ledger}
+                                            td(align='right') #{Number(result[i].debit).toFixed(0)}
+                                            td(align='right') #{Number(result[i].credit).toFixed(0)}
+                                            td #{result[i].id}
+                                        -count++;
+                                    -}
+                                -}
+                        div(class=summary)
+                            div(data-role="navbar",id="navid")
+                                ul(id="custom-nav-list")
+                                    li
+                                        a(rel="external", data-role="tab" , id="table-li-1",class="ui-btn-active") General Ledger Summary Report
+                            table(id="fixedHeader_summary", CLASS="DISPLAY", cellspacing="0", width="100%")
+                                thead
+                                    tr
+                                        th S. No
+                                        th Office
+                                        th Ledger
+                                        th No. Of Transactions
+                                        th Total Debit
+                                        th Total Credit
+                                - count = 1;
+                                - for(var i=0;i<result.length;i++) {
+                                    -if(result[i].ledger && !result[i].id && result[i].office_id){
+                                    tbody
+                                        tr
+                                            td(align='center') #{count}
+                                            td #{result[i].office}
+                                            td #{result[i].ledger}
+                                            td(align='right') #{result[i].noOfTransactions}
+                                            td(align='right') #{result[i].totalDebit}
+                                            td(align='right') #{result[i].totalCredit}
+                                        - count++
+                                    -}
+                                    -if(!result[i].office_id){
+                                    tbody
+                                        tr
+                                            td(colspan='3') Total
+                                            td(align='right') #{result[i].noOfTransactions}
+                                            td(align='right') #{result[i].totalDebit}
+                                            td(align='right') #{result[i].totalCredit}
+                                    -}
+                                - }
+                    -}
+                    -else{
+                        tbody
+                            tr
+                                div(align='center')
+                                    span(style='font-weight:bold') No records to display
+                    -}
+                -}
+                div(class="ui-loader-background")

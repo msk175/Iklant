@@ -1,0 +1,127 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'IKLANT-HoldClients'
+
+block scripts
+    link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+    include ../headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/jqx.base.css')
+    link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+    link(rel='stylesheet', href='/stylesheets/popup.css')
+    link(rel="stylesheet", href="/stylesheets/jquery.iviewer.css")
+    link(rel="stylesheet", href="/stylesheets/iklant-table-layout.css")
+    script(type='text/javascript', src='/javascripts/jquery-ui.js')
+    script(type="text/javascript", src="/javascripts/jquery.mousewheel.min.js")
+    script(type="text/javascript", src="/javascripts/jquery.iviewer.js")
+    script(type='text/javascript', src='/javascripts/jqxcore.js')
+    script(type='text/javascript', src="/javascripts/jqxsplitter.js")
+    script(type='text/javascript', src="/javascripts/data_entry/kycValidation.js")
+    script(type='text/javascript', src='/javascripts/commonCustom.js')
+
+block content
+    form(id='BMFormId')
+        div(data-role='page', data-theme='b', data-position="fixed")
+            +header("Hold Clients",["backJavascript","logout"],"cancelHold",[])
+            div(data-theme="b" )
+                p(id='errorLabelId',align="center",class='error-message global-font-details')
+                -if (status == "failure"){
+                    p(align="center",class='error-message global-font-details') No documents found for this client
+                -}
+                div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-a",style='width:90%;padding-left:5em')
+                    div(class='ui-block-a',style='width:10%')
+                        div(data-role="fieldcontain")
+                        label(for="groupName") Group Name
+                    div(class='ui-block-b',style='width:30%')
+                        div(data-role="fieldcontain")
+                        h3 #{groupName}
+                    div(class='ui-block-c',style='width:20%')
+                        div(data-role="fieldcontain")
+                        label Member Name
+                    div(class='ui-block-d',style='width:30%')
+                        div(data-role="fieldcontain")
+                            select(name='memberName',rel = "external",onchange="JavaScript:getHoldClientsWhileOnchange()", data-mini="true" ,id="memberName",data-inline="true",autofocus="autofocus", data-theme='b', data-icon='arrow-d', data-native-menu="true")
+                                option(value="0")    Select
+                                -for(i=0;i< clientIds.length;i++){
+                                    -if(clientIds[i]==clientId)
+                                        option(value=clientIds[i],selected='selected') #{clientNames[i]}
+                                    -else
+                                        option(value=clientIds[i]) #{clientNames[i]}
+                                - }
+                    div(class='ui-block-e',style='width:14%')
+                        div(data-role="fieldcontain")
+                            label Hold History
+                    div(class='ui-block-e',style='width:10%')
+                        div(data-role="fieldcontain")
+                            //-a(href='JavaScript:checkHoldHistoryMember();' , id='holdHistoryId', rel="external",data-theme="b",data-role='button', title=' Hold ', data-inline="true", data-mini="true")
+                            a(href="JavaScript:JavaScript:checkHoldHistoryMember();",id='custommainTab',data-theme="b",data-rel="popup",data-transition="slide",data-position-to="window",data-mini="true")
+                                img(id='groupIcon', style="margin:5px 10px 0 0; text-align:right;",width="40px",height="40px",src='/images/member.png')
+                div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-a",style='width:50%;padding-left:5em')
+                    -if(entryBy){
+                        div(class='ui-block-c updatedDetails',style='width:18%')
+                            div(data-role="fieldcontain")
+                            label(for="kycUpdatedBy") KYC Done By :
+                        div(class='ui-block-e updatedDetails',style='width:30%')
+                            div(data-role="fieldcontain")
+                            h3(id="kycUpdatedBy") #{entryBy}
+                     -}
+                    -if(kycDoneBy){
+                        div(class='ui-block-b updatedDetails',style='width:18%')
+                            div(data-role="fieldcontain")
+                            label(for="kycUpdatedBy") KYC Updated By :
+                        div(class='ui-block-b updatedDetails',style='width:30%')
+                            div(data-role="fieldcontain")
+                            h3(id="kycUpdatedBy") #{kycDoneBy}
+                        -}
+                div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-a",style='width:50%;padding-left:5em')
+                    -if(verifiedBy){
+                        div(class='ui-block-a updatedDetails',style='width:18%')
+                            div(data-role="fieldcontain")
+                            label(for="kycUpdatedBy") Data Verified By :
+                        div(class='ui-block-c updatedDetails',style='width:30%')
+                            div(data-role="fieldcontain")
+                            h3(id="kycUpdatedBy") #{verifiedBy}
+                    -}
+                    -if(holdBy){
+                        div(class='ui-block-b updatedDetails',style='width:18%')
+                            div(data-role="fieldcontain")
+                            label(for="kycUpdatedBy") Hold Given By :
+                        div(class='ui-block-c updatedDetails',style='width:30%')
+                            div(data-role="fieldcontain")
+                            h3(id="kycUpdatedBy") #{holdBy}
+                    -}
+
+            hr
+            div(data-role='content', id="mainSplitter", data-theme="b")
+                div(class='vertical-scroll-bar', id="leftPanel",style=(base64ImageArray.length>0)?'display:block':'display:none' )
+                    div(class='buttonWrapper', data-overlay-theme="b",style='display:none;')
+                        a(href='#', rel="external",data-icon='arrow-r', data-role='button', title='Next', data-inline="true", data-mini="true",id='next',data-iconpos="notext")
+                        a(href='#', rel="external",data-icon='arrow-l', data-role='button', title='Previous', data-inline="true", data-mini="true",id='previous',data-iconpos="notext")
+                        a(href='#', rel="external",data-icon='back', data-role='button', title='Rotate Left', data-inline="true", data-mini="true",id='rotateLeft',data-iconpos="notext")
+                        a(href='#', rel="external",data-icon='forward', data-role='button', title='Rotate Right', data-inline="true", data-mini="true",id='rotateRight',data-iconpos="notext")
+                        h3(id='imageName',align='center')
+                    div(class='wrapper',style='display:none;padding-top:2em')
+                div( id="rightPanel")
+                    div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-a",style='width:100%')
+                        h3(style='padding-top:5em;padding-left:0.25em') Document Types
+                        div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-a",style='width:100%;padding-top:1em')
+                            -for(var i = 0;i<docTypeIdNMCArray.length;i++){
+                                div(class='ui-block-a',style='width:93%;padding-left:1em')
+                                    p #{i+1}.#{docTypeNameNMCArray[i]}
+                            -}
+                        h3(style='padding-top:0.25em;padding-left:0.25em') Reason for hold given
+                        div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-a",style='width:100%;padding-top:1em')
+                            div(class='ui-block-a',style='width:93%;padding-left:1em')
+                                p #{remarks}
+                                div(data-role="content",id="clientListDivId",style = "overflow: auto;")
+            input(type="hidden",id="reqOfficeHidden",name="reqOfficeHidden",value="#{officeId}")
+            input(type="hidden", name="menuName", id="menuName", value='#{menu}')
+            input(type="hidden", name="groupName", id="groupName",value='#{groupName}')
+            input(type="hidden", name="customerId", id="customerId",value='#{customerId}')
+            input(type="hidden", name="customerLevel", id="customerLevel",value='2')
+            input(type='hidden', name='availDocTypeId', id='availDocTypeId',value='#{docTypeIdArray}')
+            input(type='hidden', name='availDocTypeName', id='availDocTypeName',value='#{docTypeNameArray}')
+            input(type='hidden', name='base64Image', id='base64Image',value='#{base64ImageArray}')
+            //div(data-role="content",id="clientListDivId",style = "overflow: auto;")
+            div(class="ui-loader-background")

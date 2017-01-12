@@ -1,0 +1,360 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'IKLANT-LoanSanctionForm'
+
+block scripts
+    //-scripts are inherited from LoanRecoveryLoanAccountList.jade
+
+block content
+    form(id='LoanAccountFormID')
+        div(data-role='page', data-theme='b', id="loginDetailsDiv")
+            +header("",["backJavascript","logout"],"back1",[])
+            div(data-role="navbar")
+                ul(id="custom-nav-list")
+                    li
+                        a(rel="external", data-role="tab" , id="custom-li-1") Loan Sanction
+            p(id="errorLabel",class="error-message global-font-details",align ="center")
+            p(id="successmessage",class="success-message global-font-details",align ="center")
+            input(type="hidden", name="selectedMemberIdArray",id="selectedMemberIdArray",value="")
+            div(data-role="content")
+                div(data-role="horizontal",class="ui-bar ui-grid-d")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                            label(for='groupname',class='label') Group Name
+                            input(type='hidden', name='mifosGroupId', id='mifosGroupId',value="#{loanOfferingObjLocal.getCustomerId()}")
+                            input(type='hidden', name='mifosGlobalId', id='mifosGlobalId',value="#{loanOfferingObjLocal.getGlobalAccountNum()}")
+                    div(class='ui-block-b',align='left')
+                        div(data-role="fieldcontain")
+                            label(for='groupname') #{loanOfferingObjLocal.getCenterName()}
+                            input(type='hidden', name='groupname', id='groupname',value="#{loanOfferingObjLocal.getCenterName()}")
+                    div(class='ui-block-c',align='left',id="formTypeLabelId")
+                        div(data-role="fieldcontain")
+                        label(for="formtypeId",class='label') Form Type
+                    div(class='ui-block-d',align='left',id="formTypeValueId")
+                        div(data-role="fieldcontain")
+                            select(name='formtypeId', id='formtypeId',onchange="JavaScript:generatePDF()",data-mini="true", data-icon='grid', data-native-menu="false")
+                                option(value='0',selected='selected') Select Form Type
+                                option(value='1') KYC Form
+                                option(value='2') Loan Form
+                                option(value='3') Legal Form
+                                option(value='4') Promissory Note
+                                option(value='5') Installment Schedule
+                                option(value='6') Receipt Form
+                    div(class='ui-block-e',align='left',id="showPdfId")
+                        div(data-role="fieldcontain",id="kycformid")
+                            a(href="#{kycform}",target="_blank",data-icon='check',id='kycformid', data-inline='true', data-mini='true')
+                                img(id='pdfIcon', src='/images/pdf.png')
+                        div(data-role="fieldcontain",id="loanformid")
+                            a(href="#{loanForm}",target="_blank",data-icon='check',id='loanformid', data-inline='true', data-mini='true')
+                                img(id='pdfIcon', src='/images/pdf.png')
+                        div(data-role="fieldcontain",id="legalFormId")
+                            a(href="#{legalForm}",target="_blank",data-icon='check',id='legalFormId', data-inline='true', data-mini='true')
+                                img(id='pdfIcon', src='/images/pdf.png')
+                        div(data-role="fieldcontain",id="promissoryNoteId")
+                            a(href="#{promissoryNote}",target="_blank",data-icon='check',id='promissoryNoteId', data-inline='true', data-mini='true')
+                                img(id='pdfIcon', src='/images/pdf.png')
+                        div(data-role="fieldcontain",id="instScheduleId")
+                            a(href="#{installmentSchedule}",target="_blank",data-icon='check',id='instScheduleId', data-inline='true', data-mini='true')
+                                img(id='pdfIcon', src='/images/pdf.png')
+                        div(data-role="fieldcontain",id="receiptFormId")
+                            a(href="#{receiptForm}",target="_blank",data-icon='check',id='receiptFormId', data-inline='true', data-mini='true')
+                                img(id='pdfIcon', src='/images/pdf.png')
+                        input(type="hidden",name="iklantGroupIdHidden",id="iklantGroupIdHiddenId",value="#{iklantGroupId}")
+                div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-d")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                        label(for="prdname",class='label') Loan Product Name
+                    div(class='ui-block-b',align='left')
+                        div(data-role="fieldcontain")
+                            select(name='prdname', id='prdname',onchange="JavaScript:retrieveDetails(this)", data-icon='grid',data-theme="d", data-overlay-theme="a", data-native-menu="true",data-mini="true")
+                                option(value='0',selected='selected') -- Select --
+                                - for(i=0;i< loanOfferingObjLocal.getProductCategoryIdList().length;i++){
+                                    option(value= "#{loanOfferingObjLocal.getProductCategoryIdList()[i]}") #{loanOfferingObjLocal.getProductCategoryNameList()[i]}
+                                - }
+                    div(class='ui-block-c')
+                        div(data-role="fieldcontain",style="margin:12px 0 0 0")
+                            //a(href='#viewLoanProductPopup', data-icon='check', data-role='button',id='viewLPDetailsId', data-rel='popup', data-position-to='window', data-transition='pop', data-inline='true', data-mini='true') view Details
+                    div(data-role="popup", id="viewLoanProductPopup",data-theme="c")
+                        h3(align="center",id="h3header") Product Summary
+                        div(data-role="fieldcontain")
+                            label(for="clientName",id='popupLabelId') Interest Rate Type
+                            label(id="clientName") : Declining Balance
+                        div(data-role="fieldcontain")
+                            label(for="clientName1",id='popupLabelId') Frequency of installments
+                            label(id="clientName1") : 2 Weeks
+                        div(data-role="fieldcontain")
+                            label(for="clientName2",id='popupLabelId') Fixed Repayment Schedule
+                            label(id="clientName2") : No
+                        div(data-role="fieldcontain")
+                            label(for="clientName3",id='popupLabelId') Interest rate
+                            label(id="clientName3") : 26
+                        div(data-role="fieldcontain")
+                            label(for="clientName4",id='popupLabelId') Number of Installments
+                            label(id="clientName4") : 25
+                        div(data-role="fieldcontain", data-inline="true",align="center")
+                            a(href='#viewLoanProductDetails',  rel="external",data-icon='check', data-role='button', title='Ok', data-inline="true",data-mini="true") OK
+                div(data-role="fieldcontain",id="dashboard")
+                    a(href='JavaScript:goToRepaymentSchedule()', rel="external",data-icon='forward', data-role='button', title=' Back', data-inline='true', data-mini='true') View Group Loan Account Information
+                    input(type='hidden', name='globalAccountNumberHidden', id='globalAccountNumberHiddenId',value="")
+            div(data-role="content",id="loanamount")
+                div(data-role="horizontal",class="ui-bar ui-grid-d")
+                    div(class='ui-block-a',align='left')
+                        div(data-role="fieldcontain")
+                        label(for='amount',class='label') Group Loan Amount
+                    div(class='ui-block-b',align='left')
+                        div(data-role="fieldcontain")
+                            input(type='text', name='amount', id='amount',value='0',readonly='readonly')
+                    div(class='ui-block-c')
+                        div(data-role="fieldcontain")
+                            label(id="allowed")
+                    input(type='hidden', name='minAmountAllowed', id='minAmountAllowed',value="")
+                    input(type='hidden', name='maxAmountAllowed', id='maxAmountAllowed',value="")
+                    input(type='hidden', name='clientIdArrayId', id='clientIdArrayId',value="")
+                    input(type='hidden', name='clientIdArrayLengthId', id='clientIdArrayLengthId',value="")
+                div(data-role="horizontal",class="ui-bar ui-grid-d")
+                    div(class='ui-block-a',align='left')
+                        div(data-role="fieldcontain")
+                        label(for='interestrate',class='label') Interest Rate
+                    div(class='ui-block-b',align='left')
+                        div(data-role="fieldcontain")
+                            input(type='text',onkeyup='numericForInt(this)', name='interestrate',autocomplete="off", id='interestrate',readonly='readonly')
+                    div(class='ui-block-c')
+                        div(data-role="fieldcontain")
+                        label(id="interestratelabel")
+                    input(type='hidden', name='mininterestrate', id='mininterestrate',value="")
+                    input(type='hidden', name='maxinterestrate', id='maxinterestrate',value="")
+                div(data-role="horizontal",class="ui-bar ui-grid-d")
+                    div(class='ui-block-a',align='left')
+                        div(data-role="fieldcontain")
+                            label(for='installments',class='label') Installments
+                    div(class='ui-block-b',align='left')
+                        div(data-role="fieldcontain")
+                            input(type='text', onkeyup='numeric(this)',name='installments', id='installments',autocomplete="off")
+                    div(class='ui-block-c')
+                        div(data-role="fieldcontain")
+                        label(id="installmentslabel")
+                    input(type='hidden', name='mininstallments', id='mininstallments',value="")
+                    input(type='hidden', name='maxinstallments', id='maxinstallments',value="")
+            div(data-role="content",id="loansummary" )
+                div(data-role="navbar")
+                    ul(id="custom-nav-list1")
+                        li
+                            a(rel="external", data-role="tab" , id="custom-li-tab",class="ui-btn-active ") Individual Details
+                        li
+                            a(rel="external", data-role="tab" , id="custom-li-tab2") Loan Account Details
+                        li
+                            a(rel="external", data-role="tab" , id="custom-li-tab3") Apply Additonal Fees
+
+                    div(data-role="content",id="individualDetails",style = "overflow: auto;")
+                        //div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-a")
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain")
+                                    input(type='checkbox', name='individualtrack',checked="checked", id='individualtrackId', data-mini="true")
+                                    label(for='individualtrackId') Individual Tracking
+                                    input(type='hidden', name='indTrackedCheckbox', id='indTrackedCheckbox')
+                        div(id="divId")
+                            table(id="bodyid")
+                div(data-role="content",id="loanAcount",style = "overflow: auto;")
+                    div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-c")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                            label(for="approvalDateId",class='label')  Approval Date
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain")
+                                input(type="text", name="approvalDate", id="approvalDateId",readonly="readonly",autocomplete="off")
+                        div(class='ui-block-c',id="disbursementlabel")
+                            div(data-role="fieldcontain")
+                            label(for="disbursalDateId",class='label') Disbursal Date
+                        div(class='ui-block-d')
+                            div(data-role="fieldcontain",id="disbursementfield")
+                                input(type="text", name="disbursalDate", id="disbursalDateId",readonly="readonly",autocomplete="off")
+                        div(class='ui-block-e')
+                            div(data-role="fieldcontain")
+                            label(for="meetingTime",style='color:black;font-weight:bold') Meeting Time
+                        div(class='ui-block-e')
+                            div(data-role="fieldcontain")
+                                input(type="time", name="meetingTime", id="meetingTime",autocomplete="off",class='ui-timepicker-input')
+                    div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-c")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                            label(for="sourceOfPaymentId",class='label') Source Of Payment
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain")
+                                select(name='sourceOfPaymentId',  id='sourceOfPaymentId',onchange='sourceOfPayment()', data-icon='grid',data-inline='true',data-mini="true")
+                                    option(value='0',selected="selected") Source Of Payment
+                    div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-c", id = "voucherNumberDiv", style="display:none")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                                label(for="voucherNumberId",class='label') Voucher Number
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain")
+                                label(for="voucherNumberValue",id="voucherNumberValueId",style="color:black")
+                    div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-c",id="chequeDetailsDivId")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                            label(for="chequeno",class='label') Cheque No*
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain")
+                                input(type="text", name="chequeno", id="chequeno", value="", required='true',onkeyup='forNumbers(this)')
+                        div(class='ui-block-c')
+                            div(data-role="fieldcontain")
+                            label(for="chequedate",class='label') Cheque Date*
+                        div(class='ui-block-d')
+                            div(data-role="fieldcontain")
+                                input(type="text", name="chequedate", id="chequedate", value="", required='true', readonly="readonly")
+                    div(data-role="fieldcontain")
+                        div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                            div(class='ui-block-a',id="weekOption")
+                                div(data-role="fieldcontain")
+                                    label(for='week') Week(S)
+                                    input(type='radio', name='meetingschedule', class="meeting",id='week', data-inline="true",value="1")
+                            div(class='ui-block-b',id="monthOption")
+                                div(data-role="fieldcontain")
+                                    label(for='month') Month(S)
+                                    input(type='radio', name='meetingschedule', class="meeting",id='month', data-inline="true",value="2")
+                        div(id="weekDiv")
+                            div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                                div(class='ui-block-a')
+                                    div(data-role="fieldcontain")
+                                        label(for="frequency",class='label') Frequency Of Meeting
+                            div(data-role="horizontal",id="frequencyOfMeetingId", data-theme="a", data-overlay-theme="a",class="ui-bar ui-grid-c")
+                                div(class='ui-block-a')
+                                    div(data-role="fieldcontain")
+                                    label(for="recurEvery",class='label') Recur Every
+                                div(class='ui-block-b')
+                                    div(data-role="fieldcontain")
+                                        input(type="text", name="recurEvery", id="recurEveryId",autocomplete="off",maxlength="2", required='true',onkeyup='forNumbers(this)')
+                                div(class='ui-block-c')
+                                    div(data-role="fieldcontain")
+                                        label(for="dayListId",class='label') Week(s)on
+                                div(class='ui-block-d')
+                                    div(data-role="fieldcontain")
+                                        select(name='dayListId', id='dayListId',  data-icon='grid', data-mini='true', data-native-menu="false")
+                                            option(value='0',selected='selected') -- Select --
+                                            option(value='1') Monday
+                                            option(value='2') Tuesday
+                                            option(value='3') Wednesday
+                                            option(value='4') Thursday
+                                            option(value='5') Friday
+                                            option(value='6') Saturday
+                                            option(value='7') Sunday
+                                    input(type="hidden", name="dayorder", id="dayorder", value= '' , required='true')
+
+                    div(id="monthsdiv")
+                        div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain")
+                                    label(for="frequency",class='label') Frequency Of Meeting
+                            div(data-role="horizontal",id="frequencyMonthId", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-c")
+                                div(class='ui-block-b')
+                                    div(data-role="fieldcontain")
+                                        label(for="day",class='label') Day
+                                div(class='ui-block-c')
+                                    div(data-role="fieldcontain")
+                                        input(type="text", name="day",autocomplete="off",maxlength="2", id="day", value= '' , required='true',onkeyup='forNumbers(this)')
+                                div(class='ui-block-d')
+                                    div(data-role="fieldcontain")
+                                        label(for="onemonth",class='label') of every 1 month(s)
+                        div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                            div(class='ui-block-a')
+                                a(href='JavaScript:previewEMIdate()', rel="external",data-icon='back', data-role='button', title=' Back', data-inline='true', data-mini='true') Preview
+                                label(id="firstInstallmentDateId")
+
+                    div(data-role="horizontal", class="ui-bar ui-grid-a")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                                input(type='checkbox', name='graceperiod', id='graceperiod', data-inline="true")
+                                label(for='graceperiod') Grace Period For Repayments
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain")
+                                input(type="text", name="grace",autocomplete="off",maxlength="2", id="grace",readonly="readonly",value="", required='true',onkeyup='forNumbers(this)')
+                div(data-role="content",id="fees")
+                    div(data-role="horizontal",class="ui-bar ui-grid-d")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                                input(type='checkbox', name='processingFee', id='processingFeeId', data-inline="true")
+                                label(for='processingFeeId') processing Fee
+                        div(class='ui-block-b')
+                        div(class='ui-block-c',id="processingFeePercentageDivId")
+                            div(data-role="fieldcontain")
+                                label(for="processingFeePercentageId",class='label') Amount
+                                input(type="hidden", name="processingFeeHiddenPercentage",autocomplete="off", data-mini="true", id="processingFeePercentageHiddenId", readonly="readonly", required='true')
+                        div(class='ui-block-d',id="processingFeePercentageLabelDivId")
+                            div(data-role="fieldcontain")
+                                input(type="text", name="processingFeePercentage",autocomplete="off", data-mini="true", id="processingFeePercentageId", readonly="readonly", required='true')
+                        div(class='ui-block-e')
+                            div(data-role="fieldcontain")
+                            label(for="dup",id="pflabelid")
+                    div(data-role="horizontal",class="ui-bar ui-grid-d")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                                input(type='checkbox', name='serviceTax', id='serviceTaxId', data-inline="true")
+                                label(for='serviceTaxId') Applicable Service Tax
+                        div(class='ui-block-b')
+                        div(class='ui-block-c',id="serviceTaxPercentageDivId")
+                            div(data-role="fieldcontain")
+                                label(for="serviceTaxPercentageId",class='label') Amount
+                                input(type="hidden", name="serviceTaxHiddenPercentage",autocomplete="off", data-mini="true", id="serviceTaxPercentageHiddenId", readonly="readonly", required='true')
+                        div(class='ui-block-d',id="serviceTaxPercentageLabelDivId")
+                            div(data-role="fieldcontain")
+                                input(type="text", name="serviceTaxPercentage",autocomplete="off", data-mini="true", id="serviceTaxPercentageId", readonly="readonly", required='true')
+                        div(class='ui-block-e')
+                            div(data-role="fieldcontain")
+                            label(for="dup",id="stlabelid")
+                    div(data-role="horizontal",class="ui-bar ui-grid-d")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                                input(type='checkbox', name='insurance', id='insuranceId', data-inline="true")
+                                label(for='insuranceId') Insurance
+                        div(class='ui-block-b')
+                        div(class='ui-block-c',id="insurancePercentageDivId")
+                            div(data-role="fieldcontain")
+                                label(for="insurancePercentageId",class='label') Amount
+                                input(type="hidden", name="insurancePercentageHidden",autocomplete="off", data-mini="true", id="insurancePercentageHiddenId", readonly="readonly", required='true')
+                        div(class='ui-block-d',id="insurancePercentageLabelDivId")
+                            div(data-role="fieldcontain")
+                                input(type="text", name="insurancePercentage",autocomplete="off", data-mini="true", id="insurancePercentageId", readonly="readonly", required='true')
+                        div(class='ui-block-e')
+                            div(data-role="fieldcontain")
+                                label(for="dup",id="insurancelabelid")
+                                input(type="hidden", name="clientSelected",autocomplete="off", data-mini="true", id="clientSelectedId", readonly="readonly", required='true')
+                                input(type="hidden", name="activeClientName",id="activeClientName",value="#{activeClientName}")
+                                input(type="hidden", name="activeClientId",id="activeClientId",value="#{activeClientId}")
+                                input(type="hidden", name="amountSanctioned",autocomplete="off", data-mini="true", id="amountSanctionedId", readonly="readonly", required='true')
+                                input(type="hidden", name="clientStatus",autocomplete="off", data-mini="true", id="clientStatusId", readonly="readonly", required='true')
+                                input(type='hidden', name='glimApplicableHiddenName', id='glimApplicableHiddenId',value="")
+                                input(type='hidden', name='clientInsuredHiddenName', id='clientInsuredHiddenId',value="")
+                                input(type='hidden', name='clientLoanPurposeIdHiddenName', id='clientLoanPurposeIdHiddenId',value="")
+                                input(type='hidden', name='localeHiddenName', id='localeHiddenId',value="")
+                                input(type='hidden', name='monthlyDayOfMonthOptionSelectedHiddenName', id='monthlyDayOfMonthOptionSelectedHiddenId',value="")
+                                input(type='hidden', name='repaymentScheduleIndependentOfCustomerMeetingHiddenName', id='repaymentScheduleIndependentOfCustomerMeetingHiddenId',value="")
+                                input(type='hidden', name='digitsBeforeDecimalForInterestHiddenName', id='digitsBeforeDecimalForInterestHiddenId',value="")
+                                input(type='hidden', name='digitsAfterDecimalForInterestHiddenName', id='digitsAfterDecimalForInterestHiddenId',value="")
+                                input(type='hidden', name='digitsBeforeDecimalForMonetaryAmountsHiddenName', id='digitsBeforeDecimalForMonetaryAmountsHiddenId',value="")
+                                input(type='hidden', name='digitsAfterDecimalForMonetaryAmountsHiddenName', id='digitsAfterDecimalForMonetaryAmountsHiddenId',value="")
+                                input(type='hidden', name='clientNameForGroup', id='clientNameForGroup',value="")
+                                input(type='hidden', name='voucherNumberIfBank', id='voucherNumberIfBankId', value="")
+                                input(type='hidden', name='voucherNumberIfCash', id='voucherNumberIfCashId', value="")
+                                input(type='hidden', name='voucherNumber', id='voucherNumberId', value="")
+                                input(type='hidden', name='cashOrBank', id='cashOrBankId', value="")
+                                input(type='hidden', name='membersCount', id='membersCount', value="")
+                                input(type="hidden", id="operationId", name="operationId" , value="12")
+                div(data-role="popup", id="loanProcessCompleted",data-theme="c")
+                    div()
+                        label(class='label') * Check all the information entered is complete and accurate.
+                    div()
+                        label(class='label') * If you click yes, system will not allow you to edit any of the details again.
+                    div()
+                        label(class='label') * This will mean money is physically delivered and account system will also be updated.
+                    div(align="center",id="ynButtonDivId")
+                        a(href='#showId',data-icon='check',data-role='button',id='yesId',data-inline='true', data-mini='true') Yes
+                        a(href='#showId', data-icon='delete', data-role='button',id='noId',data-inline='true', data-mini='true') No
+                div(data-role="fieldcontain",id="showId")
+                    -if(roleId != constantsObj.getGuestUserRoleId()){
+                        a(href='JavaScript:clientSideValidation()', data-icon='check', data-role='button',id='loanProcessCompletedId', data-rel="popup", data-position-to='window', data-inline='true', data-mini='true') Loan Process Completed
+                    -}
+                    a(href='JavaScript:back1()', rel="external",data-icon='back', data-role='button', title=' Back', data-inline='true', data-mini='true') Back
+                include ../popup
+            div(class="ui-loader-background")

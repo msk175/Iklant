@@ -1,0 +1,35 @@
+extends ./layout
+include ./header
+
+block title
+    title= 'IKLANT-FieldVerification'
+
+block scripts
+    include ./headerJqueryMobile-1
+    script(type='text/javascript', src="/javascripts/fieldVerificationOnChange.js")
+    script(type='text/javascript', src='/javascripts/validation.js')
+
+block content
+    form(id='BMFormId')
+        input(type='hidden', name='statusIdName', id='initialStatusId', value="#{}")
+        div(data-role='page', data-theme='b')
+            +header("Field Verification",["welcomeNote","menu","logout"])
+            include ./GroupManagementLayout
+            div(data-role='content')
+                div(class='content-primary')
+                    ul(data-role='listview', data-split-icon='gear', data-split-theme='c', data-filter="true", data-filter-theme='c',  data-filter-placeholder='Search for a group')
+                        p(id='alertMessage',align='center',class='error-message global-font-details')    #{errorMessage}
+                        p(id='alertMessage',align='center',class='error-message global-font-details')    #{statusName}
+                        -for( var i = 0; i < groupsName.length; i++ ) {
+                            li
+                                a(href="JavaScript:getClientListForFV(#{groupsId[i]});", rel="external")
+                                    img(src='/images/edit.png', width='60', height='60', style='margin:8px 10px 10px 20px;',id = groupsName[i])
+                                    h3 #{groupsName[i]}
+                                    label(for='groupsId', id='labelGroupsId'+i) #{listGroupsGlobalNumberArray[i]}
+                                        -if(neededInfo[i] == 1) {
+                                            p(id='alertMessage',class='error-message global-font-details') Clients in this group needed Information and so cannot be Field Verified
+                                        -}
+                        -}
+                        input(type="hidden", name="alertMessageHidden", id="alertMessageHidden", value="#{}")
+                        input(type="hidden", name="groupId", id="groupId")
+            div(class="ui-loader-background")

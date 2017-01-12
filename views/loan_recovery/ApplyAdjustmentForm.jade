@@ -1,0 +1,255 @@
+doctype
+html(lang = "en")
+    head
+        title= 'IKLANT-Dashboard'
+        meta(charset='utf-8')
+        meta(name="viewport", content="initial-scale=1.0, user-scalable=no")
+        link(rel="stylesheet", href="/stylesheets/jquery.mobile-1.3.0-beta.1.min.css")
+        link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+        link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+        link(rel='stylesheet', href='/stylesheets/iklantStyle.css')
+        link(rel='stylesheet', href='/stylesheets/loan-recovery-style.css')
+        script(type='text/javascript', src='/javascripts/jquery-1.8.3.min.js')
+        script(type='text/javascript', src='/javascripts/jquery.mobile-1.3.0-beta.1.min.js')
+        script(type='text/javascript', src='/javascripts/jquery-ui.js')
+        script(type='text/javascript', src='/javascripts/loan_recovery/ApplyAdjustment.js')
+        script(type='text/javascript', src='/javascripts/common.js')
+    body(style="overflow-x:hidden")
+        form(id="applyAdjustmentFormId")
+            div(data-role='page', data-theme='b', id="loginDetailsDiv")
+                div(data-role="header", data-theme="a", class="ui-bar ui-grid-a", data-overlay-theme="c",data-position="fixed")
+                    div(class="ui-block-a")
+                        img(id='groupIcon', style="margin:5px 10px 0 0; text-align:right;",src='/images/iklant.png')
+                    div(class="ui-block-b",align="right",style="padding:25px 50px 0 0;")
+                        a(href=contextPath + '/client/ci/menu', rel="external",data-icon='home', data-role='button', title=' Home', data-inline='true') Home
+                        a(href='JavaScript:backFormSubmission()', rel="external",data-icon='arrow-l', data-role='button', title=' Back', data-inline="true") Back
+                        a(href=contextPath + '/client/ci/logout',  rel="external",data-icon='back', data-role='button', title=' Logout ', data-inline="true") Logout
+                div(data-role="navbar")
+                    ul(id="custom-nav-list")
+                        li
+                            a(href="JavaScript:operationSubmitFromBM('');", rel="external", data-role="tab" , id="custom-li-1") Apply Adjustment
+                div(data-role="collapsible",data-overlay-theme="a", data-inline="true" , data-collapsed="false",data-content-theme="b")
+                    h3 #{groupName} - #{loanAdjustment.getGlobalAccountNum()}
+                        span(id="groupOutstandingId",style="float:right") Outstanding(#{loanAdjustment.getPaymentDetails().getTotalOutstandingAmount()})
+                        span(id="groupPaidId",style="float:right") Paid(#{loanAdjustment.getPaymentDetails().getTotalAmountPaid()}),
+                        span(id="groupDueId",style="float:right") Due(#{loanAdjustment.getPaymentDetails().getTotalInstallmentAmount()}),
+                        span(id="groupOverdueId",style="float:right") Overdue(#{loanAdjustment.getPaymentDetails().getTotalOverdueAmount()})
+                    p(align="center",style="color:red;font-weigth:bold",id="errorMsgForClientOutstandingId")
+                    p(align="center",class="color:red;font-weigth:bold",id="errorMsgForGroupOutstandingId")
+                    p(align="center",style="color:red;font-weigth:bold",id="errorMsgForMonthClosingId") #{adjustmentMonthClosingError}
+                    p(align="center",style="color:red;font-weigth:bold",id="errorMsgForLastPaymentDateId")
+                    p(align="center",style="color:red;font-weigth:bold",id="errorMsgForSourceOfPaymentId")
+                    p(align="center",style="color:red;font-weigth:bold",id="errorMsgForAmountId")
+                    p(align="center",style="color:red;font-weigth:bold",id="errorMsgForClientAmountId")
+                    p(align="center",style="color:red;font-weigth:bold",id="errorMsgForAmountMistmatchId")
+                    p(align="center",style="color:red;font-weigth:bold",id="errorMsgForChequeDetailId")
+                    p(align="center",style="color:red;font-weigth:bold",id="errorMsgForRevertReasonId")
+                    p(align="center",style="color:red;font-weigth:bold",id="errorMsgForVoucherDetailId")
+
+                    div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-c")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                                label(for="amounttoAdjustedId",id="labelid") Amount to be adjusted
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain")
+                                label(for="adjustedAmountId") #{loanAdjustment.getAmount()}
+                    - if(!loanAdjustment.getIsRevertPaymentNotApplicable()) {
+                        div(data-role="fieldcontain")
+                            input(type='checkbox', name='revertPayment', id='revertPaymentID', data-inline="true",data-mini="true")
+                            label(for='revertPaymentID',id='revertPaymentID') Check to Revert the Payment
+                    - }
+                    - else{
+                        div(data-role="fieldcontain")
+                            span(style="font-weight:bold;color:green") **Revert Payment is not applicable due to one of client is preclosed loan Account
+                    - }
+                    div(id="revertDetailId")
+                        div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-c")
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain")
+                                label(for="dateofTransactionId",id="labelid") Date of Transaction
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain")
+                                    input(type="text", name="dateofTransaction", id="dateofTransactionId", value="#{loanAdjustment.getTransactionDate()}",  readonly='readonly', required='true')
+                            div(class='ui-block-c')
+                                div(data-role="fieldcontain")
+                                label(for="sourceofPaymentId",id="labelid") Source of Payment
+                            div(class='ui-block-d')
+                                div(data-role="fieldcontain", id="sourceofPaymentDivId")
+                                    select(name='sourceofPayment', id='sourceofPaymentId', data-icon='grid',data-theme="b", data-overlay-theme="d",data-mini='true', data-native-menu="true")
+                                        option(value='0',selected='selected') Select
+                                        -for(i=0;i<loanAdjustment.getGlCodes().length;i++){
+                                            - if(loanAdjustment.getGlCodeId() == loanAdjustment.getGlCodes()[i].getGlcodeId()) {
+                                                option(value=loanAdjustment.getGlCodes()[i].getGlcodeId(), selected="selected") #{loanAdjustment.getGlCodes()[i].getGlname()}
+                                            - }
+                                            - else {
+                                                option(value=loanAdjustment.getGlCodes()[i].getGlcodeId()) #{loanAdjustment.getGlCodes()[i].getGlname()}
+                                            - }
+                                        - }
+
+                        div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-c", id="ChequeDetailId",style="display: none;")
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain")
+                                label(for="chequeNoId",id="labelid") Cheque No
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain")
+                                    - if(loanAdjustment.getReceiptId()!= null) {
+                                        input(type="text", name="chequeNo", id="chequeNoId", value="#{loanAdjustment.getReceiptId()}", maxlength='50', required='true',onkeyup='forNumbers(this)')
+                                    - }
+                                    - else {
+                                        input(type="text", name="chequeNo", id="chequeNoId", value="", required='true',onkeyup='forNumbers(this)')
+                                    - }
+                            div(class='ui-block-c')
+                                div(data-role="fieldcontain")
+                                label(for="chequeDateId",id="labelid") Cheque Date
+                            div(class='ui-block-d')
+                                div(data-role="fieldcontain")
+                                    - if(loanAdjustment.getReceiptDate()!= null) {
+                                        input(type="text", name="chequeDate", id="chequeDateId", value="#{loanAdjustment.getReceiptDate()}", readonly = 'readonly', required='true')
+                                    - }
+                                    - else {
+                                        input(type="text", name="chequeDate", id="chequeDateId", value="", readonly = 'readonly', required='true')
+                                    -}
+                        div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-c")
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain")
+                                    label(for="amountId",id="labelid") Amount
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain")
+                                    input(type="text", name="amount", id="amountId", value="#{loanAdjustment.getAmount()}", required='true',onkeyup='forNumbersWithDot(this)')
+                            div(class='ui-block-c')
+                                div(data-role="fieldcontain")
+                                    -if(loanAdjustment.getClientPaymentDetails().length>0){
+                                        a(href="#", rel="external", data-icon="plus", data-role='button',data-inline="true",data-mini="true",id="indTable") Individual Amount
+                                        a(href="#", rel="external", data-icon="minus", data-role='button',data-inline="true",data-mini="true",id="indTableminus") Individual Amount
+                                    -}
+                        - if(loanAdjustment.getPaymentComments() == 'Loan Preclosed By Individual') {
+                            div(data-role="content" , style="overflow: auto;" , class="ui-content" , role="main",id="indAmount")
+                                table(border='0')
+                                    tbody
+                                        tr
+                                            th S.NO
+                                            th Customer Name
+                                            th Due Amount
+                                            th Loan Details
+                                        -for(i=0;i<loanAdjustment.getClientPaymentDetails().length;i++){
+                                            - if(loanAdjustment.getClientPaymentDetails()[i].getClientPaymentAmount() != 0) {
+                                                tr
+                                                    td 1
+                                                    td
+                                                        div(data-role="fieldcontain")
+                                                        label(for="amountId"+i,style="font-weight:bold",id="clientNameId"+i) #{loanAdjustment.getClientPaymentDetails()[i].getClientName()}
+                                                        div(data-role="fieldcontain")
+                                                            input(type="hidden", name="clientId"+i, id="clientIdId"+i, value=loanAdjustment.getClientPaymentDetails()[i].getClientId())
+                                                    td
+                                                        div(data-role="fieldcontain",align="center")
+                                                            - if(loanAdjustment.getClientPaymentDetails()[i].getAccountStateId() == 19){
+                                                                input(type="text",readonly='readonly',autocomplete="off", name="amount"+i, id="amountId"+i, onfocusout='JavaScript:calculateGroupAmount()',value=loanAdjustment.getClientPaymentDetails()[i].getClientPaymentAmount(), required='true',onkeyup='forNumbersWithDot(this)')
+                                                                br
+                                                                span(style="color:red") **Cant Edit Client Loan PreClosed
+                                                            - }
+                                                            - else {
+                                                                input(type="text",autocomplete="off", name="amount"+i, id="amountId"+i, onfocusout='JavaScript:calculateGroupAmount()',value=loanAdjustment.getClientPaymentDetails()[i].getClientPaymentAmount(), required='true',onkeyup='forNumbersWithDot(this)')
+                                                            - }
+                                                    td
+                                                        div(data-role="fieldcontain",align="center")
+                                                            span(id='clientOverdueId'+i) OD(#{loanAdjustment.getClientPaymentDetails()[i].getTotalOverdueAmount()}),
+                                                            span(id='clientDueId'+i) Due(#{loanAdjustment.getClientPaymentDetails()[i].getTotalInstallmentAmount()}),
+                                                            span(id='clientPaidId'+i) Paid(#{loanAdjustment.getClientPaymentDetails()[i].getTotalAmountPaid()}),
+                                                            span(id='clientOutstandingId'+i) OS(#{loanAdjustment.getClientPaymentDetails()[i].getTotalOutstandingAmount()})
+                                            - }
+                                        - }
+                        - }
+                        - else {
+                            div(data-role="content" , style="overflow: auto;" , class="ui-content" , role="main",id="indAmount")
+                                table(border='0')
+                                    tbody
+                                        tr
+                                            th S.NO
+                                            th Customer Name
+                                            th Due Amount
+                                            th Loan Details
+                                        -for(i=0;i<loanAdjustment.getClientPaymentDetails().length;i++){
+                                            tr
+                                                td #{i+1}
+                                                td
+                                                    div(data-role="fieldcontain")
+                                                    label(for="amountId"+i,style="font-weight:bold",id="clientNameId"+i) #{loanAdjustment.getClientPaymentDetails()[i].getClientName()}
+                                                    div(data-role="fieldcontain")
+                                                        input(type="hidden", name="clientId"+i, id="clientIdId"+i, value=loanAdjustment.getClientPaymentDetails()[i].getClientId())
+                                                td
+                                                    div(data-role="fieldcontain",align="center")
+                                                        - if(loanAdjustment.getClientPaymentDetails()[i].getAccountStateId() == 19){
+                                                            input(type="text",readonly='readonly',autocomplete="off", name="amount"+i, id="amountId"+i, onfocusout='JavaScript:calculateGroupAmount()',value=loanAdjustment.getClientPaymentDetails()[i].getClientPaymentAmount(), required='true',onkeyup='forNumbersWithDot(this)')
+                                                            br
+                                                            span(style="color:red") **Cant Edit Client Loan PreClosed
+                                                        - }
+                                                        - else {
+                                                            input(type="text",autocomplete="off", name="amount"+i, id="amountId"+i, onfocusout='JavaScript:calculateGroupAmount()',value=loanAdjustment.getClientPaymentDetails()[i].getClientPaymentAmount(), required='true',onkeyup='forNumbersWithDot(this)')
+                                                        - }
+                                                td
+                                                    div(data-role="fieldcontain",align="center")
+                                                        span(id='clientOverdueId'+i) OD(#{loanAdjustment.getClientPaymentDetails()[i].getTotalOverdueAmount()}),
+                                                        span(id='clientDueId'+i) Due(#{loanAdjustment.getClientPaymentDetails()[i].getTotalInstallmentAmount()}),
+                                                        span(id='clientPaidId'+i) Paid(#{loanAdjustment.getClientPaymentDetails()[i].getTotalAmountPaid()}),
+                                                        span(id='clientOutstandingId'+i) OS(#{loanAdjustment.getClientPaymentDetails()[i].getTotalOutstandingAmount()})
+                                        - }
+                        - }
+                    div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-c")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                            label(for="revertReasonId",id="labelid") Revert Reason
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain")
+                                select(name='revertReason', id='revertReasonId', data-icon='grid',data-theme="b", data-overlay-theme="d",data-mini='true', data-native-menu="true")
+                                    option(value='0',selected='selected') Select
+                                    - for(i=0;i<loanAdjustment.getRevertReasons().length;i++){
+                                        option(value=loanAdjustment.getRevertReasons()[i].getId()) #{loanAdjustment.getRevertReasons()[i].getName()}
+                                    - }
+                        div(class='ui-block-c')
+                            div(data-role="fieldcontain", data-mini="true")
+                            label(for="voucherNotesId",id="labelid") Voucher Notes
+                        div(class='ui-block-d')
+                            div(data-role="fieldcontain", data-mini="true")
+                                textarea(name="voucherNotes", id="voucherNotesId", maxlength="200", style="width:250px; height:50px;",onkeyup='forRemoveSpecialCharcters(this)')
+                    div(data-role="fieldcontain", data-inline="true")
+                        - if(loanAdjustment.getPaymentComments() != 'Loan Preclosed By Individual') {
+                            a(href='JavaScript:doApplyAdjustmentFormSubmission()',  rel="external",data-mini='true', data-role='button', title='Adjust Payment', data-inline="true", id='adjustpayment') Adjust Payment
+                        - }
+                        - else{
+                            span(style="font-weight:bold;color:red")  **Can't Adjust/revert individual preclosure payment
+                        - }
+                div(data-role="fieldcontain",align="center")
+                    span(style="font-weight:bold;color:red")  **Note : Overdue,Due,Paid and Outstanding amount is based on #{loanAdjustment.getTransactionDate()}
+                div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-b")
+                    div(class='ui-block-a')
+                    div(class='ui-block-b',align="center")
+                        a(href=contextPath + '/client/ci/menu', rel="external",data-icon='home',data-theme="b", data-role='button', title=' Home', data-inline='true',data-mini="true") Home
+                    div(class='ui-block-c',align="right")
+                        a(href='JavaScript:backFormSubmission()', rel="external",data-icon='back', data-role='button', title=' Back', data-inline="true",data-mini="true") Back
+
+                - var cashOrCheque = new Array();
+                    -for(var i=0;i<loanAdjustment.getGlCodes().length;i++){
+                        - if(loanAdjustment.getGlCodes().length==(i+1)){
+                            - cashOrCheque.push(loanAdjustment.getGlCodes()[i].getCashOrBank());
+                            input(type='hidden', name='cashOrBank', id='cashOrBankId', value=cashOrCheque)
+                        - }
+                        - else {
+                            - cashOrCheque.push(loanAdjustment.getGlCodes()[i].getCashOrBank());
+                        - }
+                    - }
+                input(type='hidden', name='initialDateOfTransactionDate', id='initialDateOfTransactionDateId', value="#{loanAdjustment.getTransactionDate()}")
+                input(type='hidden', name='financialYearEndDate', id='financialYearEndDateId', value="#{loanAdjustment.getFinancialYearEndDate()}")
+                input(type='hidden', name='lastPaymentDate', id='lastPaymentDateId', value="#{loanAdjustment.getPreviousPaymentDate()}")
+                input(type='hidden', name='nextPaymentDate', id='nextPaymentDateId', value="#{loanAdjustment.getNextPaymentDate()}")
+                input(type='hidden', name='noOfClients', id='noOfClientsId', value="#{loanAdjustment.getClientPaymentDetails().length}")
+                input(type='hidden', name='globalAccountNum', id='globalAccountNumId', value="#{loanAdjustment.getGlobalAccountNum()}")
+                input(type='hidden', name='paymentId', id='paymentIdId', value="#{loanAdjustment.getPaymentId()}")
+                input(type='hidden', name='clientsId', id='clientsIdId', value="")
+                input(type='hidden', name='clientsName', id='clientsNameId', value="")
+                input(type='hidden', name='clientAmounts', id='clientAmountsId', value="")
+                input(type='hidden', name='accountId', id='accountIdHiddenId', value="#{accountId}")
+                input(type='hidden', name='accountTypeId', id='accountTypeIdHiddenId', value="#{accountTypeId}")
+                input(type='hidden', name='voucherNumber', id='voucherNumberHiddenId', value="#{loanAdjustment.getVoucherNumber()}")
+                div(class="ui-loader-background")

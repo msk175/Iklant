@@ -1,0 +1,94 @@
+extends ./layout
+include ./header
+
+block title
+    title= 'IKLANT-Manage Office'
+
+block scripts
+    include ./headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/manageOffice.js')
+    script(type='text/javascript', src='/javascripts/validation.js')
+
+block content
+    form(id='BMFormId')
+        div(data-role='page', data-theme='b')
+            +header("Branch Management",["welcomeNote","menu","logout"])
+            include ./GroupManagementLayout
+            p(id='errorMessageIdManageOffice',align="center",class='error-message global-font-details') #{error_msg}
+            div(data-role='content', data-theme="b", data-overlay-theme="b", data-inline="true")
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                            a(href='', rel="external",data-theme="b",data-icon='plus', data-role='button', title='Add Office', data-inline="true",id="addOId", data-mini='true') Add Office
+
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain")
+                            //label(for='editOId',class='label') Edit Office
+                            //input(type='radio', name='QName', id='editOId', data-inline="true",value="2")
+            div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b", id="addODiv")
+                h3 Add
+                div(data-role="content", id="questionarieid", data-theme="c", data-overlay-theme="c", data-inline="true")
+                    div(data-role='fieldcontain',align='left')
+                        label(for="officeNameId",class='label') Office Name
+                        input(type='text', name='officeName',autocomplete="off", maxlength="100",id='officeNameId', data-inline="true",value="",onkeyup='forNamesValidation(this)')
+                    div(data-role='fieldcontain',align='left')
+                        label(for="officeShortNameId",class='label') Office Short Name
+                        input(type='text', name='officeShortName',autocomplete="off", maxlength="100",id='officeShortNameId', data-inline="true",value="",onkeyup='forNamesValidation(this)')
+                    div(data-role='fieldcontain',align='left')
+                        label(for="officeAddressId",class='label') Office Address
+                        input(type='text', name='officeAddress',autocomplete="off",maxlength="250", id='officeAddressId', data-inline="true",value="",onkeyup='forAddress(this)')
+                    div(data-role='fieldcontain',align='left')
+                        label(for="stateId",class='label') State
+                        select(name='state',rel = "external", data-mini="false" ,data-inline="true", id='stateId', data-icon='grid', data-native-menu="true",onchange='stateChange()')
+                            option(value='0') Select State
+                            -for(i=0;i<stateIdArray.length;i++){
+                                option(value=stateIdArray[i]) &nbsp;#{stateNameArray[i]}&nbsp;
+                            - }
+                div(data-role="fieldcontain")
+                    a(href='JavaScript:manageOfficeSubmitForm()',  rel="external",data-theme="b",data-icon='check', data-role='button', title=' Save ', data-inline="true", data-mini='true') Save
+                    a(href='JavaScript:resetFields()', rel="external",data-theme="b",data-icon='refresh', data-role='button', title='Reset ', data-inline='true', data-mini='true') Reset
+                    a(href="", id='backOId', rel="external",data-theme="b",data-icon='back', data-role='button', title='Back', data-inline="true", data-mini='true') Back
+
+            div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b", id="editODiv")
+                h3 Edit
+                div(data-role="content", id="questionarieid", data-theme="b", data-overlay-theme="b", data-inline="true")
+                    div(data-role='fieldcontain',align='left')
+                        label(for="officeNameIdEdit",class='label') Office Name
+                        input(type='text', name='officeNameEdit',autocomplete="off",maxlength="100", id='officeNameIdEdit', data-inline="true",value="",onkeyup='forNamesValidation(this)',readonly='readonly')
+                    div(data-role='fieldcontain',align='left')
+                        label(for="officeShortNameEditId",class='label') Office Short Name
+                        input(type='text', name='officeShortNameEdit',autocomplete="off", maxlength="100",id='officeShortNameEditId', data-inline="true",value="",onkeyup='forNamesValidation(this)')
+                    div(data-role='fieldcontain',align='left')
+                        label(for="officeAddressIdEdit",class='label') Office Address
+                        input(type='text', name='officeAddressEdit',autocomplete="off",maxlength="250", id='officeAddressIdEdit', data-inline="true",value="",onkeyup='forAddress(this)')
+                        input(type='hidden', name='officeIdEdit',autocomplete="off", id='officeIdEdit', data-inline="true",value="")
+                    div(data-role='fieldcontain',align='left')
+                        label(for="stateNameIdEdit",class='label') State
+                        input(type='text', name='stateNameIdEdit',autocomplete="off",maxlength="250", id='stateNameIdEdit', data-inline="true",value="",readonly='readonly')
+                div(data-role="fieldcontain")
+                    a(href='JavaScript:manageUpdateOffice()',  rel="external",data-theme="b",data-icon='check', data-role='button', title='Update', data-inline="true", data-mini='true') Update
+                    a(href="", id='backOEId', rel="external",data-theme="b",data-icon='back', data-role='button', title=' Back ', data-inline="true", data-mini='true') Back
+            div(data-role='content',id="tableviewdiv",style = "overflow: auto;")
+                table(data-role="table", id="movie-table", class="ui-responsive", data-mode="columntoggle",border='1')
+                    thead
+                        tr
+                            th(data-priority="5") SNO
+                            th(data-priority="5") Office Name
+                            th(data-priority="5") Office Short Name
+                            th(data-priority="5") Office Address
+                            th(data-priority="5",style ="text-align:center") Action
+
+                        -for(i=0;i< officeIdArray.length;i++){
+                            tr
+                                td(style ="text-align:center") #{i+1}
+                                td #{officeNameArray[i]}
+                                td #{officeShortNameArray[i]}
+                                td #{officeAddressArray[i]}
+                                td(style ="text-align:center")
+                                    a(href="JavaScript:populateOfficeDetails('#{officeIdArray[i]}');",rel="external",data-theme="b",data-mini="true",data-icon='gear', data-role='button', title='Edit', data-inline="true", id="edit_"+officeNameArray[i]) Edit
+                                    //a(href="JavaScript:deleteOffice('#{officeIdArray[i]}');",  rel="external",data-theme="b",data-mini="true",data-icon='delete', data-role='button', title='Delete', data-inline="true") Delete
+                        - }
+            div(class="ui-loader-background")
+            input(type="hidden", name="officeNameArray", id="officeNameArray",value=officeNameArray)
+            input(type='hidden', name='stateName',autocomplete="off", id='stateNameId', data-inline="true",value="")

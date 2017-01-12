@@ -1,0 +1,35 @@
+doctype
+html(lang = "en")
+	head
+		title= 'IKLANT-Login'
+		meta(charset='utf-8')
+		meta(name='viewport', content='initial-scale=1.0, width= ,user-scalable=no')
+		meta(http-equiv='Cache-Control', content='no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0')
+		meta(http-equiv='Pragma', content='no-cache')
+		meta(http-equiv='Expires', content='-1')
+		link(rel='stylesheet', href='/stylesheets/jquery.mobile.css')
+		link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+		link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+		link(rel='stylesheet', href='/stylesheets/mobile/dialogStyleMobile.css')
+		script(type='text/javascript', src='/javascripts/jquery-1.7.1.min.js')
+		script(type='text/javascript', src='/javascripts/jquery.mobile.js')
+		script(type='text/javascript', src='/javascripts/jquery.mobile.custom.js')
+		script(type='text/javascript', src="/javascripts/Mobile/LoginValidationsMobile.js")
+		script(type='text/javascript', src="/javascripts/registerUser.js")
+		
+	body
+		div(data-role='page', data-theme='b', id="menuDisplay")
+			div(data-role="header", data-theme="a", class="ui-bar ui-grid-a")
+				div(class="ui-block-a")
+					img(id='groupIcon', src='/images/iklantMobile.png')
+			div(data-role='content', data-theme='b', id="loginDetailsDiv")
+				p(id="alertMessage", align="center") #{errorMessage}  
+				form(id="loginFormID", align="center", method="post",action=contextPath+"/client/ci/auth")
+					div(data-role="fieldcontain", data-mini="true")
+						label(for="userName", data-inline="true", id="label") User Name
+						input(type="text", name="userName", id="userName", value="")
+					div(data-role="fieldcontain", data-mini="true")
+						label(for="password", data-inline="true", id="label") Password
+						input(type="password", name="password", id="password", value="")
+					input(type="submit", name="submit", id="submitId",value="Login", data-theme='b',data-icon='check',data-mini="true",data-inline='true')
+					a(href='JavaScript:resetFields()',rel="external", data-role='button', data-theme='b',data-icon='back',data-mini="true", title=' Reset ', data-inline='true') Reset

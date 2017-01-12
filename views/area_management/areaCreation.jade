@@ -1,0 +1,105 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'Iklant-Manage Area'
+
+block scripts
+    include ../headerJqueryMobile-1
+    script(type='text/javascript', src='/javascripts/area_management/areaManagement.js')
+
+block content
+    form(id='areaManagementForm')
+        div(data-role='page', data-theme='b')
+            +header("Area Management",["menu","logout"],'',[])
+            div(data-role="navbar", data-grid="d")
+                ul
+                    -for(var i=0;i< operationId.length;i++) {
+                        -if(operationId[i] == selectedOperationId) {
+                            li
+                                a(href="JavaScript:operationSubmitForAreaMgmt('#{operationId[i]}');", rel="external", data-role="tab", class="ui-btn-active") #{operationName[i]}
+                        -}
+                        -else{
+                            li
+                                a(href="JavaScript:operationSubmitForAreaMgmt('#{operationId[i]}');", rel="external", data-role="tab") #{operationName[i]}
+                        -}
+                    -}
+            div(data-role="bar")
+                div(data-role="fieldcontain")
+            div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b")
+                h3 Area Details
+                -if (error_msg.indexOf('failed') > -1){
+                    p(align="center",class='error-message global-font-details') #{error_msg}
+                -}
+                -else if(error_msg.indexOf('success') > -1){
+                    p(id='successMessage',align="center",class='success-message global-font-details') #{error_msg}
+                -}
+                p(id='errorMessageId',align="center",class='error-message global-font-details')
+                -for(var i=0;i< questionId.length;i++) {
+                    -if (subQuestionsId.indexOf(questionId[i]) > -1){
+                        div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b",style='width:60%;padding-left:16em',data-inline='true')
+                            h4 #{questions[i]}*
+                            p(id='#{questions[i].replace(/ /g,"")}',class='error-message global-font-details',align='center')
+                            div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a",style='width:100%;')
+                                - classValue = 'a';
+                                -for(var j=0;j< subQuestionsId.length;j++){
+                                    -if(subQuestionsId[j] == questionId[i]){
+                                        -if(description[i] == 'religion'){
+                                            div(class='ui-block-#{classValue}',style='width:20%;')
+                                                div(data-role="fieldcontain",class='#{description[i]}_#{subQuestions[j]}')
+                                                label(for='#{description[i]}_#{subQuestions[j]}') #{subQuestions[j]}(%) &nbsp;
+                                            -classValue = 'c'
+                                        -}
+                                        -else if(inputType[i] == 'radio' || inputType[i] == 'checkbox'){
+                                            div(class='ui-block-#{classValue}',style='width:85%;padding-left:6em')
+                                                div(data-role="fieldcontain",class='#{description[i]}_#{subQuestions[j]}',align='center')
+                                                    label(for='#{description[i]}_#{subQuestions[j]}') #{subQuestions[j].replace(/_/g," ")}
+                                        -}
+                                        -else{
+                                            div(class='ui-block-#{classValue}',style='width:20%;')
+                                                div(data-role="fieldcontain",class='#{description[i]}_#{subQuestions[j]}')
+                                                label(for='#{description[i]}_#{subQuestions[j]}') #{subQuestions[j].replace(/_/g," ")} (Count)
+                                            -classValue = 'c'
+                                        -}
+                                        -if(inputType[i] == 'radio' || inputType[i] == 'checkbox'){
+                                            input(type='#{inputType[i]}', name='#{description[i]}', id='#{description[i]}_#{subQuestions[j]}', autocomplete="off", data-inline="true",checked=(subQuestions[j] == 'No')?"checked":undefined,value='#{subQuestions[j]}')
+                                        -}
+                                        -else{
+                                            div(class='ui-block-b',style='width:30%;')
+                                                div(data-role="fieldcontain")
+                                                    -if(description[i] == 'religion')
+                                                        input(type='#{inputType[i]}', name='#{description[i]}_#{subQuestions[j]}', id='#{description[i]}_#{subQuestions[j]}', autocomplete="off", data-inline="true", style='text-align:right',onkeyup="forNumbers(this)", maxlength='3')
+                                                    -else
+                                                        input(type='#{inputType[i]}', name='#{description[i]}_#{subQuestions[j]}', id='#{description[i]}_#{subQuestions[j]}', autocomplete="off", data-inline="true", style='text-align:right',onkeyup="forNumbers(this)", maxlength='6')
+                                        -}
+                                    -}
+                                -}
+                    -}
+                    -else{
+                        div(class='ui-block-a')
+                        div(data-role="fieldcontain",style='width:60%;padding-left:16em')
+                            p(id='#{questions[i].replace(/ /g,"")}',class='error-message global-font-details',align='center')
+                            -if(description[i] != 'remarks_for_SMH')
+                                -if(description[i] != 'remarks')
+                                    label(for='#{description[i]}') #{questions[i]}*
+                                -else
+                                    label(for='#{description[i]}') #{questions[i]}
+                            -if(description[i] != 'area_name' && description[i] != 'landmark' && description[i] != 'primary_occupation' && description[i] != 'remarks' && description[i] != 'remarks_for_SMH'){
+                                -if(description[i] == 'business_projection')
+                                    input(type='#{inputType[i]}', name='#{description[i]}', id='#{description[i]}', autocomplete="off", data-inline="true",style='text-align:right',onkeyup="forNumbers(this)" ,maxlength='15')
+                                -else
+                                    input(type='#{inputType[i]}', name='#{description[i]}', id='#{description[i]}', autocomplete="off", data-inline="true",style='text-align:right',onkeyup="forNumbers(this)" ,maxlength='6')
+                            -}
+                            -else if(description[i] != 'remarks_for_SMH'){
+                                input(type='#{inputType[i]}', name='#{description[i]}', id='#{description[i]}', autocomplete="off", data-inline="true",onkeyup="forNamesValidation(this)",maxlength='190')
+                            -}
+                    -}
+                -}
+                input(type='hidden',id='questionIdArray',name='questionIdArray',value='#{questionId}')
+                input(type='hidden',id='subQuestionArray',name='subQuestionArray', value='#{subQuestionsId}')
+                input(type='hidden',id='existingAreaCodes',name='existingAreaCodes', value='#{areaCode}')
+                input(type='hidden',id='operationId',name='operationId',value=selectedOperationId)
+                div(data-role="fieldcontain",align='center')
+                    a(href='JavaScript:submitAreaCreation()', rel="external",data-theme="b",data-role='button', title=' Create ',id='Create', data-inline="true", data-mini="true") Create
+                    a(href=contextPath + '/client/ci/area/areaManagement', rel="external",data-icon='back', data-role='button', title=' Back',id='Back', data-inline="true", data-mini="true") Back
+        div(class="ui-loader-background")

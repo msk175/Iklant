@@ -1,0 +1,95 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'Iklant-LoanReceoveryLoans'
+
+block scripts
+    include ../headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/loan_recovery/ChequeBounce.js')
+
+block content
+    div(data-role='page', data-theme='b', id="loginDetailsDiv")
+        +header("",["menu","logout"],contextPath + '/client/ci/chequeDepositList',[])
+        div(data-role="navbar")
+            ul(id="custom-nav-list")
+                li
+                    a(href=contextPath + '/client/ci/retrieveLoanOfficerList', rel="external", data-role="tab" , id="custom-li-1" ) Receive Payment From FO
+                li
+                    a(href=contextPath + '/client/ci/chequeDepositList', rel="external", data-role="tab" , id="custom-li-2") Cheque Deposit
+                li
+                    a(href=contextPath + '/client/ci/loanrecovery/chequeBounceLoad', rel="external", data-role="tab" , id="custom-li-3",class="ui-btn-active") Cheque Bounce
+        div(data-role="bar")
+            div(data-role="fieldcontain")
+        div(data-role="collapsible", id="minutes", data-overlay-theme="a", data-inline="true" , data-collapsed="false",data-content-theme="b")
+            h3 Cheque Bounce
+            div(data-role="fieldcontain",align="center")
+                p(id="errorMsg" , class='error-message global-font-details')
+                -if(chequeDetail == 2){
+                    p(class='error-message global-font-details') Cheque Number should be 6 or 7 digits
+                -}
+                -if(chequeDetail == 1){
+                    -if(PaymentCollectionDetail.getPaymentId() == null){
+                        p(id="searchErrorMsg" , class='error-message global-font-details') No payments made for the given cheque number
+                    -}
+                -}
+            form(id="chequeBounceFormId",method="post",action=contextPath + '/client/ci/loanrecovery/searchChequeBounceLoad')
+                div(data-theme="b", data-overlay-theme="b", data-inline="true")
+                    div(data-role="horizontal", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-a")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain")
+                                input(type="text", name="searchChequeNo", id="searchChequeNoId", value="",placeholder="Enter Cheque Number",style="width:165%",onkeyup='numeric(this)')
+                        div(class='ui-block-b',align="right")
+                            div(data-role="fieldcontain",style="width:40%")
+                                input(type='submit',name='searchId', data-theme='b', id='searchId',value='Search',data-icon='search',data-mini='true')
+
+            form(id="chequeBounceFormId1")
+                -if(chequeDetail == 1){
+                    -if(PaymentCollectionDetail.getPaymentId() != null){
+                        div(data-role="content" , style="overflow: auto;" , class="ui-content" , role="main")
+                            table(border='0',id="paymentVerificationTableId")
+                                tbody
+                                    tr
+                                        th Group Name
+                                        th Loan Number
+                                        th Transaction Amount
+                                        th Cheque No
+                                        th Cheque Date
+                                        th Revert
+                                    tr
+                                        td #{PaymentCollectionDetail.getGroupName()}
+                                        td #{PaymentCollectionDetail.getGlobalAccNum()}
+                                        td #{PaymentCollectionDetail.getAmount()}
+                                        td #{PaymentCollectionDetail.getChequeNumber()}
+                                        td #{PaymentCollectionDetail.getChequeDate()}
+                                        td
+                                            a(href='JavaScript:revertChequeDeposit()', data-role='button',title=' Revert', data-inline='true',data-mini='true',id="revertId") Revert
+                                            label(id="labelRevertID",class='success-message global-font-details')
+
+                    -}
+                    input(type='hidden', name='paymentId', id='paymentIdId', value="#{PaymentCollectionDetail.getPaymentId()}")
+                    input(type='hidden', name='paymentCollectionId', id='paymentCollectionId', value="#{PaymentCollectionDetail.getPaymentCollectionId()}")
+                    input(type='hidden', name='globalAccountNum', id='globalAccountNumId', value="#{PaymentCollectionDetail.getGlobalAccNum()}")
+
+                -}
+            div(data-role="popup", id="paymentVerifiedId",data-theme="c", style="width:400px;")
+                br
+                div(align="center")
+                    label(class="label") Are you sure to Revert Cheque Deposit?
+                    br
+                    label(class="label") If yes all the transaction details will be reverted
+                br
+                div(align="center",id="ynButtonDivId")
+                    a(href='#menu',data-icon='check',data-role='button',id='yesId',data-inline='true', data-mini='true') Yes
+                    a(href='#menu',data-icon='delete',data-role='button',id='noId',data-inline='true', data-mini='true') No
+                br
+        div(data-role='horizontal', id="menu", class="ui-bar ui-grid-b")
+            div(class='ui-block-a')
+            div(class='ui-block-b')
+                div(data-role="fieldcontain",align="center")
+                    a(href=contextPath + '/client/ci/menu', rel="external",data-icon='home', data-role='button', title=' Home', data-inline='true', data-mini="true") Home
+            div(class='ui-block-c')
+                div(data-role="fieldcontain",align="right")
+                    a(href=contextPath + '/client/ci/menu', rel="external",data-icon='back', data-role='button', title='Back', data-inline='true', data-mini="true") Back
+        div(class="ui-loader-background")

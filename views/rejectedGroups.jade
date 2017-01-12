@@ -1,0 +1,33 @@
+extends ./layout
+include ./header
+
+block title
+    title= 'Rejected Groups'
+
+block scripts
+    include ./headerJqueryMobile-1
+    script(type='text/javascript', src='/javascripts/rejectedGroups.js')
+    script(type='text/javascript', src='/javascripts/reintiateGroup.js')
+    script(type='text/javascript', src='/javascripts/validation.js')
+
+block content
+    form(id='BMFormId')
+        input(type='hidden', name='statusIdName', id='initialStatusId', value="#{}")
+        div(data-role='page', data-theme='b')
+            +header("Rejected Groups",["welcomeNote","menu","logout"])
+            input(type='hidden', name='alertMessageHidden', id='alertMessageHidden', value="#{}")
+            include ./GroupManagementLayout
+            div(data-role='content')
+                div(class='content-primary')
+                    ul(data-role='listview', data-split-icon='gear', data-split-theme='c', data-filter="true", data-filter-theme='c',  data-filter-placeholder='Search for a group')
+                        p(id='alertMessage',align='center',class='error-message global-font-details')    #{errorMessage}
+                        p(id='successmessage',align='center',class='success-message global-font-details') #{reinitiatedStatusDisplay}
+                            - for( var i = 0; i < groupsName.length; i++ ) {
+                                li
+                                    a(href="JavaScript:getClientListForRejectedGroups(#{groupsId[i]});", rel="external")
+                                        img(src='/images/edit.png', width='60', height='60', style='margin:8px 10px 10px 20px;',id = groupsName[i])
+                                        h3 #{groupsName[i]}
+                                        label(for='groupsId' , id='labelGroupsId'+i) #{listGroupsGlobalNumberArray[i]} | FieldOfficer : #{fieldOfficerName[i]}
+                            -}
+                            input(type="hidden", name="groupId", id="groupId")
+            div(class="ui-loader-background")

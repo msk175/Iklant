@@ -1,0 +1,167 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'IKLANT-LUC Clients'
+
+block scripts
+    include ../headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/loan_utilization_check/loanUtilizationCheck.js')
+
+block content
+    form(id='loanUtilizationCheck')
+        div(data-role='page', data-theme='b')
+            +header("",["menu","backJavascript","logout"],'cancelLUCClients',[])
+            div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b",id='clientDetailsDiv')
+                h3 Loan Utilization Check for Clients
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a",style='width: 100%;')
+                    div(class='ui-block-a',style='width:15%;',align='center')
+                        div(data-role="fieldcontain")
+                        label(for='groupNameId') Group Name :
+                    div(class='ui-block-b',style='width:35%;')
+                        div(data-role="fieldcontain")
+                        label(id='groupNameId',style='font-weight:bold;') #{groupName}
+                    - if(accountIdArray.length>0) {
+                        div(class='ui-block-c',style='width:15%;',align='center')
+                            div(data-role="fieldcontain")
+                            label(for='loanAccountId',class='label') Select Account
+                        div(class='ui-block-d',style='width:25%;')
+                            div(data-role="fieldcontain")
+                                select(name='loanAccountId', id='loanAccountId', data-theme='b', data-icon='grid', data-inline='true', data-mini='true',onchange='getLUCCustomers()')
+                                    option(value='-1') Select Account
+                                    -for(i=0;i<accountIdArray.length;i++){
+                                        -if(loanAccountId == accountIdArray[i]){
+                                            option(value=accountIdArray[i],selected="selected") #{globalNameArray[i]}
+                                        -}else{
+                                            option(value=accountIdArray[i]) #{globalNameArray[i]}
+                                        -}
+                                    -}
+                    -}
+                p(class='success-message global-font-details',align='center') #{statusMessage}
+                -if(clientIds.length>0){
+                    table
+                        thead
+                            tr
+                                th S. No
+                                th Client Code
+                                th Client Name
+                                th Last LUC Date
+                                th Expected LUC End Date
+                                th KYC Update
+                                -for(var i=0;i< clientIds.length;i++){
+                                    tr
+                                        td(class='center-text') #{i+1}
+                                        td(class='center-text')
+                                            -if(lastLUCDate[i] != 0 && (new Date(lastLUCEndDate[i]) > new Date() && new Date(expectedLUCDate[i]) > new Date()))
+                                                label(title='LUC already completed for this period') #{clientCodes[i]}
+                                            -else
+                                                a(href="JavaScript:getClientsForLUC(#{clientIds[i]},#{loanAccountId});") #{clientCodes[i]}
+                                        td #{clientNames[i]}
+                                        -if(lastLUCDate[i] != 0)
+                                            td(class='center-text',style='color:#00A9F5') #{lastLUCDate[i]}
+                                        -else
+                                            td(class='center-text') LUC not done
+                                        td(class='center-text') #{expectedLUCDate[i].format("DD/MM/YYYY")}
+                                        td(class='center-text')
+                                            a(href="JavaScript:updateContactDetails(#{iklantClientIdArray[i]},'#{i}','#{clientNames[i]}','#{clientMobileNumbers[i]}','#{clientLandLineNumbers[i]}')", id='updateContact_#{i}', data-theme="b",data-inline='true', data-role='button', title=' Update KYC', data-mini="true",data-rel="popup",data-position-to='window') Update KYC Request
+                                            label(id='labelId_#{i}',class="success-message global-font-details")
+                                -}
+
+                -}
+                -else{
+                    div
+                        p(class='error-message global-font-details',align='center') No records found
+                -}
+            div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b",id='individuatlClientDiv',style='display:none')
+                h3 Client Details
+                div(data-role="content", id='clientDetails')
+                p(id='errorMessage',class='error-message global-font-details',class='center-text')
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a",style='width: 100%; padding-left: 6em;')
+                    div(class='ui-block-a',style='width:25%;')
+                        div(data-role='fieldcontain')
+                        label Whether loan amount used for intended purpose?
+                    div(class='ui-block-b',style='width:6%;')
+                        div(data-role='fieldcontain')
+                        label(for="is_loan_amount_used_for_intended_purpose_yes") Yes
+                    div(class='ui-block-c',style='width:5%;')
+                        div(data-role='fieldcontain')
+                        input(id='is_loan_amount_used_for_intended_purpose_yes', name='is_loan_amount_used_for_intended_purpose', type='radio',data-mini='true')
+                    div(class='ui-block-d',style='width:6%;')
+                        div(data-role='fieldcontain')
+                        label(for="is_loan_amount_used_for_intended_purpose_no") No
+                    div(class='ui-block-e',style='width:5%;')
+                        div(data-role='fieldcontain')
+                        input(id='is_loan_amount_used_for_intended_purpose_no',name='is_loan_amount_used_for_intended_purpose', type='radio',data-mini='true')
+                    div(class='ui-block-e',style='width:45%;display:none',id='reason_for_loan_amount_not_used')
+                        div(data-role='fieldcontain')
+                        textarea(id='reason_for_loan_amount_not_used_for_intended_purpose',class='reason',autocomplete='off',name='reason_for_loan_amount_not_used_for_intended_purpose', data-mini='true', maxlength='300')
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a",style='width: 100%; padding-left: 6em;display:none',id='physicalVerification')
+                    div(class='ui-block-a',style='width:25%;')
+                        div(data-role='fieldcontain')
+                        label Physical verification
+                    div(class='ui-block-b',style='width:6%;')
+                        div(data-role='fieldcontain')
+                        label(for="physical_verification_yes") Yes
+                    div(class='ui-block-c',style='width:5%;')
+                        div(data-role='fieldcontain')
+                        input(id='physical_verification_yes', name='physical_verification', type='radio',data-mini='true')
+                    div(class='ui-block-d',style='width:6%;')
+                        div(data-role='fieldcontain')
+                        label(for="physical_verification_no") No
+                    div(class='ui-block-e',style='width:5%;')
+                        div(data-role='fieldcontain')
+                        input(id='physical_verification_no',name='physical_verification', type='radio',data-mini='true')
+                    div(class='ui-block-e',style='width:45%;display:none',id='reason_for_physical_verification')
+                        div(data-role='fieldcontain')
+                        textarea(id='reason_for_physical_verification_not_done',class='reason',name='reason_for_physical_verification_not_done',autocomplete='off', data-mini='true', maxlength='300')
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a",style='width: 100%; padding-left: 6em;display:none',id='lucSatisfied')
+                    div(class='ui-block-a',style='width:25%;')
+                        div(data-role='fieldcontain')
+                        label Is LUC result satisfied?
+                    div(class='ui-block-b',style='width:6%;')
+                        div(data-role='fieldcontain')
+                        label(for="is_luc_result_satisfied_yes") Yes
+                    div(class='ui-block-c',style='width:5%;')
+                        div(data-role='fieldcontain')
+                        input(id='is_luc_result_satisfied_yes', name='is_luc_result_satisfied', type='radio',data-mini='true')
+                    div(class='ui-block-d',style='width:6%;')
+                        div(data-role='fieldcontain')
+                        label(for="is_luc_result_satisfied_no") No
+                    div(class='ui-block-e',style='width:5%;')
+                        div(data-role='fieldcontain')
+                        input(id='is_luc_result_satisfied_no',name='is_luc_result_satisfied', type='radio',data-mini='true')
+                    div(class='ui-block-e',style='width:45%;display:none',id='reason_for_luc_result')
+                        div(data-role='fieldcontain')
+                        textarea(id='reason_for_luc_result_not_satisfied',class='reason',name='reason_for_luc_result_not_satisfied',autocomplete='off', data-mini='true', maxlength='300')
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a",style='width: 100%; padding-left: 6em;display:none',id='grievance')
+                    div(class='ui-block-a',style='width:25%;')
+                        div(data-role='fieldcontain')
+                        label Is there any grievance with FO or Branch?
+                    div(class='ui-block-b',style='width:6%;')
+                        div(data-role='fieldcontain')
+                        label(for="is_there_any_grievance_with_fo_or_branch_yes") Yes
+                    div(class='ui-block-c',style='width:5%;')
+                        div(data-role='fieldcontain')
+                        input(id='is_there_any_grievance_with_fo_or_branch_yes', name='is_there_any_grievance_with_fo_or_branch', type='radio',data-mini='true')
+                    div(class='ui-block-d',style='width:6%;')
+                        div(data-role='fieldcontain')
+                        label(for="is_there_any_grievance_with_fo_or_branch_no") No
+                    div(class='ui-block-e',style='width:5%;')
+                        div(data-role='fieldcontain')
+                        input(id='is_there_any_grievance_with_fo_or_branch_no',name='is_there_any_grievance_with_fo_or_branch', type='radio',data-mini='true')
+                    div(class='ui-block-e',style='width:45%;display:none',id='remarks_for_grievance')
+                        div(data-role='fieldcontain')
+                        textarea(id='remarks',name='remarks',class='reason',data-mini='true',autocomplete='off', maxlength='300')
+                div(data-role="fieldcontain",class='center-text')
+                    a(href="JavaScript:saveLUCDetails();",rel="external",data-theme="b",data-icon='check', data-role='button',data-mini="true", title='Finish', data-inline="true") Finish
+                    a(href='#', id = 'backId',rel="external",data-theme="b",data-icon='back', data-role='button', title='Back', data-inline="true", data-mini='true') Cancel
+            input(type='hidden', name='fieldOfficer', id='fieldOfficer',value='#{personnelId}')
+            input(type='hidden', name='groupId', id='groupId',value='#{groupId}')
+            input(type='hidden', name='clientId', id='clientId',value='')
+            input(type='hidden', name='accountId', id='accountId',value='')
+            input(type='hidden', name='flag', id='flag',value=0)
+            input(type='hidden', name='groupName', id='groupName',value='#{groupName}')
+            input(type="hidden", id="operationId", name="operationId" , value="luc")
+            include ../popup
+            div(class="ui-loader-background")

@@ -1,0 +1,58 @@
+!!! 5
+html(lang = "en")
+	head
+		title= 'IKLANT-Menu'
+		meta(charset='utf-8')
+		meta(name='viewport', content='initial-scale=1.0, width= ,user-scalable=no')
+		meta(http-equiv='Cache-Control', content='no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0')
+		meta(http-equiv='Pragma', content='no-cache')
+		meta(http-equiv='Expires', content='-1')
+		link(rel='stylesheet', href='/stylesheets/jquery.mobile.css')
+		link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+		link(rel='stylesheet', href='/stylesheets/jquery.custom.css')
+		link(rel='stylesheet', href='/stylesheets/Mobile/dialogStyleMobile.css')	
+		script(type='text/javascript', src='/javascripts/jquery-1.7.1.min.js')
+		script(type='text/javascript', src='/javascripts/jquery.mobile.js')
+		script(type='text/javascript', src='/javascripts/jquery.mobile.custom.js')
+		script(type='text/javascript', src='/javascripts/constantjs.js')
+		script(type='text/javascript', src="/javascripts/newGroup.js")
+		script(type='text/javascript', src='/javascripts/validation.js')
+		script(type='text/javascript', src='/javascripts/authorization.js')
+	body	
+	form(id='BMFormId')
+		div(data-role='page', data-theme='b', id="menuDisplay")
+			div(data-role="header", data-theme="a", class="ui-bar ui-grid-a")
+				div(class="ui-block-a")
+					img(id='groupIcon', src='/images/iklantMobile.png')
+				div(class="ui-block-b", align="right")
+					a(href=contextPath+ '/client/ci/logout', id="logoutButtonId", rel="external",data-icon='back',data-role='button',data-mini='true',title='Logout', data-inline='true') Logout
+			div(id="menu", data-theme="b", data-overlay-theme="b", class="ui-content", align="center")
+				div(id="menuDetails", data-theme="a", class="ui-bar ui-grid-a", data-overlay-theme="a",data-inline="true")
+					-if(roleId == constantsObj.getBDEroleId()) {
+						div(data-mini="true", id="groupCreationDiv", style="float:left;")
+							a(href=contextPath+ '/client/ci/groups/create', rel="external", title='New Group', data-inline='true')  
+								img(id='groupIcon', src='/images/groupsMobile.png')
+								h3(id="menuLabel") New Group Creation
+						div(data-mini="true", id="preliminaryDiv", style="float:left;")
+							a(href=contextPath+ '/client/ci/getGroups', rel="external", title='Groups', data-inline='true')  
+								img(id='groupIcon', src='/images/groupsMobile.png')
+								h3(id="menuLabel") Preliminary Verification
+					-}
+					-else if(roleId == constantsObj.getFOroleId()) {
+						div(data-mini="true", style="float:left;")
+							a(href=contextPath+ '/client/ci/getGroups', rel="external", title='Groups', data-inline='true')  
+								img(id='groupIcon', src='/images/groupsMobile.png')
+								h3(id="menuLabel") Field Verification
+						div(data-mini="true", style="float:left;")
+							a(href=contextPath+ '/client/ci/loanrecoveryLoans', rel="external", title='Groups', data-inline='true')  
+								img(id='groupIcon', src='/images/loan_recovery.gif',style="margin:5px 10px 0 0; text-align:right;",width="70px",height="70px")
+								h3(id="menuLabel") Payment Collection
+						div(data-mini="true", style="float:left;")
+								a(href=contextPath+ '/client/ci/getGroupsForRecovery', rel="external", title='Groups', data-inline='true')  
+									img(id='groupIcon', src='/images/groupsMobile.png')
+									h3(id="menuLabel") NPA Loans Recovery
+						div(data-mini="true", style="float:left;")
+								a(href=contextPath+ '/client/ci/NPALRGroups/todo/current', rel="external", title='Groups', data-inline='true')  
+									img(id='groupIcon', src='/images/groupsMobile.png')
+									h3(id="menuLabel") NPALR Todo
+					-}

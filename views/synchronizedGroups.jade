@@ -1,0 +1,51 @@
+extends ./layout
+include ./header
+
+block title
+    title= 'Synchronized Groups'
+
+block scripts
+    include ./headerJqueryMobile-1
+    script(type='text/javascript', src='/javascripts/validation.js')
+    link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+
+block content
+    form(id='BMFormId')
+        input(type='hidden', name='statusIdName', id='initialStatusId', value="#{}")
+        div(data-role='page', data-theme='b')
+            +header("Synchronized Groups",["welcomeNote","menu","logout"])
+            input(type='hidden', name='alertMessageHidden', id='alertMessageHidden', value="#{}")
+            include ./GroupManagementLayout
+            div(data-role='content')
+                div(class='content-primary')
+                    ul(data-role='listview', data-split-icon='gear', data-split-theme='c', data-filter="true", data-filter-theme='c',  data-filter-placeholder='Search for a group')
+                        -if(roleIds.indexOf(constantsObj.getSMHroleId())>-1  || roleIds.indexOf(constantsObj.getCCEroleId())>-1 || roleIds.indexOf(constantsObj.getAuditorRoleId())>-1) {
+                            div(data-role='horizontal', id="branchName", class="ui-bar ui-grid-c")
+                                div(class="ui-block-a",align="center")
+                                div(class="ui-block-b",align="center")
+                                    label(for="branchName",style="font-weight:bold") Branch Name
+                                div(class="ui-block-c",align="center")
+                                    select(name='branchName', id='branchName', data-theme='b', onchange="branchGroupsDisplaySynchronized(this)", data-icon='bank', data-inline='true',data-mini='true',  data-native-menu="false")
+                                        option(value='0') Select
+                                        -if(typeof branchIdAuthorization == 'undefined' || branchIdAuthorization == ''){
+                                            -branchIdAuthorization = officeValue;
+                                        -}
+                                        -for(i=0;i<officeIdArray.length;i++) {
+                                            -if(officeIdArray[i] == branchIdAuthorization)
+                                                option(value=officeIdArray[i], selected="selected", rel = "#{languageArray[i]}") #{officeNameArray[i]}
+                                            -else
+                                                option(value=officeIdArray[i], rel = "#{languageArray[i]}") #{officeNameArray[i]}
+                                        -}
+                        -}
+                            p(id='alertMessage',align='center',class="error-message global-font-details") #{errorMessage}
+                            p(id='alertMessage',align='center',class="error-message global-font-details") #{reinitiatedStatusDisplay}
+                                -for(var i=0;i<groupsName.length;i++) {
+                                    li
+                                        a(href="JavaScript:getClientListForLoanSanctionForms('#{groupsId[i]}','#{isSynchronized[i]}','#{mifosCustomerId[i]}')", rel="external")
+                                            img(src='/images/edit.png', width='60', height='60', style='margin:8px 10px 10px 20px;')
+                                            h3 #{groupsName[i]}
+                                            label(for='groupsId' , id='labelGroupsId'+i) #{listGroupsGlobalNumberArray[i]} | FieldOfficer : #{fieldOfficerName[i]}
+                                -}
+                        input(type="hidden", name="groupId", id="groupId")
+                        input(type="hidden", name="docLanguage", id="docLanguage", value='#{docLanguage}')
+            div(class="ui-loader-background")

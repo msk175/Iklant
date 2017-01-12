@@ -1,0 +1,49 @@
+extends ./layout
+include ./header
+
+block title
+    title= 'Iklant - Login'
+
+block scripts
+    include ./headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+    link(rel='stylesheet', href='/stylesheets/login.css')
+    script(type='text/javascript', src="/javascripts/LoginValidations.js")
+
+block content
+    div(data-role='page', data-theme='b', id="loginDetailsDiv")
+        +header("",[])
+        noscript
+            style(type='text/css').
+                #loginFormID {
+                    display: none;
+                }
+            .noscriptmsg
+                center
+                    b To use IKLANT, please enable JavaScript in your browser.
+        form(id="loginFormID",name="loginFormID", onsubmit="loginAccess()", align="center", method="post")
+            div(id='login-style',class="ui-bar ui-bar-c ui-corner-all", data-theme="a", data-overlay-theme="a", align="center")
+                p(id="alertMessage",class='error-message') #{errorMessage}
+                marquee(onmouseover='this.scrollAmount=3', onmouseout='this.scrollAmount=6')
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a",style='width:115%;')
+                    div(class='ui-block-a',style="width:15%")
+                        div(data-role="fieldcontain", data-mini="true")
+                        label(for="userName", data-inline="true", id="label") User Name
+                    div(class='ui-block-b',style="width:85%")
+                        div(data-role="fieldcontain", data-mini="true")
+                            input(type="text", name="userName", id="userName", value="",onkeyup='forUserName(this)',required='required')
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a",style='width:115%;')
+                    div(class='ui-block-a',style="width:15%")
+                        div(data-role="fieldcontain", data-mini="true")
+                        label(for="password", data-inline="true", id="label") Password
+                    div(class='ui-block-b',style="width:85%")
+                        div(data-role="fieldcontain", data-mini="true")
+                            input(type="password", name="password", id="password", value="",required='required',onkeyup='forUserName(this)',onfocusout='forUserName(this)')
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a",style='width:100%;')
+                    div(class='ui-block-a',style="width:25%")
+                        input(type="submit", name="submit", id="submitId",value="Login", data-theme='b',data-icon='check',data-mini="true",data-inline='true')
+                    div(class='ui-block-b',style="width:25%")
+                        a(href='JavaScript:resetFields()',rel="external", data-role='button', data-theme='b',data-icon='back',data-mini="true", title=' Reset ', data-inline='true') Reset
+                    div(class='ui-block-c',style="width:50%")
+                        a(href=contextPath + '/client/ci/forgotPassword',rel="external", data-role='button', data-theme='b',data-icon='info',data-mini="true", title=' Reset ', data-inline='true') Forgot Password
+        div(class="ui-loader-background")

@@ -1,0 +1,38 @@
+mixin boDashboardNavbar(navTitle)
+   div(data-role="navbar",class="ui-bar no-padding ui-navbar ui-mini",role="navigation")
+      ul(id="custom-nav-list")
+         li
+            -if(navTitle == 'boCurrentStatusDashBoard'){
+               a(href=contextPath + '/client/ci/getGroupCount/regionWise', rel="external", data-role="tab",class="ui-btn-active") BO Queue Status Dashboard
+            -}
+            - else {
+               a(href=contextPath + '/client/ci/getGroupCount/regionWise', rel="external", data-role="tab") BO Queue Status Dashboard
+            -}
+         - if(roleId == constantsObj.getSMHroleId() || roleIdLength > 1) {
+            li
+               -if(navTitle == 'dateWiseDashBoard'){
+                  a(href=contextPath + '/client/ci/getGroupCount/dateWise/summary', rel="external", data-role="tab",class="ui-btn-active",title="Summary Dashboard shows #No of clients entered in BO Queue, #No of Holded clients and #No of Rejected Clients") Date-wise Summary Dashboard
+               -}
+               - else {
+                  a(href=contextPath + '/client/ci/getGroupCount/dateWise/summary', rel="external", data-role="tab") Date-wise Summary Dashboard
+               -}
+         - }
+         - if(roleId == constantsObj.getSMHroleId() || roleIdLength > 1) {
+            li
+               -if(navTitle == 'boSummaryDashBoard'){
+                  a(href=contextPath + '/client/ci/getGroupCount/regionWise/summary', rel="external", data-role="tab",class="ui-btn-active") Clientwise Summary Dashboard
+               -}
+               - else {
+                  a(href=contextPath + '/client/ci/getGroupCount/regionWise/summary', rel="external", data-role="tab") Clienwise Summary Dashboard
+               -}
+         - }
+         - if(roleId == constantsObj.getSMHroleId() || roleIdLength > 1) {
+            li
+               -if(navTitle == 'deoPerformanceDashBoard'){
+                  a(href=contextPath + '/client/ci/getClientCount/deoWiseList', rel="external", data-role="tab",class="ui-btn-active") DEO Performance Dashboard
+               -}
+               - else {
+                  a(href=contextPath + '/client/ci/getClientCount/deoWiseList', rel="external", data-role="tab") DEO Performance Dashboard
+               -}
+         - }
+

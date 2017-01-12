@@ -1,0 +1,66 @@
+extends ./layout
+include ./header
+block title
+    title= 'IKLANT-Manage Roles and Permissions'
+block scripts
+    link(rel='stylesheet', href='/stylesheets/jquery.mobile.css')
+    link(rel='stylesheet', href='/stylesheets/RP-table-layout.css')
+    script(type='text/javascript', src='/javascripts/jquery.mobile.js')
+    script(type='text/javascript', src='/javascripts/manageRolesAndPermission.js')
+    script(type='text/javascript', src='/javascripts/validation.js')
+block content
+    form(id='BMFormId')
+        div(data-role='page', data-theme='b')
+            +header("Role Management",["welcomeNote","menu","logout"])
+            include ./GroupManagementLayout
+            input(type='hidden', name='editRoleName', id='editRoleName', value="#{editRoleName}")
+            input(type='hidden', name='editRoleId', id='editRoleId', value="#{editRoleId}")
+            input(type='hidden', name='editLength', id='editLength', value="")
+            p(id='errorMessageIdManageRoles',align="center",class='error-message global-font-details')
+                div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b", id="editRPDiv")
+                    h3 Edit Role : #{editRoleName}
+                    -for(i=0;i< activitySet.length;i++){
+                        table(style="padding-left:1em;",data-role="table", id="movie-table", class="ui-responsive",border='0')
+                            tr
+                                -if( ((activitySet[i].activityIndex).match(new RegExp("_", "g")) || []).length == 0 && ((activitySet[i].activityIndex).match(new RegExp(constantsObj.getOrganizationManagementActivityId(), "g")) || []).length == 1){
+                                    td(width="2%")
+                                        input(type='checkbox',name='activityIdCheckEdit_#{activitySet[i].activityId}',id = 'activityIdCheckEdit_#{activitySet[i].activityId}',data-inline="true",checked=(activitySet[i].isChecked===true ? "checked" : undefined),readonly="true",onClick="checkAllBox()")
+                                    td(id='activityCheckBox',colspan="10") #{activitySet[i].activityName}
+                                -}else if( activitySet[i].parentDescription == 0 && ((activitySet[i].activityIndex).match(new RegExp("_", "g")) || []).length == 1 && ((activitySet[i].activityIndex).match(new RegExp(activitySet[i].activityIndex, "g")) || []).length == 1){
+                                    td(width="2%")
+                                    td(width="2%")
+                                        input(width="10%",id='activityFirstChildCheckBox',type='checkbox',checked=(activitySet[i].isParentChecked===true ? "checked" : undefined),readonly="true",onClick="checkAllBox()")
+                                    td(colspan="10",id='activityFirstChildCheckBox') #{activitySet[i].activityName}
+                                -}else if(((activitySet[i].activityIndex).match(new RegExp("_", "g")) || []).length == 2 && ((activitySet[i].activityIndex).match(new RegExp(activitySet[i].parentActivityIndex, "g")) || []).length == 1){
+                                    td(width="2%")
+                                    td(width="2%")
+                                    td(width="2%")
+                                        input(width="10%",id='activitySecondChildCheckBox',type='checkbox',checked=(activitySet[i].isChecked===true ? "checked" : undefined),readonly="true",onClick="checkAllBox()")
+                                    td(colspan="10",id='activitySecondChildCheckBox') #{activitySet[i].activityName}
+                                -}else{
+                                    td(width="2%")
+                                        input(type='checkbox',name='activityIdCheckEdit_#{activitySet[i].activityId}',id = 'activityIdCheckEdit_#{activitySet[i].activityId}',data-inline="true",value="",checked=(activitySet[i].isChecked===true ? "checked" : undefined),readonly="true",onClick="checkAllBox()")
+                                    td(id='activityCheckBox',colspan="10") #{activitySet[i].activityName}
+                                -}
+                    -}
+                    div(data-role="fieldcontain")
+                        //a(href='JavaScript:',  rel="external",data-theme="b",data-icon='check', data-role='button', title=' Update ', data-inline="true", data-mini='true') Update
+                        a(href="JavaScript: backEditRole(#{constantsObj.getManageRolesAndPermissionsOperationId()})",id="backUId", rel="external",data-theme="b",data-icon='back', data-role='button', title='Back', data-inline="true", data-mini='true') Back
+                div(data-role='content',id="tableviewdivRole",style = "overflow: auto;")
+                    table(data-role="table", id="movie-table", class="ui-responsive", data-mode="columntoggle",border='1')
+                        thead
+                            tr
+                                th(data-priority="5") SNO
+                                th(data-priority="5") Role Name
+                                th(data-priority="5") Role Description
+                                th(data-priority="5",style ="text-align:center") Action
+                            -for(i=0;i< roleIdArray.length;i++){
+                                tr
+                                    td(style ="text-align:center") #{i+1}
+                                    td #{roleNameArray[i]}
+                                    td #{roleDescriptionArray[i]}
+                                    td(style ="text-align:center")
+                                        a(href="JavaScript:populateRolePermissionDetails('#{roleIdArray[i]}');",rel="external",data-theme="b",data-mini="true",data-icon='gear', data-role='button', title='View', data-inline="true") View
+                                        input(type='hidden', name='roleNameEdit_#{roleIdArray[i]}', id='roleNameEdit_#{roleIdArray[i]}', value="#{roleNameArray[i]}")
+                            - }
+                div(class="ui-loader-background")

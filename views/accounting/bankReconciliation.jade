@@ -1,0 +1,178 @@
+extends ../layout
+include ../header
+block title
+    title= 'Bank Reconciliation'
+block scripts
+    include ../headerJqueryMobileBeta-3
+    link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    link(rel='stylesheet', href='/stylesheets/loanSanctionCustom.css')
+    //script(type='text/javascript', src="/javascripts/jquery-1.8.3.min.js")
+    //script(type='text/javascript', src="/javascripts/jquery.mobile-1.3.0-beta.1.min.js")
+    script(type='text/javascript', src="/javascripts/jquery-ui.js")
+    script(type="text/javascript", src="/javascripts/bankReconciliation.js")
+    script(type="text/javascript", src="/javascripts/jquery.dataTables.js")
+block content
+    form(id='bankReconciliation')
+        div(data-role='page', data-theme='b', id="loginDetailsDiv")
+            div(data-role="header", data-theme="a", class="ui-bar ui-grid-a", data-overlay-theme="c")
+                div(class="ui-block-a")
+                    img(id='groupIcon', style="margin:5px 10px 0 0; text-align:right;",src='/images/iklant.png')
+                div(class="ui-block-b",align="right")
+                    h3(align="right",style="margin:20px 10px 0 0")
+                    a(href=contextPath + '/client/ci/accounts/accountsMenu', rel="external",data-icon='arrow-l', data-role='button', title='Back', data-inline='true') Back
+                    a(href=contextPath + '/client/ci/menu', rel="external",data-icon='home', data-role='button', title='Home', data-inline='true') Home
+                    a(href=contextPath + '/client/ci/logout',  rel="external",data-icon='back', data-role='button', title=' Logout ', data-inline="true") Logout
+            div(data-role="navbar",id="navid")
+                ul(id="custom-nav-list")
+                    li
+                        a(rel="external", data-role="tab" , id="table-li-1",class="ui-btn-active") Bank Reconcilation Statement
+            input(type="hidden",name="bankReconciliationArray", id="bankReconciliationArray",value="#{bankReconciliationStmtLength}")
+            input(type="hidden", name="selectedDocName", id="selectedDocName",value='#{filePath}')
+            div(data-role="horizontal",class="ui-grid-solo")
+                div(data-role="ui-block-a",style="width:100%;")
+                    div(data-role="collapsible", data-collapsed="false", data-theme="b", data-content-theme="b",id='bankBookReportDiv')
+                        h3 Select Dates to view Bank Reconcilation
+                        p(id="errorMsg" ,class="error-message global-font-details",align="center")
+                        p(id="successMsg" ,class="success-message global-font-details",align="center") #{statusMessage}
+                        div(data-role="horizontal", data-theme="b", data-overlay-theme="b",class="ui-grid-b")
+                            div(class='ui-block-b',style="width:10%")
+                                div(data-role="fieldcontain")
+                                    label(id="report_label_top") Month
+                            div(class='ui-block-b',style="width:20%")
+                                div(data-role="fieldcontain")
+                                    select(name='monthValue', id='monthValue', data-theme='b', data-icon='grid', data-inline='true', data-mini='true',onchange='changeDatePicker();')
+                                        -for(i=0;i<months.length;i++){
+                                            -if(monthIndex[i] == selectedMonth){
+                                                option(value=monthIndex[i],selected='selected',id='monthValue') #{months[i]}
+                                            -}
+                                            -else{
+                                                option(value=monthIndex[i],id='monthValue') #{months[i]}
+                                            -}
+                                        - }
+                            div(class='ui-block-c',style="width:10%")
+                                div(data-role="fieldcontain")
+                                    label(id="report_label_top") Ledger
+                            div(class='ui-block-d',style="width:35%")
+                                div(data-role="fieldcontain")
+                                    select(name='listledger', id='listledger', data-theme='b', data-icon='grid', data-inline='true', data-mini='true',onchange='saveLedgerName();')
+                                        -for(i=0;i<ledger_name_array.length;i++){
+                                            -if(ledgerValue == gl_code_value_array[i]){
+                                                option(value=gl_code_value_array[i],selected="",id='listledger') #{ledger_name_array[i]} [#{gl_code_value_array[i]}]
+                                            -}else{
+                                                option(value=gl_code_value_array[i],id='listledger') #{ledger_name_array[i]} [#{gl_code_value_array[i]}]
+                                            -}
+                                        - }
+                                    input(type="hidden",name="ledgerNameBR", id="ledgerNameBR")
+                            div(class='ui-block-e',align="right",style="width:10%")
+                                div(data-role="fieldcontain", data-mini="true")
+                                    a(href="JavaScript:generateBankReconciliation('bankReconciliation')",rel="external", data-role='button', title='Bank Reconciliation', data-inline="true",data-mini="true") View Reconciliation
+                            div(id="generateButtonDiv",class='ui-block-e',align="right",style="width:10%")
+                                div(data-role="fieldcontain", data-mini="true")
+                                    a(href="JavaScript:generateBankReconciliationReport('bankReconciliation')",rel="external", data-role='button', title='Generate', data-inline="true",data-mini="true") Generate
+                            div(id='downloadDiv',class='ui-block-b',style='width:50%;padding-top:1em')
+                                -if(fileSize != ""){
+                                    div(data-role="fieldcontain")
+                                        a(href="Javascript:downloadReport('bankReconciliation')", target="_blank",rel="external", data-role="default") Download report #{fileSize}
+                                -}else{
+                                    div(data-role="fieldcontain")
+                                        label(style="font-weight:bold;padding-left:2%;") No Records
+                                -}
+            div(data-role="horizontal",class="ui-grid-solo")
+                div(data-role="ui-block-a",style="width:100%;")
+                    -if(toDisplayLedger != ""){
+                            input(type="hidden",name="brsLength", id="brsLength",value="#{bankReconciliationStmt.length}")
+                            //-if(bankReconciliationStmt != null && bankReconciliationStmt.length>0){
+                            div(id="bankReconciliationLabel",data-role="horizontal", data-theme="a", data-overlay-theme="b",class="ui-grid-a")
+                                div(class='ui-block-b',style="width:50%;padding-bottom:1%;")
+                                    label(style="font-weight:bold;padding-left:2%;") Bank :     #{toDisplayLedger}
+                                div(class='ui-block-b',style="width:50%;",align='right')
+                                    label(style="font-weight:bold;padding-top:5%;padding-right:2%;") Opening Balance as per Company Books : #{opening_bal}
+                            div(id="bankReconciliationLabelOther",data-role="horizontal", data-theme="a", data-overlay-theme="b",class="ui-grid-a")
+                                div(class='ui-block-b',style="width:50%;")
+                                    label(id="currentDateLabel",style="font-weight:bold;padding-left:2%;") Reconciliation Date :
+                                div(class='ui-block-b',style="width:50%;",align='right')
+                                    label(style="font-weight:bold;padding-top:7%;padding-right:2%;")  #{dateStr}
+                            p(id="errorField",class="error_label",align="center")
+                            div(id="bankReconciliationTableId",style = "overflow: auto;width:100%;",class="ui-grid-solo")
+                                table(id="fixedHeader_detailedsummary", cellspacing="0",style="width:100%;")
+                                    thead(style="width:100%;")
+                                        tr
+                                            th(width="10%",height='1%') S.No.
+                                            th(width="10%") Trxn.Date
+                                            th(width="28%") Particulars
+                                            th(width="10%") Cheque No
+                                            th(width="10%") Cheque Date
+                                            th(width="12%") Bank Date
+                                            th(width="10%",style="textIndent:50px;") Debit
+                                            th(width="10%") Credit
+                                    -var debitSum = 0;
+                                    -var creditSum = 0;
+                                    -var closingBal = 0;
+                                    -if(bankReconciliationStmt != null && bankReconciliationStmt.length != 0){
+                                    - for(var i=0; i<bankReconciliationStmt.length;i++){
+                                    tbody(style="width:100%;")
+                                        tr(class="showhide")
+                                            td(align='center') #{i+1}
+                                                input(type="hidden",name="transactionMasterId-"+i, id="transactionMasterId-"+i,value=bankReconciliationStmt[i].getTransactionMasterId())
+                                            td(align='center') #{bankReconciliationStmt[i].getTransactionDate()}
+                                            td #{bankReconciliationStmt[i].getDebitAccName()}
+                                            td(align='center') #{bankReconciliationStmt[i].getChequeNumber()}
+                                            td(align='center') #{bankReconciliationStmt[i].getChequeDate()}
+                                            td
+                                                input(type="hidden",name="reconciliationDateAltered-"+i, id="reconciliationDateAltered-"+i,value="")
+                                                input(type="text",name="reconciliationDate-"+i, id="reconciliationDate-"+i,required='true',class='fromDate',onchange="saveLedgerName('#{bankReconciliationStmt[i].getTransactionDate()}','#{bankReconciliationStmt[i].getChequeDate()}','#{bankReconciliationStmt[i].getDebitAcc()}','#{bankReconciliationStmt[i].getCreditAcc()}',this,'#{i}');")
+                                            td(align='right') #{bankReconciliationStmt[i].getDebitAcc()}
+                                            - debitSum = parseInt(debitSum) + parseInt(bankReconciliationStmt[i].getDebitAcc())
+                                            td(align='right') #{bankReconciliationStmt[i].getCreditAcc()}
+                                            - creditSum =parseInt(creditSum) + parseInt(bankReconciliationStmt[i].getCreditAcc())
+                                    - }
+                                    -}else{
+                                        input(type="hidden",name="brsLength", id="brsLength",value="0")
+                                    -}
+                        //-}
+                    -}
+                    -if(opening_bal == null || opening_bal == ""){
+                        -opening_bal = 0
+                    -}
+                    -if(debitSum == null){
+                        -debitSum = 0
+                    -}
+                    -if(creditSum == null){
+                        -creditSum = 0
+                    -}
+                    - closingBal = parseInt(opening_bal)+parseInt(debitSum)-parseInt(creditSum)
+                    - var bankBalance = parseInt(closingBal)+parseInt(debitSum)-parseInt(creditSum)
+                    input(type="hidden",name="totalDebit", id="totalDebit",value="#{debitSum}")
+                    input(type="hidden",name="totalCredit", id="totalCredit",value="#{creditSum}")
+                    input(type="hidden",name="closingBalValue", id="closingBalValue",value="#{closingBal}")
+                    input(type="hidden",name="dateValidationFlag", id="dateValidationFlag",value="false")
+                    input(type="hidden",name="fromDateValue", id="fromDateValue",value="#{fromDate}")
+            div(class="ui-loader-background")
+            div(data-role="horizontal",class="ui-grid-solo")
+                div(data-role="ui-block-a",style="width:100%;")
+                    div(id="bankReconciliationFooter",data-role="horizontal", data-theme="a", data-overlay-theme="b",class="ui-grid-b",style='width:100%;padding-top:2%;')
+                        div(class='ui-block-b',style="width:50%;padding-right:5%")
+                            div(data-role="fieldcontain",align='right')
+                                a(href="JavaScript:saveBankReconciliation('bankReconciliation')",rel="external", data-role='button', title='Bank Reconciliation', data-inline="true",data-mini="true",style="font-weight:bold;") Submit
+                        div(class='ui-block-b',style="width:50%")
+                            div(data-role="horizontal", data-theme="b", data-overlay-theme="b",class="ui-grid-b",style="width:95%;")
+                                div(class='ui-block-b',style="width:50%;padding-left:3%")
+                                    label(style="font-weight:bold") Balance as per Company Books :
+                                div(class='ui-block-b',style="width:23%",align='right')
+                                    label(id="openingBalLabel",style="font-weight:bold") #{balanceAsPerBook}
+                                //- Balance as pe company books means [take closing balance for the current page]
+                                div(class='ui-block-c',style="width:22%",align='right')
+                            div(data-role="horizontal", data-theme="b", data-overlay-theme="b",class="ui-grid-b",style="width:95%;")
+                                div(class='ui-block-b',style="width:50%;padding-left:3%")
+                                    label(style="font-weight:bold;") Amount Not reflected in Bank :
+                                div(class='ui-block-b',style="width:23%;",align='right')
+                                    label(id="debitLabel",style="font-weight:bold;") #{debitSum}
+                                div(class='ui-block-c',style="width:22%;",align='right')
+                                    label(id="creditLabel",style="font-weight:bold;") #{creditSum}
+                            div(data-role="horizontal", data-theme="b", data-overlay-theme="b",class="ui-grid-b",style="width:95%;")
+                                div(class='ui-block-b',style="width:50%;padding-left:3%")
+                                    label(style="font-weight:bold;") Balance as per Bank :
+                                div(class='ui-block-b',style="width:23%;",align='right')
+                                    label(id="closingBalLabel",style="font-weight:bold;") #{bankBalance}
+                                div(class='ui-block-c',style="width:22%",align='right')

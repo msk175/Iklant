@@ -1,0 +1,174 @@
+extends ../layout
+include ../header
+
+block title
+    title= 'Iklant-PaymentVerification'
+
+block scripts
+    include ../headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/loan_recovery/PaymentVerification.js')
+
+block content
+    form(id="paymentVerificationFormId")
+        div(data-role='page', data-theme='b', id="loginDetailsDiv")
+            +header("",["menu","logout"])
+            div(data-role="navbar")
+                ul(id="custom-nav-list")
+                    li
+                        a(href=contextPath + '/client/ci/retrieveLoanOfficerList', rel="external", data-role="tab" , id="custom-li-1",class="ui-btn-active" ) Receive Payment From FO
+                    li
+                        a(href=contextPath + '/client/ci/chequeDepositList', rel="external", data-role="tab" , id="custom-li-2") Cheque Deposit
+                    li
+                        a(href=contextPath + '/client/ci/loanrecovery/chequeBounceLoad', rel="external", data-role="tab" , id="custom-li-3") Cheque Bounce
+            div(data-role="bar")
+                div(data-role="fieldcontain")
+            div(data-role="collapsible", id="minutes", data-overlay-theme="a", data-inline="true" , data-collapsed="false",data-content-theme="b")
+                h3 Receive Payment From FO
+                div(data-role='horizontal', id="branchName", class="ui-bar ui-grid-a")
+                    div(class="ui-block-a",align="right")
+                        div(data-role="fieldcontain")
+                            label(for="foname",style="font-weight:bold;") Field-Officer
+                    div(class="ui-block-b",align="left")
+                        div(data-role="fieldcontain")
+                            select(name='foname', id='foname', data-theme='b', onchange="retrievePayments(this.value)", data-icon='bank', data-inline='true',data-mini='true', data-native-menu="true")
+                                option(value='0') Select FO
+                                -for(i=0;i<personnelNameArray.length;i++) {
+                                    -if(personnelIdArray[i] == personnelId)
+                                        option(value=personnelIdArray[i], selected="selected") #{personnelNameArray[i]}
+                                    -else
+                                        option(value=personnelIdArray[i]) #{personnelNameArray[i]}
+                                -}
+                div(data-role="fieldcontain",align="center")
+                    p(id="errorMsg" ,class='error-message global-font-details')
+                - if(PaymentCollectionArray.length == 0 & personnelId != 0){
+                    p(class='error-message global-font-details',align="center") No Payments to verify
+                - }
+                - else if(PaymentCollectionArray.length > 0){
+                    div(data-role="content" , style="overflow: auto;" , class="ui-content" , role="main")
+                        table(border='0',id="paymentVerificationTableId")
+                            thead
+                                tr
+                                    th S.No
+                                    th Group Name
+                                    th Loan Number
+                                    //th Due Amount
+                                    th Received Amount
+                                    th Mode Of Payment
+                                    th Receipt No
+                                    th Download Receipt
+                                    th Check Receipt
+                                    th Individual Amount
+                                    th Accept Payment
+
+                            tbody
+                                -for(i=0;i<PaymentCollectionArray.length;i++){
+                                    tr
+                                        td(class='center-text') #{i+1}
+                                        td(style="display:none;") #{PaymentCollectionArray[i].getPaymentCollectionId()}
+                                        td #{PaymentCollectionArray[i].getGroupName()}
+                                        td(class='center-text') #{PaymentCollectionArray[i].getGlobalAccNum()}
+                                        td(class='center-text') #{PaymentCollectionArray[i].getAmount()}
+                                        //td(class='center-text') #{PaymentCollectionArray[i].getClientAmount()}
+                                        td #{PaymentCollectionArray[i].getModeOfPayment()}
+                                        td(class='center-text') #{PaymentCollectionArray[i].getReceiptId()}
+                                        td(class='center-text')
+                                            select(name='docDownload', onchange = 'JavaScript:doPaymentVerificationImageDownloadFormSubmission(this.value)',data-theme="b", id='imageId'+i,data-inline='true', data-icon='grid', data-mini='true', data-native-menu="true")
+                                                option(value='0') Select Doc
+                                                a(href="JavaScript:doPaymentVerificationImageDownloadFormSubmission('#{PaymentCollectionArray[i].getFileLocation()}')",  rel="external",data-icon='arrow-d',title=' Add ', data-inline="true",data-mini="true", id='imageId'+i)
+                                                - if(PaymentCollectionArray[i].getDocId() != null) {
+                                                    - for(var j=0;j<PaymentCollectionArray[i].getDocId().length; j++) {
+                                                        -if(PaymentCollectionArray[i].getDocId()[j] == '1'){
+                                                            option(value=PaymentCollectionArray[i].getFileLocation()[j]) MOM Book
+                                                        -}
+                                                        -else if(PaymentCollectionArray[i].getDocId()[j] == '5'){
+                                                            option(value=PaymentCollectionArray[i].getFileLocation()[j]) Photo
+                                                        -}
+                                                        -else if(PaymentCollectionArray[i].getDocId()[j] == '11'){
+                                                            option(value=PaymentCollectionArray[i].getFileLocation()[j]) Receipt
+                                                        -}
+                                                    - }
+                                                - }
+                                            a(href="JavaScript:doPaymentVerificationImageDownloadFormSubmission('#{PaymentCollectionArray[i].getFileLocation()}')",  rel="external",data-icon='arrow-d',title=' Add ', data-inline="true",data-mini="true", id='imageId'+i)
+                                                //img(src="/images/download.png",style="margin:5px 10px 0 0;width:40px;height:40px")
+                                        td(class='center-text')
+                                            select(name='status', id='statusId'+i,onchange = 'showOptions(this.value)',data-icon='grid',data-theme="b", data-overlay-theme="d",data-mini="true", data-native-menu="true")
+                                                option(value='',selected='selected') Select
+                                                option(value='1') Matched
+                                                option(value='0') Not Matched
+                                        td
+                                            a(href="JavaScript:showClientList('#{i}','#{PaymentCollectionArray[i].getPaymentCollectionId()}','#{PaymentCollectionArray[i].getGroupName()}');",id='custommainTab'+i,data-theme="b",data-rel="popup",data-transition="slide",data-position-to="window",data-mini="true")
+                                                img(id='groupIcon', style="margin:5px 10px 0 0; text-align:right;",width="40px",height="40px",src='/images/member.png')
+                                        td(class='center-text')
+                                            a(href='JavaScript:doPaymentVerificationFormSubmission(#{i+1},#{PaymentCollectionArray[i].getIsApplyPayment()})',title="verified",data-role="button",data-rel="popup", data-position-to='window', data-mini="true",data-inline="true", id='actionId'+i) Accept
+                                            label(id='labelRevertID'+i,class='success-message global-font-details')
+
+                                - }
+                                a(href='JavaScript:doPaymentVerificationFormSubmission()',title="verified",data-role="button",data-rel="popup", data-position-to='window', data-mini="true",data-inline="true", id='fictionId0') Accept
+
+                -}
+                input(type='hidden', name='paymentCollectionId', id='paymentCollectionIdId', value="")
+                input(type='hidden', name='amount', id='amountId', value="")
+                input(type='hidden', name='groupId', id='groupIdId', value="")
+                input(type='hidden', name='groupName', id='groupNameId', value="")
+                input(type='hidden', name='globalAccNum', id='globalAccNumId', value="")
+                input(type='hidden', name='modeOfPayment', id='modeOfPaymentId', value="")
+                input(type='hidden', name='isMatch', id='isMatchId', value="")
+                input(type='hidden', name='officeId', id='officeIdId', value="#{officeId}")
+                input(type='hidden', name='fileLocation', id='fileLocationId', value="")
+                input(type='hidden', name='rowIndex', id='rowIndexId', value="")
+                input(type='hidden', name='isApplyPayment', id='isApplyPaymentId', value="")
+                input(type='hidden', name='abc', id='personnelId', value="#{personnelId}")
+                div(data-role="fieldcontain", data-inline="true",align="center",data-theme="d")
+                div(data-role="popup", id="paymentVerifiedId",data-theme="c", style="width:300px;")
+                    br
+                    div(align="center")
+                        label(id="labelid") Are you sure want to submit?
+                    br
+                    div(align="center",id="ynButtonDivId")
+                        a(href='#backId',data-icon='check',data-role='button',id='yesId',data-inline='true', data-mini='true') Yes
+                        a(href='#backId',data-icon='delete',data-role='button',id='noId',data-inline='true', data-mini='true') No
+                    br
+                div(data-role="popup", id="mismatchpopup", class="ui-content", style="width:200px;")
+                    a(href="#",data-rel="back",data-role="button",data-theme="a",data-icon="delete",data-iconpos="notext",class="ui-btn-right") Close
+                    div(data-role="navbar")
+                        ul(id="custom-nav-list")
+                            li
+                                a(href="", rel="external", data-role="tab", data-theme="c", data-overlay-theme="c",id="loanSummary") Select Mismatch Reason
+                    p(id="errorId",align="center",class='error-message global-font-details')
+                    div(data-role="fieldcontain", data-mini="true")
+                        label(for="amountmismatchId", data-inline="true") Amount Mismatch
+                        input(type="checkbox", name="clientLastName", data-theme="c", data-overlay-theme="c",id="amountmismatchId",data-inline="true",data-mini="true", value="")
+                    div(data-role="fieldcontain", data-mini="true")
+                        label(for="rcptnumber", data-inline="true") Receipt Mismatch
+                        input(type="checkbox", name="rcptnumber",id="rcptnumber", data-theme="c", data-overlay-theme="c",data-inline="true",data-mini="true", value="")
+                    div(data-role="fieldcontain", data-inline="true",align="center",data-theme="d")
+                        a(href='#memberDetailsDivId',  rel="external", data-theme="c", data-overlay-theme="c", data-role='button',data-mini="true", title=' Add ', data-inline="true", id='savemismatch',align="center") save
+            div(data-role='horizontal', id="menu", class="ui-bar ui-grid-b")
+                div(class='ui-block-a')
+                div(class='ui-block-b')
+                    div(data-role="fieldcontain",align="center")
+                        a(href=contextPath + '/client/ci/menu', rel="external",data-icon='home', data-role='button', title=' Home', data-inline='true', data-mini="true") Home
+                div(class='ui-block-c')
+                    div(data-role="fieldcontain", data-inline="true",align="right",id="backId")
+                        a(href=contextPath + '/client/ci/menu',  rel="external",data-icon='back', data-role='button', title=' Back ', data-inline="true",data-mini="true", id='cancel') Back
+            input(type='hidden', name='paymentId', id='paymentId', value="")
+            input(type='hidden', name='rowIndex', id='rowIndex', value="")
+            div(data-role="popup",id="recentActivityPopup",data-corners="true",data-theme="b",data-shadow="true")
+                a(href="#",data-rel="back",data-role="button",data-theme="a",data-icon="delete",data-iconpos="notext",class="ui-btn-right") Close
+                div(data-role="navbar")
+                    ul(id="custom-nav-list")
+                        li
+                            a(href="", rel="external", data-role="tab" , id="") Individual Client Paid Amount
+                div(data-role="fieldcontain")
+                    label(for="groupid",id="labelid") Group Name :
+                    label(id="groupid")
+                div(data-role="horizontal",class="ui-bar ui-grid-c")
+                    div(class='ui-block-a')
+                        a(href='#', data-icon='arrow-l',data-iconpos="left", data-role='button',id='clientListPrevId',data-inline='true', data-mini='true') Prev
+                    div(class='ui-block-b')
+                        a(href='#', data-icon='check', data-role='button',id='clientListPageNoId',data-inline='true', data-mini='true')
+                    div(class='ui-block-c',style="float:right")
+                        a(href='#', data-icon='arrow-r',data-iconpos="right",data-role='button',id='clientListNextId',data-inline='true', data-mini='true') Next
+                div(data-role="content",id="clientListDivId",style = "overflow: auto;")
+            div(class="ui-loader-background")

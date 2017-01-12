@@ -1,0 +1,77 @@
+extends ../layout
+include ../header
+block title
+   title= 'IKLANT-Deposit Statement'
+block scripts
+   link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+   include ../headerJqueryMobile-1
+   link(rel='stylesheet', href='/stylesheets/jqx.base.css')
+   link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+   link(rel='stylesheet', href='/stylesheets/popup.css')
+   link(rel="stylesheet", href="/stylesheets/jquery.iviewer.css")
+   link(rel="stylesheet", href="/stylesheets/iklant-table-layout.css")
+   script(type='text/javascript', src='/javascripts/jquery-ui.js')
+   script(type="text/javascript", src="/javascripts/jquery.mousewheel.min.js")
+   script(type="text/javascript",src="/javascripts/jsapi.txt")
+   script(type='text/javascript', src="/javascripts/bc_dashboard/bcsummary.js")
+   script(type='text/javascript', src='/javascripts/commonCustom.js')
+block content
+   form(id='BMFormId')
+      div(data-role='page', data-theme='b')
+         +header("Deposit Statement",["menu", "logout"],"",[])
+         div(data-role="content")
+            h3 Overall Deposit Summary
+            div(data-role="horizontal",class="ui-bar ui-grid-c")
+               div(class='ui-block-a',style="width:25%")
+                  div(data-role="fieldcontain")
+                  label(for='disbAmount',class='label') Total Demanded :
+               div(class='ui-block-b',style="width:25%")
+                  div(data-role="fieldcontain")
+                  label(id='disbAmount') &#8377;  0
+               div(class='ui-block-c',style="width:25%")
+                  div(data-role="fieldcontain")
+                  label(for='collectedAmount',class='label') Total Collected :
+               div(class='ui-block-d',style="width:25%")
+                  div(data-role="fieldcontain")
+                  label(id='collectedAmount') &#8377; 0
+            div(data-role="horizontal",class="ui-bar ui-grid-c")
+               div(class='ui-block-a',style="width:25%")
+                  div(data-role="fieldcontain")
+                  label(for='demdAmount',class='label') Total Deposited :
+               div(class='ui-block-b',style="width:25%")
+                  div(data-role="fieldcontain")
+                  label(id='demdAmount') &#8377;  0
+               div(class='ui-block-c',style="width:25%")
+                  div(data-role="fieldcontain")
+                  label(for='osAmount',class='label') Demand vs Deposit Difference :
+               div(class='ui-block-d',style="width:25%")
+                  div(data-role="fieldcontain")
+                  label(id='osAmount') &#8377; 0
+         div(data-role="content")
+            h3 Demand Vs Deposit for Selected Dates
+            br
+            div(data-role="horizontal", data-inline="true",class="ui-bar ui-grid-d")
+               div(class='ui-block-a',style="width:10%")
+                  div(data-role="fieldcontain")
+                  label(for="fromDateId") From Date *
+               div(class='ui-block-b',style="width:20%")
+                  div(data-role="fieldcontain",id="fromOfficeHierarchyDivId")
+                     input(type="text", name="fromDateId", id="fromDateId", value="#{fromDate}", readonly='readonly', required='true')
+               div(class='ui-block-c',style="width:10%")
+                  div(data-role="fieldcontain", data-mini="true")
+                  label(for="toDateId") To Date *
+               div(class='ui-block-d',style="width:20%")
+                  div(data-role="fieldcontain",id="officeDivId")
+                     input(type="text", name="toDateId", id="toDateId", value="#{toDate}", readonly='readonly', required='true')
+               div(class='ui-block-e',style="width:15%")
+                  div(data-role="fieldcontain", data-mini="true")
+                     a(href='JavaScript:retrieveDemandvsCollectionForSelectedDates(0)', rel="external",data-theme="b",data-role="button",id="Submit", data-inline="true",data-mini="true") GO
+            div
+               table
+                  tr
+                     th S.No
+                     th Date
+                     th Demanded Amount
+                     th Collected Amount
+                     th Deposited Amount
+                     th Deficit / (Excess)

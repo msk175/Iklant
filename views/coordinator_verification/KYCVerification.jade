@@ -1,0 +1,148 @@
+extends ../layout
+include ../header
+block title
+   title= 'IKLANT-KYCVerification'
+block scripts
+    link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
+    include ../headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/jqx.base.css')
+    link(rel='stylesheet', href='/stylesheets/jquery.mobile.structure-1.1.1.min.css')
+    link(rel='stylesheet', href='/stylesheets/popup.css')
+    link(rel="stylesheet", href="/stylesheets/jquery.iviewer.css")
+    link(rel="stylesheet", href="/stylesheets/iklant-table-layout.css")
+    script(type='text/javascript', src='/javascripts/jquery-ui.js')
+    script(type="text/javascript", src="/javascripts/jquery.mousewheel.min.js")
+    script(type="text/javascript", src="/javascripts/jquery.iviewer.js")
+    script(type='text/javascript', src='/javascripts/jqxcore.js')
+    script(type='text/javascript', src="/javascripts/jqxsplitter.js")
+    script(type='text/javascript', src="/javascripts/jquery.ui.touch-punch.min.js")
+    script(type='text/javascript', src="/javascripts/coordinator_verification/coordValidation.js")
+    script(type='text/javascript', src='/javascripts/validation.js')
+    script(type='text/javascript', src='/javascripts/commonCustom.js')
+block content
+   form(id='BMFormId')
+      div(data-role='page', data-theme='b')
+         +header("Documents Verification",["backJavascript","logout"],"cancelKYCVerification",[])
+         input(type='hidden', name='alertMessageHidden', id='alertMessageHidden', value="#{}")
+         input(type='hidden', name='officeValue', id='officeValueId', value="#{officeValue}")
+         input(type='hidden', name='groupId', id='groupId', value="")
+         input(type='hidden', name='screenFlag', id='screenFlagId', value="#{screenFlag}")
+         input(type='hidden', name='roleId', id='roleId', value="#{roleId}")
+         div(data-role="horizontal", data-theme="b", data-overlay-theme="b", data-inline="true",class="ui-bar ui-grid-a",style='width:80%')
+            div(class='ui-block-a',style='width:10%')
+               div(data-role="fieldcontain")
+               label(for="groupName") Group Name
+            div(class='ui-block-b',style='width:10%')
+               div(data-role="fieldcontain")
+               h3 #{clientsForKYCVerification.groupName}
+            div(class='ui-block-c',style='width:20%')
+               div(data-role="fieldcontain")
+               label(for="centerName", data-inline="true") |   Center Name
+            div(class='ui-block-d',style='width:20%')
+               div(data-role="fieldcontain")
+               h3 #{clientsForKYCVerification.centerName}
+            div(class='ui-block-e',style='width:10%')
+               div(data-role="fieldcontain")
+               label Member Name
+            div(class='ui-block-e',style='width:15%')
+                div(data-role="fieldcontain")
+                    - if(screenFlag == 1) {
+                        select(name='MemberName',rel = "external",onchange="JavaScript:retrieveDocument(3)", data-mini="true" ,id="memberName",data-inline="true",autofocus="autofocus", data-theme='b', data-icon='arrow-d', data-native-menu="true")
+                            option(value="0")    Select
+                            -for(i=0;i< clientsForKYCVerification.clientIdList.length;i++){
+                                -if(clientsForKYCVerification.clientIdList[i]== 0) {
+                                    option(value=clientsForKYCVerification.clientIdList[i],selected='selected') #{clientsForKYCVerification.clientNameList[i]}
+                                - }
+                                -else {
+                                    option(value=clientsForKYCVerification.clientIdList[i]) #{clientsForKYCVerification.clientNameList[i]}
+                                - }
+                            - }
+                    - }
+                    - else {
+                        select(name='MemberName',rel = "external",onchange="JavaScript:retrieveResolvedDocuments()", data-mini="true" ,id="memberName",data-inline="true",autofocus="autofocus", data-theme='b', data-icon='arrow-d', data-native-menu="true")
+                            option(value="0")    Select
+                            -for(i=0;i< clientsForKYCVerification.clientIdList.length;i++){
+                                -if(clientsForKYCVerification.clientIdList[i]== 0) {
+                                    option(value=clientsForKYCVerification.clientIdList[i],selected='selected') #{clientsForKYCVerification.clientNameList[i]}
+                                - }
+                                -else {
+                                    option(value=clientsForKYCVerification.clientIdList[i]) #{clientsForKYCVerification.clientNameList[i]}
+                                - }
+                            - }
+                    - }
+          div(data-role='content')
+              div(id="deoRemarksDiv",style="display:none")
+                 div(class='ui-block-a',style='width:10%')
+                     div(data-role="fieldcontain")
+                     label(for="groupName") Remarks  :
+                 div(class='ui-block-b',style='width:40%')
+                     div(data-role="fieldcontain")
+                        p(id="deoRemarks")
+         p(id='errorLabelId',align="center",class='error-message global-font-details')
+         hr
+         div(data-role='content', id="mainSplitter", data-theme="b" )
+            div(class='vertical-scroll-bar', id="leftPanel")
+                div(class='buttonWrapper', data-overlay-theme="b",style='display:none;')
+                    a(href='#', rel="external",data-icon='arrow-r', data-role='button', title='Next', data-inline="true", data-mini="true",id='next',data-iconpos="notext")
+                    a(href='#', rel="external",data-icon='arrow-l', data-role='button', title='Previous', data-inline="true", data-mini="true",id='previous',data-iconpos="notext")
+                    a(href='#', rel="external",data-icon='back', data-role='button', title='Rotate Left', data-inline="true", data-mini="true",id='rotateLeft',data-iconpos="notext")
+                    a(href='#', rel="external",data-icon='forward', data-role='button', title='Rotate Right', data-inline="true", data-mini="true",id='rotateRight',data-iconpos="notext")
+                    h3(id='imageName',align='center')
+                div(class='wrapper',style='display:none;padding-top:2em')
+            div(class='vertical-scroll-bar', id="rightPanel")
+                div(class='buttonWrapperRightPannel', data-overlay-theme="b",style='display:none;')
+                    //a(href='#', rel="external", data-role='button', title='Reject', data-inline="true", data-mini="true",id='reject') Reject
+                    a(href='#', rel="external",data-icon='arrow-r', data-role='button', title='Next', data-inline="true", data-mini="true",id='nextRightPanel',data-iconpos="notext")
+                    a(href='#', rel="external",data-icon='arrow-l', data-role='button', title='Previous', data-inline="true", data-mini="true",id='previousRightPanel',data-iconpos="notext")
+                    a(href='#', rel="external",data-icon='back', data-role='button', title='Rotate Left', data-inline="true", data-mini="true",id='rotateLeftRightPanel',data-iconpos="notext")
+                    a(href='#', rel="external",data-icon='forward', data-role='button', title='Rotate Right', data-inline="true", data-mini="true",id='rotateRightPanel',data-iconpos="notext")
+                    //a(href='#', rel="external" data-role='button', title='Accept'     , data-inline="true", data-mini="true",id='accept') Accept
+                    h3(id='imageNameRightPanel',align='center')
+                div(class='wrapperRightPanel',style='display:none;padding-top:2em')
+          div(data-role='content', data-theme="b",style='display:none;',id="actionDiv")
+              h3(id='footerRightPanel')
+              div(data-role="fieldcontain")
+                  a(href="JavaScript:approveDocument(1)", rel="external" data-role='button', title='Accept'     , data-inline="true", data-mini="true",id='accept') Send to DEO
+                  a(href="JavaScript:approveDocument(0)", data-role='button', title='Reject', data-rel='popup', data-position-to='window', data-transition='pop', data-inline="true", data-mini="true",id='reject') Send to FO
+                  div(data-role="popup", id="reasonForReject", data-inline='true',data-theme="a",align='center', data-dismissible="false",style="max-width:650px !important; width: 600px !important") Confirmation!
+                      div(data-role="collapsible", data-collapsed="false",data-theme="b", data-content-theme="b")
+                          div
+                              p(id='errorMessage',style="color:red")
+                              span(id='alertMessage',class='error-message global-font-details')
+                              br
+                              p(id='errMessage',style="color:green")
+                          div(data-role="horizontal", data-theme="a", class="ui-bar ui-grid-b", data-overlay-theme="a", data-inline="true",style='width:100%')
+                              div(class="ui-block-a",style='width:20%')
+                                  div(data-role="fieldcontain", data-mini="true")
+                                  label(for='remarks') Remarks by BM :
+                              div(class="ui-block-b",style='width:80%')
+                                  div(data-role="fieldcontain", data-mini="true")
+                                      input(type='text',name='bmRemarks',id='bmRemarks',autocomplete='off',onkeyup='forRemoveSpecialCharctersHold(this)',maxlength='240')
+                          div(align="center",id="ynButtonDivId")
+                              a(href='#',onclick="JavaScript:checkValidation()", id='needImageClaritySaveId', rel="external", data-role='button',data-mini="true", title=' Save ', data-theme="b", data-inline="true") Save
+                              a(href='#rightPanel', id='needImageClarityCancelId', rel="external",data-icon='back', data-role='button',data-mini="true", title='Cancel', data-inline="true") Cancel
+
+                  //div(data-role="popup", data-theme="b", data-overlay-theme="b", id="reasonForReject" ,style="max-width:650px !important; width: 600px !important") Back to FO Confirmation Remarks!
+                      div(data-role="horizontal", data-theme="a", class="ui-bar ui-grid-b", data-overlay-theme="a", data-inline="true",style='width:100%')
+                          div(class="ui-block-a",style='width:10%')
+                              div(data-role="fieldcontain", data-mini="true")
+                              label(for='remarks') Remarks
+                          div(class="ui-block-b",style='width:90%')
+                              div(data-role="fieldcontain", data-mini="true")
+                                  input(type='text',name='remarks',id='remarks',autocomplete='off',onkeyup='forAddress(this)',maxlength='240')
+                      div(align="center")
+                          a(href='#',onclick="JavaScript:updateClientStatus()", id='needImageClaritySaveId', rel="external", data-role='button',data-mini="true", title=' Save ', data-theme="b", data-inline="true") Save
+                          a(href='#', id='needImageClarityCancelId', rel="external",data-icon='back', data-role='button',data-mini="true", title='Cancel', data-inline="true") Cancel
+          - if(roleId == constantsObj.getBMroleId()) {
+              div(data-role='content', data-theme="b")
+                  h3 Hints:
+                  br
+                  p The above documents requires more suggestions from you, please read the above remarks for more information.
+                  div(data-role="fieldcontain" , style="color:blue")
+                    ul
+                        li Please click the button "Send to FO" if the requested information in the above remarks  is valid
+                        li Please click the button "Send to DEO" if the requested information in the above remarks is not required OR FO Recpatured requested information.
+                        li A popup window will be available after reviewing all the documents, please fill the remarks (Maximum 230 Characters allowed) in the popup window.
+                        li Verification will be saved after clicking the save button in popup window.
+          - }
+          div(class="ui-loader-background")

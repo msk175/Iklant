@@ -1,0 +1,217 @@
+extends ./layout
+include ./header
+
+block title
+    title= 'Iklant-ClientRating'
+
+block scripts
+    include ./headerJqueryMobileBeta-3
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type="text/javascript", src="/javascripts/backfix.min.js")
+    script(type='text/javascript', src='/javascripts/cca1.js')
+    script(type='text/javascript')
+        backdetect.OnBack = function(){document.getElementById("BMFormId").method='GET';document.getElementById("BMFormId").action=contextPath + "/client/ci/groups";document.getElementById("BMFormId").submit().refresh();}
+
+block content
+    form(id="BMFormId",enctype='multipart/form-data')
+        div(data-role='page',id="gridplus")
+            -if(isIdle == 1 && typeof isIdle != 'undefined')
+                +header("Manage Idle Group",["backJavascript","logout"],"manageIdleGroupsCancelButton",[])
+            -else
+                +header("Client Credit Appraisal",["backJavascript","logout"],"appraisalCancelButton",[])
+            div(data-role='content')
+                div(data-role="fieldcontain")
+                    -if (errorfield.indexOf('successfully') > -1) {
+                        p(id ='successmessage',data-theme="e",align='center',class="success-message global-font-details") #{errorfield}
+                    -} else {
+                        p(id ='errorLabel',data-theme="e",align='center',class="error-message global-font-details") #{errorfield}
+                    -}
+                    p(id ='errorLabelId',data-theme="e",align='center',class="error-message global-font-details")
+                    p(id ='errorLabelIdSecondRow',data-theme="e",align='center',class="error-message global-font-details")
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-b")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain")
+                            h3(for="value") Group Name :
+                            label(for="groupName val") &nbsp;#{appraisedClientsObj.getgroup_name()}
+                            input(type="hidden", id="unAppraisedClientsHidden", value=unAppraisedClients)
+                            input(type="hidden", id="groupName",name='groupName', value='#{appraisedClientsObj.getgroup_name()}')
+                            input(type="hidden", id="groupidfordownload", name="groupnamefordownload" , value="#{groupId}")
+                            input(type="hidden", id="operationId", name="operationId" , value="10")
+                            input(type='hidden', name='brchid', id='brchid', value="0")
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain")
+                            h3(for="value") Center Name :
+                            label(for="avarage Rating") &nbsp;#{appraisedClientsObj.getAppraisal_group_name()}
+                            input(type='hidden', name='centerName', value="#{appraisedClientsObj.getAppraisal_group_name()}")
+                    -if(statusId != 5 && statusId != 6){
+                        div(class='ui-block-c')
+                            div(data-role="fieldcontain")
+                                h3(for="value") Average Rating :
+                                label(for="avarage Rating") &nbsp;#{Number(appraisedClientsObj.getAppraisal_Rating()).toFixed(2)}
+                    -}
+                -if(isIdle == 1 && typeof isIdle != 'undefined'){
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-b", style='width:85%')
+                        div(class='ui-block-a', style='width:38%')
+                            div(data-role="fieldcontain")
+                                h3(for="value") Last Credit Check Date :
+                                label(for="avarage Rating") &nbsp;#{lastCreditCheckDate}
+                        div(class='ui-block-b', style='width:45%')
+                            div(data-role="fieldcontain")
+                                h3(for="value") No. of Idle Days :
+                                label(for="avarage Rating") &nbsp;#{noOfIdleDays}
+                -}
+                div(style = "overflow: auto;")
+                    table
+                        tr
+                            th(data-priority="5",rowspan="2",style="vertical-align:middle;text-align:center") S.No
+                            th(data-priority="5",rowspan="2",style="vertical-align:middle;text-align:center") Client Name
+                            th(data-priority="5",colspan="3",style="vertical-align:middle;text-align:center") Credit Report
+                            -if(statusId != 5 && statusId != 6)
+                                th(data-priority="5",rowspan="2",style="vertical-align:middle;text-align:center") Rating
+                            th(data-priority="5",rowspan="2",style="vertical-align:middle;text-align:center") Option
+                            th(data-priority="5",rowspan="2",style="vertical-align:middle;text-align:center") Document Type
+                            th(data-priority="5",rowspan="2",style="vertical-align:middle;text-align:center") Download Docs
+                            th(data-priority="5",rowspan="2",style="vertical-align:middle;text-align:center") Action
+                            //-if(roleId !=constantsObj.getGuestUserRoleId()){
+                                th(data-priority="5",rowspan="2",style="vertical-align:middle;text-align:center") Action
+                            //-}
+                            -if(isIdle != 1 && typeof isIdle == 'undefined')
+                                th(data-priority="5",rowspan="2",style="vertical-align:middle;text-align:center") KYC Update
+                        tr
+                            th(style ="text-align:center") Count
+                            th(style ="text-align:center") Balance Amount
+                            th(style ="text-align:center") Written-Off Amount
+                        -var count = 1;
+                        -for(i=0;i< appraisedClientsObj.getListClientIdArray().length;i++){
+                            -if(appraisedClientsObj.getReinitiatedStatus()[i] && appraisedClientsObj.getStatusId()[i] != 17){
+                                tr
+                                    td(style ="text-align:center") #{count}
+                                    -if(appraisedClientsObj.getIsReinitiated() [i] == 1){
+                                        td(style ="text-align:center;color:#03CE17") #{appraisedClientsObj.getListClientNameArray() [i]}
+                                    -}
+                                    -else{
+                                        td(style ="text-align:center") #{appraisedClientsObj.getListClientNameArray() [i]}
+                                    -}
+                                    input(type='hidden', name='clientLoanCount_#{appraisedClientsObj.getListClientIdArray()[i]}', id='clientLoanCount_#{appraisedClientsObj.getListClientIdArray()[i]}', value='#{appraisedClientsObj.getListLoanCountArray() [i]}')
+                                    td(style="vertical-align:middle;text-align:center") #{appraisedClientsObj.getcountOfOtherMFILoans()[i]}
+                                    td(style="vertical-align:middle;text-align:center") #{appraisedClientsObj.getotherMFIBalanceAmount()[i]}
+                                    td(style="vertical-align:middle;text-align:center") #{appraisedClientsObj.getotherMFIWrittenOffAmount()[i]}
+                                    -if(statusId != 5 && statusId != 6){
+                                        td(style ="text-align:center")
+                                            -if(isIdle == 1 && typeof isIdle != 'undefined'){
+                                                a(href="JavaScript:clientAppraisalAnswersForBM(#{groupId},#{appraisedClientsObj.getListClientIdArray()[i]},#{appraisedClientsObj.getListLoanCountArray()[i]},#{appraisedClientsObj.getListClientRatingArray()[i]},#{appraisedClientsObj.getListClientTotalWeightageArray()[i]},#{appraisedClientsObj.getListClientTotalWeightageRequiredArray()[i]})",data-theme="b",title='Rating Detail',data-mini='true', data-role='button') #{appraisedClientsObj.getListClientRatingArray()[i]} %
+                                            -}else
+                                                a(href="JavaScript:clientAppraisalAnswersBm(#{groupId},#{appraisedClientsObj.getListClientIdArray()[i]},#{appraisedClientsObj.getListLoanCountArray()[i]},#{appraisedClientsObj.getListClientRatingArray()[i]},#{appraisedClientsObj.getListClientTotalWeightageArray()[i]},#{appraisedClientsObj.getListClientTotalWeightageRequiredArray()[i]})",data-theme="b",title='Rating Detail',data-mini='true', data-role='button') #{appraisedClientsObj.getListClientRatingArray()[i]} %
+                                    -}
+                                    td(style ="text-align:center")
+                                        a(href="JavaScript:openNOCPopup(#{appraisedClientsObj.getListClientIdArray()[i]},'#{appraisedClientsObj.getListClientNameArray()[i]}','uploadNOC_#{i}')", id='uploadNOC_#{i}', data-theme="b",data-inline='true',data-role='button', title=' Upload NOC', data-mini="true",data-rel="popup",data-position-to='window') Upload NOC
+                                    td(style ="text-align:center; width:13%;")
+                                        div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a")
+                                            div(class='ui-block-a',style="width:15%")
+                                                div(data-role="fieldcontain")
+                                                select(name='members', id='members', data-theme='b', data-icon='grid', data-inline='true', data-mini='true',onchange = 'JavaScript:downloadClientDocuments(this.value,#{appraisedClientsObj.getListClientIdArray()[i]})')
+                                                    option(value='0') Select Doc Type
+                                                    -for(var j=0;j< appraisedClientsObj.getDocumentIdArray().length; j++) {
+                                                        -if(clientId == appraisedClientsObj.getListClientIdArray()[i] && appraisedClientsObj.getDocumentIdArray()[j]==docId)
+                                                            option(value=appraisedClientsObj.getDocumentIdArray()[j],selected='selected') #{appraisedClientsObj.getDocumentNameArray()[j]}
+                                                        -else
+                                                            option(value=appraisedClientsObj.getDocumentIdArray()[j]) #{appraisedClientsObj.getDocumentNameArray()[j]}
+                                                    -}
+                                    td(style ="text-align:center; width:5%;")
+                                        div(data-role="horizontal", data-theme="a", data-overlay-theme="a",class="ui-grid-a")
+                                            div(class='ui-block-a',style="width:15%")
+                                                div(data-role="fieldcontain")
+                                                    select(name='docDownload', onchange = 'JavaScript:downloadDocs(this.value)',data-theme="b", id='docDownloadId',data-inline='true', data-icon='grid', data-mini='true', data-native-menu="true")
+                                                        option(value='0') Select Doc
+                                                        -if(clientId == appraisedClientsObj.getListClientIdArray()[i]){
+                                                            -for(var j=0;j<fileLocation.length; j++) {
+                                                                option(value=fileLocation[j]) Doc #{j+1}
+                                                            - }
+                                                        -}
+                                    td(style ="text-align:center")
+                                        -if(roleId !=constantsObj.getGuestUserRoleId()){
+                                            -if(isIdle == 1 && typeof isIdle != 'undefined')
+                                                a(href="JavaScript:rejectIdleClient(#{appraisedClientsObj.getListClientIdArray()[i]},'rejectClient_#{i}','#{appraisedClientsObj.getListClientNameArray() [i]}')", id='rejectClient_#{i}', data-theme="b",data-inline='true',data-icon='delete', data-role='button', title=' Reject', data-mini="true",data-rel="popup",data-position-to='window') Reject
+                                            -else
+                                                a(href="JavaScript:rejectClient(#{appraisedClientsObj.getListClientIdArray()[i]},'rejectClient_#{i}','#{appraisedClientsObj.getListClientNameArray() [i]}')", id='rejectClient_#{i}', data-theme="b",data-inline='true',data-icon='delete', data-role='button', title=' Reject', data-mini="true",data-rel="popup",data-position-to='window') Reject
+                                        -}
+                                    -if(isIdle != 1 && typeof isIdle == 'undefined'){
+                                        td(align='center')
+                                            a(href="JavaScript:updateContactDetails(#{appraisedClientsObj.getListClientIdArray()[i]},'#{i}','#{appraisedClientsObj.getListClientNameArray() [i]}','#{appraisedClientsObj.getClientMobileNumbers()[i]}','#{appraisedClientsObj.getClientLandLineNumbers()[i]}')", id='updateContact_#{i}', data-theme="b",data-inline='true', data-role='button', title=' Update KYC Request', data-mini="true",data-rel="popup",data-position-to='window') Update KYC Request
+                                            label(id='labelId_#{i}',class="success-message global-font-details")
+                                    -}
+                                - count ++;
+                            -}
+                        -}
+                input(type='hidden', name='selectedDocName', id='selectedDocId', value="")
+                input(type='hidden', name='clientRatingPercHidden',id="clientRatingPercHiddenId")
+                input(type='hidden', name='clientTotalWeightageHidden',id="clientTotalWeightageHiddenId")
+                //input(type='hidden', name='totalWeightageHiddenName',id="totalWeightageHiddenId",value="#{totalWeightage}")
+                -if(isIdle == 1 && typeof isIdle != 'undefined')
+                    input(type='hidden', name='ccaRedirectHiddenName',id="ccaRedirectHiddenId",value="3")
+                -else
+                    input(type='hidden', name='ccaRedirectHiddenName',id="ccaRedirectHiddenId",value="1")
+                input(type='hidden', name='clientTotalWeightageRequiredHiddenCCA1Name',id="clientTotalWeightageRequiredHiddenCCA1Id")
+                input(type='hidden', name='rejectedClientName', id='rejectedClientID', value="")
+                input(type='hidden', name='approvedGroupName', id='approvedGroupId', value="")
+                input(type='hidden', name='countofrejectedclients', id='countofrejectedclients', value="#{countOfRejectedClients}")
+                input(type='hidden', name='membersCount', id='membersCount', value="#{appraisedClientsObj.getListClientIdArray().length}")
+                input(type='hidden', name='selectedClientForNOCUpload', id='selectedClientForNOCUpload', value="")
+                input(type='hidden', name='selectedClientNameForNOCUpload', id='selectedClientNameForNOCUpload', value="")
+                input(type='hidden', name='reinitiatedClientsFlag', id='reinitiatedClientsFlag', value='#{appraisedClientsObj.getReinitiatedStatus()}')
+                input(type='hidden', name='reinitiatedClients', id='reinitiatedClients', value='#{appraisedClientsObj.getListClientNameArray()}')
+                input(type='hidden', name='rejectedClient', id='rejectedClient', value='')
+                input(type='hidden', name='statusId', id='statusId', value='#{statusId}')
+                -if(isIdle == 1 && typeof isIdle != 'undefined')
+                    input(type='hidden', name='pageName', id='pageName', value='manageIdleGroups')
+                -else
+                    input(type='hidden', name='pageName', id='pageName', value='cca1')
+                div(data-role="fieldcontain",data-inline="true",id="submitDivId")
+                    - if(countOfRejectedClients > 0) {
+                        a(href="JavaScript:reintiateRejectedClients()", data-theme="b", rel="external",data-icon='forward', data-role='button', title=' Approve', data-inline="true", data-mini="true") Reinitiate Rejected Clients
+                    - }
+                    -if(isIdle == 1 && typeof isIdle != 'undefined'){
+                        a(href="JavaScript:manageIdleGroupsCancelButton()",data-theme="b", rel="external",data-icon='arrow-l', data-role='button', title=' Back', data-inline="true", data-mini="true") Back
+                        -if(roleId !=constantsObj.getGuestUserRoleId()){
+                            a(href="JavaScript:approveIdleGroup(#{groupId}, '#{appraisedClientsObj.getAppraisal_group_name()}')", data-theme="b",id='approveGroup', data-role='button', title=' Approve', data-inline="true", data-mini="true",data-rel="popup",data-position-to='window') Approve
+                            a(href="JavaScript:rejectIdleGroup(#{groupId}, '#{appraisedClientsObj.getAppraisal_group_name()}')",data-theme="b", rel="external",data-icon='delete', data-role='button', title=' Reject', data-inline="true", data-mini="true") Reject
+                        -}
+                    -}else{
+                        -if(roleId !=constantsObj.getGuestUserRoleId()){
+                            a(href="JavaScript:approveGroup(#{groupId})", data-theme="b",id='approveGroup', data-role='button', title=' Approve', data-inline="true", data-mini="true",data-rel="popup",data-position-to='window') Approve
+                            a(href="JavaScript:rejectGroup(#{groupId})",data-theme="b", rel="external",data-icon='delete', data-role='button', title=' Reject', data-inline="true", data-mini="true") Reject
+                        -}
+                        a(href="JavaScript:appraisalCancelButton()",data-theme="b", rel="external",data-icon='arrow-l', data-role='button', title=' Back', data-inline="true", data-mini="true") Back
+                    -}
+
+                div(data-role="popup", id="approveConfirmationId", data-inline='true',data-theme="a",align='center') Confirmation!
+                    div(data-role="collapsible", data-collapsed="false",data-theme="b", data-content-theme="b")
+                        div
+                            span This group will be rejected due to active clients less than 5. Do you want to continue?
+                        div(align="center",id="ynButtonDivId")
+                            a(href='#showId',data-icon='check',data-role='button',id='yesApproveId',data-inline='true', data-mini='true',data-theme="b") Yes
+                            a(href='#showId', data-icon='delete', data-role='button',id='noApproveId',data-inline='true', data-mini='true',data-theme="b") No
+                div(data-role="popup", id="rejectConfirmationId", data-inline='true',data-theme="a",align='center') Confirmation!
+                    div(data-role="collapsible", data-collapsed="false",data-theme="b", data-content-theme="b")
+                        div
+                            span If active clients less than 5 then this group will be rejected while Appraisal. Do you want to continue?
+                        div(align="center",id="ynButtonDivId")
+                            a(href='#showId',data-icon='check',data-role='button',id='yesRejectId',data-inline='true', data-mini='true',data-theme="b") Yes
+                            a(href='#showId', data-icon='delete', data-role='button',id='noRejectId',data-inline='true', data-mini='true',data-theme="b") No
+                div(data-role="popup", id="uploadNOC", data-inline='true',data-theme="a",align='center') Upload NOC
+                    div(data-role="collapsible", data-collapsed="false",data-theme="a", data-content-theme="c")
+                        div
+                            span(id='normalMessage') Please select a file/files to upload
+                            span(id='errorMessage',style='color:red;font-weight: bold;display:none')
+                        div(data-role="fieldcontain", data-mini="true",id='checkBoxDiv')
+                            input(type='checkbox', name='isMultipleDocCheck', id='isMultipleDocCheckID', data-inline="true")
+                            label(for='isMultipleDocCheckID',id="isMultipleDocCheckIDLabel") Multiple Files
+                            input(type="hidden", name="isMultipleDocument" , id="isMultipleDocumentId" , value="false", checked='false')
+                        div(data-role="fieldcontain", data-mini="true",id="multipleDocDivId")
+                            input(type="file", name="multipleUploadDocument" , id="multipleUploadDocumentId" , multiple="multiple")
+                            a(href='JavaScript:uploadNOC(#{groupId})',data-icon='check',data-role='button',data-inline='true', data-mini='true',data-theme="b") Upload
+                        div(data-role="fieldcontain", data-mini="true",id="singleDocDivId")
+                            input(type="file", name="singleUploadDocument" , id="singleUploadDocumentId")
+                            a(href='JavaScript:uploadNOC(#{groupId})',data-icon='check',data-role='button',data-inline='true', data-mini='true',data-theme="b") Upload
+            include ./popup
+            div(class="ui-loader-background")

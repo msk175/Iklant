@@ -1,0 +1,350 @@
+extends ../layout
+include ../header
+block title
+    title= 'LD Groups'
+block scripts
+    include ../headerJqueryMobile-1
+    link(rel='stylesheet', href='/stylesheets/iklant-table-layout.css')
+    script(type='text/javascript', src='/javascripts/LDCallTracking.js')
+    script(type='text/javascript', src='/javascripts/data_entry/LDCallTrackingCheckList.js')
+block content
+    div(data-role='page', data-theme='b', id="loginDetailsDiv")
+        +header("LD Call Tracking",["menu", "backJavascript", "logout"],'operationLDBack',[])
+        div(data-role="fieldcontain")
+            p(id="errorLabel",align="center",style="color:red;font-weight:bold")
+        form(id='BMFormId')
+            div(data-role="collapsible", id="minutes", data-overlay-theme="a", data-inline="true" , data-collapsed="false", data-content-theme="b")
+                h3 #{result[0].center_name} &nbsp; #{result[0].group_name}
+                div(data-role="fieldcontain")
+                    p(id="popupErrorLabel",align="center",style="color:red;font-weight:bold")
+                div(data-role='content')
+                    div(data-role="fieldcontain")
+                        input(type="hidden", name="resultValue", id="resultId",value="#{JSON.stringify(result)}")
+                        input(type="hidden", name="selectedIndex", id="selectedIndexId",value="#{selectedIndex}")
+                        input(type="hidden", name="callTrackingId", id="callTrackingIdId", value ="0")
+                        input(type="hidden", name="clientId", id="clientIdId")
+                        input(type="hidden", name="groupId", id="groupIdId")
+                        input(type="hidden", name="accountId", id="accountIdId")
+                        input(type="hidden", name="clientAccountId", id="clientAccountIdId")
+                        input(type="hidden", name="officeId", id="officeIdId", value ="#{result[0].office_id}")
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-b")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain", data-inline="true")
+                            label(for="callStatusId") Call Status?
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain", data-inline="true")
+                            label(for="callStatusId",id="callStatusLabelId")
+                    div(class='ui-block-c')
+                        div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain")
+                                    select(name='callStatus',rel = "external",data-mini="true" ,id="callStatusId",data-inline="true", data-theme='b', data-icon='arrow-d', data-native-menu="true")
+                                        option(value="0")    Select
+                                        option(value="147")    Call Success
+                                        option(value="148")    No response
+                                        option(value="149")    Family member not aware
+                                        option(value="150")    Wrong Number
+                                        option(value="151")    Switched off
+                                        option(value="152")    Member Busy
+                                        option(value="162")    Number Busy
+                                        option(value="153")    Ringing No Response
+                                        option(value="154")    Not Reachable
+                                        option(value="155")    Incorrect Number
+                                        option(value="156")    Barred
+                                        option(value="157")    No mobile no
+                                        option(value="158")    Member not available
+                                        option(value="167")    Loan Not Disbursed
+                        div(data-role="fieldcontain")
+                            input(type="text", name="callStatusRemarks", id="callStatusRemarksId",value = "", style="display:none", maxlength="240", onkeyup='forRemoveSpecialCharcters(this)')
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-b")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain", data-inline="true")
+                            label(for="altnoId") Alternate Contact No ?
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain", data-inline="true")
+                            label(for="altnoId",id="altnoLabelId")
+                    div(class='ui-block-c')
+                        div(data-role="fieldcontain")
+                            input(type="text", name="alternateNo", id="alternateNoId",value = "", maxlength="10", onkeyup='forRemoveSpecialCharcters(this)')
+                div(id="callSuccessFieldsId",style="display:none")
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-b")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain", data-inline="true")
+                                label(for="mrsId") Are you Mrs ?
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain", data-inline="true")
+                                label(for="mrsId",id="mrsLabelId")
+                        div(class='ui-block-c')
+                            div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                                div(class='ui-block-a')
+                                    div(data-role="fieldcontain")
+                                        input(type="radio", name="mrs", id="mrsYesId", value = "118", data-mini="true",data-theme='b', onclick="radioClickEvent(this)")
+                                        label(for="mrsYesId") Yes
+                                div(class='ui-block-b')
+                                    div(data-role="fieldcontain")
+                                        input(type="radio", name="mrs", id="mrsNoId", value = "119", data-mini="true",data-theme='b', onclick="radioClickEvent(this)")
+                                        label(for="mrsNoId") No
+                            input(type="text", name="mrsRemarks", id="mrsRemarksId",value = "", style="display:none", maxlength="240", onkeyup='forRemoveSpecialCharcters(this)')
+
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-b")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain", data-inline="true")
+                                label(for="groupNameId") Are you belong to the following group?
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain", data-inline="true")
+                                label(for="groupNameId",id="groupNameLabelId")
+                        div(class='ui-block-c')
+                            div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                                div(class='ui-block-a')
+                                    div(data-role="fieldcontain")
+                                        input(type="radio", name="groupName", id="groupNameYesId",value = "125",data-theme='b', data-mini="true", onclick="radioClickEvent(this)")
+                                        label(for="groupNameYesId") Yes
+                                div(class='ui-block-b')
+                                    div(data-role="fieldcontain")
+                                        input(type="radio", name="groupName", id="groupNameNoId",value = "126",data-theme='b', data-mini="true", onclick="radioClickEvent(this)")
+                                        label(for="groupNameNoId") No
+                            input(type="text", name="groupNameRemarks", id="groupNameRemarksId",style="display:none",maxlength="240")
+
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-b")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain", data-inline="true")
+                                label(for="apexAbishekId") Have You applied loan in Apex Abishek?
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain", data-inline="true")
+                                label(for="apexAbishekId",id="apexAbishekLabelId")
+                        div(class='ui-block-c')
+                            div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                                div(class='ui-block-a')
+                                    div(data-role="fieldcontain")
+                                        input(type="radio", name="apexAbishek", id="apexAbishekYesId",value = "127",data-theme='b', data-mini="true", onclick="radioClickEvent(this)")
+                                        label(for="apexAbishekYesId") Yes
+                                div(class='ui-block-b')
+                                    div(data-role="fieldcontain")
+                                        input(type="radio", name="apexAbishek", id="apexAbishekNoId",value = "128",data-theme='b', data-mini="true", onclick="radioClickEvent(this)")
+                                        label(for="apexAbishekNoId") No
+                            input(type="text", name="apexAbishekRemarks", id="apexAbishekRemarksId",style="display:none",maxlength="240")
+
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-b")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain", data-inline="true")
+                                label(for="fvId") Is Field Verification done for you?
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain", data-inline="true")
+                                label(for="fvId",id="fvLabelId")
+                        div(class='ui-block-c')
+                            div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                                div(class='ui-block-a')
+                                    div(data-role="fieldcontain")
+                                        input(type="radio", name="fv", id="fvYesId",value = "129", data-mini="true",data-theme='b', onclick="radioClickEvent(this)")
+                                        label(for="fvYesId") Yes
+                                div(class='ui-block-b')
+                                    div(data-role="fieldcontain")
+                                        input(type="radio", name="fv", id="fvNoId", value = "130",data-mini="true",data-theme='b', onclick="radioClickEvent(this)")
+                                        label(for="fvNoId") No
+                            input(type="text", name="fvRemarks", id="fvRemarksId",style="display:none",maxlength="240")
+
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-b")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain", data-inline="true")
+                                label(for="foId") How is the FO behaviour?
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain", data-inline="true")
+                                label(for="foId",id="foLabelId")
+                        div(class='ui-block-c')
+                            div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                                div(class='ui-block-a')
+                                    div(data-role="fieldcontain")
+                                        select(name='fo',rel = "external",data-mini="true" ,id="foId",data-inline="true", data-theme='b', data-icon='arrow-d', data-native-menu="true")
+                                            option(value="0")    Select
+                                            option(value="120")    Poor
+                                            option(value="121")    Average
+                                            option(value="122")    Good
+                                            option(value="123")    Very Good
+                                            option(value="124")    Excellent
+
+                    //div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-b")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain", data-inline="true")
+                                label(for="disbursedDateLabelId") Disursement Date
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain", data-inline="true")
+                                label(for="disbursedDateLabelId") 01-01-2015
+                        div(class='ui-block-c')
+                            div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                                div(class='ui-block-a')
+                                    div(data-role="fieldcontain")
+                                        input(type="radio", name="disbursedDate", id="disbursedDateYesId",data-theme='b', data-mini="true")
+                                        label(for="disbursedDateYesId") Yes
+                                div(class='ui-block-b')
+                                    div(data-role="fieldcontain")
+                                        input(type="radio", name="disbursedDate", id="disbursedDateNoId",data-theme='b', data-mini="true")
+                                        label(for="disbursedDateNoId") No
+
+
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-b")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain", data-inline="true")
+                                label(for="disbursedAmountId") Disursement Amount
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain", data-inline="true")
+                                label(for="disbursedAmountId",id="disbursedAmountLabelId")
+                        div(class='ui-block-c')
+                            div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                                div(class='ui-block-a')
+                                    div(data-role="fieldcontain")
+                                        input(type="radio", name="disbursedAmount", id="disbursedAmountYesId",value = "131", data-theme='b',data-mini="true", onclick="radioClickEvent(this)")
+                                        label(for="disbursedAmountYesId") Yes
+                                div(class='ui-block-b')
+                                    div(data-role="fieldcontain")
+                                        input(type="radio", name="disbursedAmount", id="disbursedAmountNoId",value = "132",data-theme='b', data-mini="true", onclick="radioClickEvent(this)")
+                                        label(for="disbursedAmountNoId") No
+                            input(type="text", name="disbursedAmountRemarks", id="disbursedAmountRemarksId",style="display:none",maxlength="240")
+
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-b")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain", data-inline="true")
+                                label(for="EMIAMountId") EMI Amount
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain", data-inline="true")
+                                label(for="EMIAMountId",id="EMIAMountLabelId")
+                        div(class='ui-block-c')
+                            div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                                div(class='ui-block-a')
+                                    div(data-role="fieldcontain")
+                                        input(type="radio", name="EMIAMount", id="EMIAMountYesId", value = "133",data-theme='b',data-mini="true", onclick="radioClickEvent(this)")
+                                        label(for="EMIAMountYesId") Yes
+                                div(class='ui-block-b')
+                                    div(data-role="fieldcontain")
+                                        input(type="radio", name="EMIAMount", id="EMIAMountNoId", value = "134",data-theme='b',data-mini="true", onclick="radioClickEvent(this)")
+                                        label(for="EMIAMountNoId") No
+                            input(type="text", name="EMIAMountRemarks", id="EMIAMountRemarksId",style="display:none",maxlength="240")
+
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-b")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain", data-inline="true")
+                                label(for="interestRateId") Interest Rate
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain", data-inline="true")
+                                label(for="interestRateId",id="interestRateLabelId")
+                        div(class='ui-block-c')
+                            div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                                div(class='ui-block-a')
+                                    div(data-role="fieldcontain")
+                                        input(type="radio", name="interestRate", id="interestRateYesId",value = "135", data-theme='b',data-mini="true", onclick="radioClickEvent(this)")
+                                        label(for="interestRateYesId") Yes
+                                div(class='ui-block-b')
+                                    div(data-role="fieldcontain")
+                                        input(type="radio", name="interestRate", id="interestRateNoId",value = "136", data-theme='b', data-mini="true", onclick="radioClickEvent(this)")
+                                        label(for="interestRateNoId") No
+                            input(type="text", name="interestRateRemarks", id="interestRateRemarksId",style="display:none",maxlength="240")
+
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-b")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain", data-inline="true")
+                                label(for="tenurePeriodId") Tenure Period
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain", data-inline="true")
+                            label(for="tenurePeriodLabelId",id="tenurePeriodLabelId")
+                        div(class='ui-block-c')
+                            div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                                div(class='ui-block-a')
+                                    div(data-role="fieldcontain")
+                                        input(type="radio", name="tenurePeriod", id="tenurePeriodYesId",value = "137", data-theme='b', data-mini="true", onclick="radioClickEvent(this)")
+                                        label(for="tenurePeriodYesId") Yes
+                                div(class='ui-block-b')
+                                    div(data-role="fieldcontain")
+                                        input(type="radio", name="tenurePeriod", id="tenurePeriodNoId",value = "138", data-theme='b', data-mini="true", onclick="radioClickEvent(this)")
+                                        label(for="tenurePeriodNoId") No
+                            input(type="text", name="tenurePeriodRemarks", id="tenurePeriodRemarksId",style="display:none",maxlength="240")
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-b")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain", data-inline="true")
+                                label(for="finLiteracyId") Trainig provided to you on Financial Literacy?
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain", data-inline="true")
+                            label(for="finLiteracyLabelId",id="finLiteracyLabelId")
+                        div(class='ui-block-c')
+                            div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                                div(class='ui-block-a')
+                                    div(data-role="fieldcontain")
+                                        input(type="radio", name="finLiteracy", id="finLiteracyYesId",value = "143", data-theme='b', data-mini="true", onclick="radioClickEvent(this)")
+                                        label(for="finLiteracyYesId") Yes
+                                div(class='ui-block-b')
+                                    div(data-role="fieldcontain")
+                                        input(type="radio", name="finLiteracy", id="finLiteracyNoId",value = "144", data-theme='b', data-mini="true", onclick="radioClickEvent(this)")
+                                        label(for="finLiteracyNoId") No
+                            input(type="text", name="finLiteracyRemarks", id="finLiteracyRemarksId",style="display:none",maxlength="240")
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-b")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain", data-inline="true")
+                                label(for="legalPaperId") Legal paper signed by you with your understanding ?
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain", data-inline="true")
+                            label(for="legalPaperLabelId",id="legalPaperLabelId")
+                        div(class='ui-block-c')
+                            div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                                div(class='ui-block-a')
+                                    div(data-role="fieldcontain")
+                                        input(type="radio", name="legalPaper", id="legalPaperYesId",value = "145", data-theme='b', data-mini="true", onclick="radioClickEvent(this)")
+                                        label(for="legalPaperYesId") Yes
+                                div(class='ui-block-b')
+                                    div(data-role="fieldcontain")
+                                        input(type="radio", name="legalPaper", id="legalPaperNoId",value = "146", data-theme='b', data-mini="true", onclick="radioClickEvent(this)")
+                                        label(for="legalPaperNoId") No
+                            input(type="text", name="legalPaperRemarks", id="legalPaperRemarksId",style="display:none",maxlength="240")
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-b")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain", data-inline="true")
+                                label(for="processingFeeId") Discrepancies in processing fee ?
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain", data-inline="true")
+                            label(for="processingFeeId",id="processingFeeLabelId")
+                        div(class='ui-block-c')
+                            div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                                div(class='ui-block-a')
+                                    div(data-role="fieldcontain")
+                                        input(type="radio", name="processingFee", id="processingFeeYesId",value = "139", data-theme='b', data-mini="true", onclick="radioClickEventForYes(this)")
+                                        label(for="processingFeeYesId") Yes
+                                div(class='ui-block-b')
+                                    div(data-role="fieldcontain")
+                                        input(type="radio", name="processingFee", id="processingFeeNoId",value = "140", data-theme='b', data-mini="true", onclick="radioClickEventForYes(this)")
+                                        label(for="processingFeeNoId") No
+                            input(type="text", name="processingFeeRemarks", id="processingFeeRemarksId",style="display:none",maxlength="240")
+                    div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-b")
+                        div(class='ui-block-a')
+                            div(data-role="fieldcontain", data-inline="true")
+                                label(for="awarenessId") Awareness of Loan Features ?
+                        div(class='ui-block-b')
+                            div(data-role="fieldcontain", data-inline="true")
+                            label(for="awarenessId",id="awarenessLabelId")
+                        div(class='ui-block-c')
+                            div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                                div(class='ui-block-a')
+                                    div(data-role="fieldcontain")
+                                        input(type="radio", name="awareness", id="awarenessYesId",value = "141", data-theme='b', data-mini="true", onclick="radioClickEvent(this)")
+                                        label(for="awarenessYesId") Yes
+                                div(class='ui-block-b')
+                                    div(data-role="fieldcontain")
+                                        input(type="radio", name="awareness", id="awarenessNoId",value = "142", data-theme='b', data-mini="true", onclick="radioClickEvent(this)")
+                                        label(for="awarenessNoId") No
+                            input(type="text", name="awarenessRemarks", id="awarenessRemarksId",style="display:none",maxlength="240")
+                div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-b")
+                    div(class='ui-block-a')
+                        div(data-role="fieldcontain", data-inline="true")
+                            label(for="callTrackingCompletedId") Is Call tracking completed ?
+                    div(class='ui-block-b')
+                        div(data-role="fieldcontain", data-inline="true")
+                        label(for="callTrackingCompletedId",id="callTrackingCompletedLabelId")
+                    div(class='ui-block-c')
+                        div(data-role="horizontal", data-theme="a", data-overlay-theme="a", data-inline="true",class="ui-bar ui-grid-a")
+                            div(class='ui-block-a')
+                                div(data-role="fieldcontain")
+                                    input(type="radio", name="callTrackingCompleted", id="callTrackingCompletedYesId",value = "1", data-theme='b', data-mini="true")
+                                    label(for="callTrackingCompletedYesId") Yes
+                            div(class='ui-block-b')
+                                div(data-role="fieldcontain")
+                                    input(type="radio", name="callTrackingCompleted", id="callTrackingCompletedNoId",value = "0", data-theme='b', data-mini="true")
+                                    label(for="callTrackingCompletedNoId") No
+                a(href='#', rel="external",data-icon='refresh', data-role='button', title=' Add ', data-inline="true",id="submitId",data-mini="true") Submit
+                a(href='JavaScript:operationLDBack();', rel="external",data-icon='refresh', data-role='button', data-inline="true",data-mini="true",id="cancelId") Cancel
+

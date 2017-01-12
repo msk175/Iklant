@@ -1,0 +1,78 @@
+extends ./layout
+include ./header
+
+block title
+    title= 'IKLANT-Menu'
+
+block scripts
+    include ./headerJqueryMobile-1
+
+block content
+    form(id='reportsMainMenuFormId')
+        div(data-role='page', data-theme='b', id="menuDisplay")
+            +header("",["menu","logout"])
+            div(id="menu", data-theme="b", data-overlay-theme="b", class="ui-content", align="center")
+                div(id="menuDetails", data-theme="a", class="ui-bar ui-grid-a", data-overlay-theme="b", data-inline="true")
+                    div(data-role="horizontal", id="menuDetailsId", data-theme="a", class="ui-bar ui-grid-b", data-overlay-theme="a", data-inline="true")
+                        -if(roleId == constObj.getAccountsExecutiveRoleId()|| roleId == constObj.getSMHroleId() || roleId == constObj.getNaiveroleId()|| roleId == constObj.getAMHroleId()) {
+                        div(class="ui-block-a")
+                            div(data-role="fieldcontain", data-mini="true")
+                                a(href=contextPath + '/client/ci/reportsMenuByCategory/#{constObj.getFinancialReports()}', rel="external", title='Financial', data-inline='true')
+                                    img(id='groupIcon', src='/images/Financial.png',width='75%',height='75%')
+                                    h3(class="menu-label") Financial- Reports
+                        -}
+                        -if(roleId == constObj.getAccountsExecutiveRoleId() || roleId == constObj.getSMHroleId() || roleId == constObj.getBMroleId() || roleId == constObj.getGuestUserRoleId()) {
+                        div(class="ui-block-d")
+                            div(data-role="fieldcontain", data-mini="true")
+                                a(href=contextPath + '/client/ci/reportsMenuByCategory/#{constObj.getManagementReports()}', rel="external", title='Management', data-inline='true')
+                                    img(id='groupIcon', src='/images/Management.png',width='90%',height='90%')
+                                    h3(class="menu-label") Management- DashBoard
+                        -}
+                        -if(roleId == constObj.getBMroleId() || roleId == constObj.getSMHroleId() || roleId == constObj.getGuestUserRoleId()) {
+                        div(class="ui-block-c")
+                            div(data-role="fieldcontain", data-mini="true")
+                                a(href=contextPath + '/client/ci/reportsMenuByCategory/#{constObj.getOperationalReports()}', rel="external", title='Operational', data-inline='true')
+                                    img(id='groupIcon', src='/images/Operational.png',width='75%',height='75%')
+                                    h3(class="menu-label") Operational - DashBoard
+                        -}
+                    div(data-role="horizontal", id="menuDetailsId", data-theme="a", class="ui-bar ui-grid-b", data-overlay-theme="a", data-inline="true")
+                        -if(roleId != constObj.getCCEroleId()&& roleId != constObj.getDEOroleId() && roleId != constObj.getAuditorRoleId()) {
+                        //div(class="ui-block-a")
+                            div(data-role="fieldcontain", data-mini="true")
+                                a(href=contextPath+'/client/ci/reportsMenuByCategory/#{constObj.getGroupsReports()}', rel="external", title='Groups', data-inline='true')
+                                    img(id='groupIcon', src='/images/GroupManagement.png',width='75%',height='75%')
+                                    h3(class="menu-label") Groups
+                        -if(roleId != constObj.getGuestUserRoleId()){
+                            div(class="ui-block-a")
+                                div(data-role="fieldcontain", data-mini="true")
+                                    a(href=contextPath + '/client/ci/reportsMenuByCategory/#{constObj.getGroupMembersReports()}', rel="external", title='Group Members', data-inline='true')
+                                        img(id='groupIcon', src='/images/g_member.png',width='75%',height='75%')
+                                        h3(class="menu-label") Group Members
+                        -}
+                            // -div(class="ui-block-c")
+                                div(data-role="fieldcontain", data-mini="true")
+                                    a(href=contextPath + '/client/ci/reportsMenuByCategory #{constObj.getPortfolioReports()}', rel="external", title='Portfolio', data-inline='true')
+                                        img(id='groupIcon', src='/images/Portfolio.png',width='75%',height='75%')
+                                        h3(class="menu-label") Portfolio
+                        -}
+                           // -if(roleId == constObj.getDEOroleId()|| roleId == constObj.getAuditorRoleId()){
+                            div(class="ui-block-a")
+                                div(data-role="fieldcontain", data-mini="true")
+                                    a(href=contextPath + '/client/ci/reportsMenuByCategory/#{constObj.getGroupsReports()}', rel="external", title='Groups', data-inline='true')
+                                        img(id='groupIcon', src='/images/GroupManagement.png',width='75%',height='75%')
+                                        h3(class="menu-label") Groups
+                            -}
+                        -if(roleIds.indexOf(constObj.getCCEroleId())>-1) {
+                            //div(class="ui-block-a")
+                                div(data-role="fieldcontain", data-mini="true")
+                                    a(href=contextPath + '/client/ci/reportsMenuByCategory/#{constObj.getGroupsReports()}', rel="external", title='Groups', data-inline='true')
+                                        img(id='groupIcon', src='/images/GroupManagement.png',width='75%',height='75%')
+                                        h3(class="menu-label") Groups
+                        div(class="ui-block-b")
+                            div(data-role="fieldcontain", data-mini="true")
+                                a(href=contextPath + '/client/ci/reportsMenuByCategory/#{constObj.getOperationalReports()}', rel="external", title='Groups', data-inline='true')
+                                    img(id='groupIcon', src='/images/Operational.png',width='75%',height='75%')
+                                    h3(class="menu-label") Operational- DashBoard
+                        -}
+
+            div(class="ui-loader-background")
